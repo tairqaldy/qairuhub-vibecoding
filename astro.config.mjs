@@ -5,12 +5,9 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
-import cloudflare from '@astrojs/cloudflare';
-
 export default defineConfig({
   site: 'https://vibecoding.qairuhub.com',
   trailingSlash: 'always',
-
   integrations: [
     mdx(),
     react(),
@@ -30,5 +27,4 @@ export default defineConfig({
   },
 
   vite: { plugins: [tailwindcss()] },
-  adapter: cloudflare(),
 });

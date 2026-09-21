@@ -1,0 +1,400 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import { modules } from '@/data/curriculum';
+import { href } from '@/i18n/ui';
+import * as W from '@/data/workshop';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+
+// Sections are written by hand over time; render only the ones that exist.
+const runOfShow = W.runOfShow ?? [];
+const beforeEvent = (W as any).beforeEvent ?? [];
+const presenterKit = (W as any).presenterKit ?? [];
+const interactions = (W as any).interactions ?? [];
+const demos = (W as any).demos ?? [];
+const projects = (W as any).projects ?? [];
+const qa = (W as any).qa ?? [];
+const afterEvent = (W as any).afterEvent ?? [];
+
+const c = {
+  en: {
+    title: 'The workshop',
+    desc: 'The full run-of-show for teaching this masterclass live: minute by minute, with demos, fallbacks and a Q&A bank.',
+    kicker: 'For whoever is teaching it',
+    h1a: 'Run it',
+    h1b: 'yourself',
+    lead: 'This is the presenter’s copy. Two hours of masterclass plus an hour of building together, planned minute by minute — including what to do when the wifi dies, which it will. Take it, change it, teach it.',
+    openSlides: 'Open the slides',
+    printNote: 'This page prints cleanly. Print it and put it next to your laptop.',
+    runK: 'Run of show',
+    runP: 'Times are relative to the start. Negative times are before you begin.',
+    goal: 'Goal',
+    fallback: 'If it breaks',
+    beforeK: 'Send this to attendees',
+    kitK: 'Presenter kit',
+    interK: 'Audience moments',
+    demoK: 'Live demos',
+    setup: 'Setup',
+    type: 'Type this',
+    expect: 'What should happen',
+    ifFails: 'If it fails',
+    projK: 'Build together',
+    projP: 'Ten projects scoped to about forty minutes. Let the room vote, or let each table pick.',
+    starter: 'Starter prompt',
+    doneWhen: 'Done when',
+    qaK: 'Question bank',
+    qaP: 'The questions that actually get asked, with answers you can give honestly.',
+    afterK: 'The next seven days',
+    energy: {
+      hook: 'hook', teach: 'teach', demo: 'demo', interact: 'room', break: 'break', build: 'build',
+    },
+    level: ['', 'Beginner', 'Intermediate', 'Advanced'],
+    empty: 'This section is still being written.',
+  },
+  kk: {
+    title: 'Воркшоп',
+    desc: 'Осы мастер-классты тірі өткізуге арналған толық жоспар: минут сайын, демолармен, сақтық нұсқаларымен және сұрақ-жауап жинағымен.',
+    kicker: 'Сабақ өткізетін адамға',
+    h1a: 'Өзің',
+    h1b: 'өткіз',
+    lead: 'Бұл — жүргізушінің нұсқасы. Екі сағаттық мастер-класс және бірге құрастыруға арналған бір сағат, минут сайын жоспарланған — оның ішінде wi-fi істен шыққанда не істеу керегі де бар, ал ол міндетті түрде істен шығады. Ал да, өзгерт те, өткіз.',
+    openSlides: 'Слайдтарды ашу',
+    printNote: 'Бұл бет таза басылады. Басып шығарып, ноутбугыңның қасына қой.',
+    runK: 'Өткізу жоспары',
+    runP: 'Уақыт басталуға шаққанда берілген. Теріс сандар — басталғанға дейінгі уақыт.',
+    goal: 'Мақсат',
+    fallback: 'Бұзылса',
+    beforeK: 'Мұны қатысушыларға жібер',
+    kitK: 'Жүргізушінің жиынтығы',
+    interK: 'Залмен жұмыс сәттері',
+    demoK: 'Тікелей демолар',
+    setup: 'Дайындық',
+    type: 'Мынаны жаз',
+    expect: 'Не болуы керек',
+    ifFails: 'Істемей қалса',
+    projK: 'Бірге құрастыру',
+    projP: 'Шамамен қырық минутқа есептелген он жоба. Зал дауыс берсін немесе әр үстел өзі таңдасын.',
+    starter: 'Бастапқы prompt',
+    doneWhen: 'Аяқталды деп есепте, егер',
+    qaK: 'Сұрақтар жинағы',
+    qaP: 'Шын мәнінде қойылатын сұрақтар және оларға адал беретін жауаптар.',
+    afterK: 'Келесі жеті күн',
+    energy: {
+      hook: 'ілмек', teach: 'түсіндіру', demo: 'демо', interact: 'зал', break: 'үзіліс', build: 'құрастыру',
+    },
+    level: ['', 'Бастаушы', 'Орта', 'Жоғары'],
+    empty: 'Бұл бөлім әлі жазылып жатыр.',
+  },
+}[lang];
+
+const moduleTitle = (slug?: string) => (slug ? modules.find((m) => m.slug === slug)?.title[lang] : undefined);
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc} image="/og/workshop.png" act="why">
+  <section class="hero wrap">
+    <p class="kicker">{c.kicker}</p>
+    <h1><span class="block">{c.h1a}</span><span class="block accent">{c.h1b}</span></h1>
+    <p class="lead">{c.lead}</p>
+    <div class="cta no-print">
+      <a class="btn btn-signal" href={href(lang, 'present')}>{c.openSlides} →</a>
+      <button type="button" class="btn" onclick="window.print()">⎙</button>
+    </div>
+    <p class="print-note no-print">{c.printNote}</p>
+  </section>
+
+  {
+    runOfShow.length > 0 && (
+      <section class="wrap band">
+        <p class="eyebrow"><b>01</b> {c.runK}</p>
+        <p class="band-lead">{c.runP}</p>
+        <ol class="run">
+          {runOfShow.map((s: any) => (
+            <li class={`seg e-${s.energy}`}>
+              <div class="clock">
+                <span class="t1">{s.from}</span>
+                <span class="t2">{s.to}</span>
+              </div>
+              <div class="seg-body">
+                <p class="seg-top">
+                  <span class="energy">{(c.energy as any)[s.energy] ?? s.energy}</span>
+                  {s.module && moduleTitle(s.module) && (
+                    <a class="modlink" href={href(lang, `learn/${s.module}`)}>{moduleTitle(s.module)}</a>
+                  )}
+                  {s.slide && <a class="modlink" href={`${href(lang, 'present')}#${s.slide}`}>▸ {s.slide}</a>}
+                </p>
+                <h3>{s.title[lang]}</h3>
+                <p class="goal"><span>{c.goal}</span> {s.goal[lang]}</p>
+                <ul class="doing">
+                  {s.doing.map((d: any) => <li>{d[lang]}</li>)}
+                </ul>
+                {s.fallback && (
+                  <p class="fb"><span>{c.fallback}</span> {s.fallback[lang]}</p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )
+  }
+
+  {
+    beforeEvent.length > 0 && (
+      <section class="wrap band">
+        <p class="eyebrow"><b>02</b> {c.beforeK}</p>
+        <div class="cards">
+          {beforeEvent.map((b: any) => (
+            <article class="card2">
+              <span class="who">{b.who[lang]}</span>
+              <h3>{b.title[lang]}</h3>
+              <p>{b.body[lang]}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    demos.length > 0 && (
+      <section class="wrap band">
+        <p class="eyebrow"><b>03</b> {c.demoK}</p>
+        <div class="demos">
+          {demos.map((d: any, i: number) => (
+            <article class="demo">
+              <h3><span class="dn">{i + 1}</span> {d.title[lang]}</h3>
+              <p class="row"><span class="lbl">{c.setup}</span>{d.setup[lang]}</p>
+              <div class="term" data-copy-root>
+                <div class="term-bar">
+                  <span class="term-dots"><i /><i /><i /></span>
+                  <span>{c.type}</span>
+                  <button type="button" class="copy no-print" data-copy data-copied="✓">⧉</button>
+                </div>
+                <pre>{d.prompt}</pre>
+              </div>
+              <p class="row"><span class="lbl ok">{c.expect}</span>{d.expect[lang]}</p>
+              <p class="row fb2"><span class="lbl warn">{c.ifFails}</span>{d.ifItFails[lang]}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    interactions.length > 0 && (
+      <section class="wrap band">
+        <p class="eyebrow"><b>04</b> {c.interK}</p>
+        <ul class="inters">
+          {interactions.map((x: any) => (
+            <li>
+              <span class="at">{x.at}</span>
+              <span class="ibody">
+                <span class="kind">{x.kind[lang]}</span>
+                <span class="say">“{x.prompt[lang]}”</span>
+                <span class="why">{x.why[lang]}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    projects.length > 0 && (
+      <section class="wrap band">
+        <p class="eyebrow"><b>05</b> {c.projK}</p>
+        <p class="band-lead">{c.projP}</p>
+        <div class="projects">
+          {projects.map((p: any) => (
+            <article class="proj">
+              <span class="ptop">
+                <span class={`lvl lvl-${p.level}`}>{c.level[p.level]}</span>
+                <span class="stack">{p.stack[lang]}</span>
+              </span>
+              <h3>{p.title[lang]}</h3>
+              <p class="brief">{p.brief[lang]}</p>
+              <details class="no-print">
+                <summary>{c.starter}</summary>
+                <div class="term" data-copy-root>
+                  <div class="term-bar">
+                    <span class="term-dots"><i /><i /><i /></span>
+                    <span>prompt</span>
+                    <button type="button" class="copy" data-copy data-copied="✓">⧉</button>
+                  </div>
+                  <pre>{p.starterPrompt}</pre>
+                </div>
+              </details>
+              <p class="pdone"><span>{c.doneWhen}</span> {p.done[lang]}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    qa.length > 0 && (
+      <section class="wrap band">
+        <p class="eyebrow"><b>06</b> {c.qaK}</p>
+        <p class="band-lead">{c.qaP}</p>
+        <div class="qa">
+          {qa.map((x: any) => (
+            <details>
+              <summary>{x.q[lang]}<span class="tag">{x.tag}</span></summary>
+              <p>{x.a[lang]}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    presenterKit.length > 0 && (
+      <section class="wrap band">
+        <p class="eyebrow"><b>07</b> {c.kitK}</p>
+        <ul class="kit">
+          {presenterKit.map((k: any) => (
+            <li>
+              <b>{k.title[lang]}</b>
+              <span>{k.body[lang]}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    afterEvent.length > 0 && (
+      <section class="wrap band">
+        <p class="eyebrow"><b>08</b> {c.afterK}</p>
+        <ol class="after">
+          {afterEvent.map((a: any) => (
+            <li>
+              <span class="day">{a.day[lang]}</span>
+              <span>{a.task[lang]}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .hero { padding: clamp(48px, 8vw, 88px) 0 0; }
+  .kicker { margin: 0 0 18px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
+  h1 { font-size: clamp(44px, 9vw, 92px); font-weight: 300; letter-spacing: -0.045em; line-height: 0.98; }
+  .block { display: block; }
+  .accent { color: var(--color-signal-soft); }
+  .lead { max-width: 62ch; margin: 26px 0 0; font-size: clamp(16.5px, 2vw, 19px); line-height: 1.65; color: var(--color-muted); }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  .print-note { margin: 14px 0 0; font: 400 13px/1.4 var(--font-mono); color: var(--color-faint); }
+
+  .band { padding: clamp(44px, 6vw, 72px) 0 0; }
+  .band-lead { max-width: 64ch; margin: 14px 0 0; font-size: 17px; line-height: 1.6; color: var(--color-muted); }
+
+  /* run of show */
+  .run { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 10px; }
+  .seg { --e: var(--color-signal); display: grid; grid-template-columns: 64px 1fr; gap: 16px; padding: 18px 20px; border-radius: 18px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); }
+  .e-hook { --e: var(--color-pink); }
+  .e-demo { --e: var(--color-amber); }
+  .e-interact { --e: var(--color-lime); }
+  .e-break { --e: var(--color-faint); }
+  .e-build { --e: var(--color-ok); }
+  .clock { display: grid; gap: 2px; align-content: start; font-family: var(--font-mono); }
+  .t1 { font-size: 15px; font-weight: 500; color: #fff; }
+  .t2 { font-size: 11.5px; color: var(--color-faint); }
+  .seg-body { min-width: 0; }
+  .seg-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 8px; }
+  .energy { padding: 3px 9px; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--e) 45%, transparent); background: color-mix(in oklab, var(--e) 12%, transparent); font: 500 10px/1.4 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--e); }
+  .modlink { font: 400 11.5px/1 var(--font-mono); color: var(--color-signal-soft); text-decoration: none; border-bottom: 1px solid transparent; }
+  .modlink:hover { border-bottom-color: currentColor; }
+  .seg h3 { font-size: clamp(19px, 2.4vw, 23px); font-weight: 500; letter-spacing: -0.015em; }
+  .goal { margin: 8px 0 0; font-size: 15.5px; line-height: 1.55; color: rgb(255 255 255 / 0.88); }
+  .goal span, .fb span, .pdone span { font: 500 10px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-faint); margin-right: 7px; }
+  .doing { margin: 12px 0 0; padding-left: 16px; display: grid; gap: 6px; font-size: 15px; line-height: 1.5; color: var(--color-muted); }
+  .doing li::marker { color: var(--e); }
+  .fb { margin: 12px 0 0; padding: 10px 13px; border-radius: 12px; border: 1px solid rgb(255 181 71 / 0.3); background: rgb(255 181 71 / 0.07); font-size: 14.5px; line-height: 1.5; color: #f0dcbb; }
+  .fb span { color: var(--color-amber); }
+
+  .cards { display: grid; gap: 12px; margin-top: 24px; }
+  .card2 { padding: 20px; border-radius: 18px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); }
+  .who { font: 500 10px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-signal-soft); }
+  .card2 h3 { margin-top: 10px; font-size: 18px; font-weight: 600; }
+  .card2 p { margin: 7px 0 0; font-size: 15px; line-height: 1.55; color: var(--color-muted); }
+
+  .demos { display: grid; gap: 16px; margin-top: 24px; }
+  .demo { padding: 22px; border-radius: 20px; border: 1px solid rgb(255 181 71 / 0.3); background: rgb(255 181 71 / 0.05); }
+  .demo h3 { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 500; }
+  .dn { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--color-amber); color: #1b1b1b; font: 600 13px/1 var(--font-mono); }
+  .row { margin: 12px 0 0; font-size: 15px; line-height: 1.55; color: rgb(255 255 255 / 0.88); }
+  .lbl { display: block; font: 500 10px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-faint); margin-bottom: 4px; }
+  .lbl.ok { color: var(--color-ok); }
+  .lbl.warn { color: var(--color-amber); }
+  .fb2 { padding: 12px 14px; border-radius: 12px; background: rgb(0 0 0 / 0.25); }
+  .demo .term, .proj .term { margin-top: 12px; }
+  .term pre { margin: 0; padding: 14px 16px; font: 400 12.5px/1.65 var(--font-mono); color: #cfe2ff; white-space: pre-wrap; overflow-x: auto; }
+  .copy { margin-left: auto; min-height: 24px; padding: 0 9px; border-radius: 999px; border: 1px solid var(--color-line-strong); background: transparent; color: var(--color-muted); font: 500 11px/1 var(--font-mono); cursor: pointer; }
+  .copy:hover { color: #fff; }
+  .copy.done { border-color: var(--color-ok); color: var(--color-ok); }
+
+  .inters { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 8px; }
+  .inters li { display: grid; grid-template-columns: 54px 1fr; gap: 14px; padding: 16px 18px; border-radius: 16px; border: 1px solid var(--color-line); background: rgb(190 235 80 / 0.05); }
+  .at { font: 500 14px/1.4 var(--font-mono); color: var(--color-lime); }
+  .ibody { display: grid; gap: 5px; min-width: 0; }
+  .kind { font: 500 10px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-faint); }
+  .say { font-size: 16.5px; line-height: 1.45; color: #fff; }
+  .why { font-size: 14px; line-height: 1.5; color: var(--color-muted); }
+
+  .projects { display: grid; gap: 14px; margin-top: 24px; }
+  .proj { padding: 20px; border-radius: 18px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); display: grid; align-content: start; gap: 8px; }
+  .ptop { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .lvl { padding: 3px 9px; border-radius: 999px; font: 500 10px/1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--color-line); color: var(--color-faint); }
+  .lvl-1 { color: var(--color-ok); border-color: rgb(72 213 151 / 0.4); }
+  .lvl-2 { color: var(--color-signal-soft); border-color: rgb(43 127 255 / 0.45); }
+  .lvl-3 { color: var(--color-pink); border-color: rgb(255 120 210 / 0.45); }
+  .stack { font: 400 11.5px/1.4 var(--font-mono); color: var(--color-faint); }
+  .proj h3 { font-size: 19px; font-weight: 500; }
+  .brief { margin: 0; font-size: 15px; line-height: 1.55; color: var(--color-muted); }
+  .proj details summary { cursor: pointer; font: 500 12px/1 var(--font-mono); color: var(--color-signal-soft); padding: 6px 0; }
+  .pdone { margin: 6px 0 0; font-size: 14.5px; line-height: 1.5; color: rgb(255 255 255 / 0.85); }
+
+  .qa { display: grid; gap: 7px; margin-top: 24px; }
+  .qa details { border-radius: 14px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); }
+  .qa summary { display: flex; align-items: center; gap: 10px; padding: 14px 18px; cursor: pointer; font-size: 16.5px; font-weight: 500; color: #fff; list-style: none; }
+  .qa summary::-webkit-details-marker { display: none; }
+  .qa summary::before { content: '?'; flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--color-signal); font: 500 11px/1 var(--font-mono); color: var(--color-signal-soft); }
+  .tag { margin-left: auto; font: 400 10px/1.4 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-faint); }
+  .qa p { margin: 0; padding: 0 18px 16px 48px; font-size: 15.5px; line-height: 1.6; color: var(--color-muted); }
+
+  .kit { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 8px; }
+  .kit li { display: grid; gap: 3px; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.025); }
+  .kit b { font-size: 15.5px; color: #fff; }
+  .kit span { font-size: 14.5px; line-height: 1.5; color: var(--color-muted); }
+
+  .after { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 8px; counter-reset: d; }
+  .after li { display: grid; grid-template-columns: 86px 1fr; gap: 14px; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--color-line); }
+  .day { font: 500 12px/1.5 var(--font-mono); color: var(--color-signal-soft); }
+  .after li span:last-child { font-size: 15.5px; line-height: 1.5; color: rgb(255 255 255 / 0.88); }
+
+  @media (min-width: 760px) {
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .projects { grid-template-columns: repeat(2, 1fr); }
+    .seg { grid-template-columns: 82px 1fr; }
+  }
+  @media (min-width: 1060px) { .projects { grid-template-columns: repeat(3, 1fr); } .cards { grid-template-columns: repeat(3, 1fr); } }
+
+  @media print {
+    .seg, .card2, .demo, .proj, .qa details, .kit li, .after li, .inters li { break-inside: avoid; border-color: #ccc; background: none; }
+    .qa details { display: block; }
+    .qa p { display: block; }
+  }
+</style>

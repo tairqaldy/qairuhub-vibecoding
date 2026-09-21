@@ -157,8 +157,13 @@ export function isLang(x: string | undefined): x is Lang {
   return x === 'en' || x === 'kk';
 }
 
-/** Swap the locale prefix of a path, keeping the rest. */
+/**
+ * Swap the locale prefix of a path, keeping the rest.
+ * Paths with no locale prefix (/, /404/) have no counterpart in the other
+ * locale, so they point at that locale's home page instead of inventing a URL.
+ */
 export function switchLang(pathname: string, to: Lang): string {
+  if (!/^\/(en|kk)(\/|$)/.test(pathname)) return `/${to}/`;
   const rest = pathname.replace(/^\/(en|kk)(?=\/|$)/, '');
   return `/${to}${rest || '/'}`;
 }

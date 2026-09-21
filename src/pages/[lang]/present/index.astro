@@ -83,7 +83,7 @@ const deck = slides[lang];
 
     {
       deck.map((s, i) => (
-        <section class="slide" data-slide={i} hidden={i !== 0}>
+        <section class="slide" id={String(i + 1)} data-slide={i} hidden={i !== 0}>
           <div class="inner">
             {s.kind === 'title' && (
               <>

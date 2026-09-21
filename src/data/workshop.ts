@@ -409,5 +409,447 @@ export const runOfShow: Segment[] = [
       kk: 'Қосалқы слайдта бес дайын рұқсат сұрауы тұрсын: `npm install`, `.env` файлын оқу, қалтаға `rm -rf`, `git push --force`, `curl` нәтижесін `bash` ішіне жіберу — дауыс беруді сол бойынша өткіз. Тексеру бөлігі үшін `step-3-tested` тегіне өт те, кеше жазылған тест нәтижесін көрсет.',
     },
   },
-  // <<CHUNK2>>
+  {
+    from: '1:12',
+    to: '1:19',
+    energy: 'interact',
+    module: 'git-and-github',
+    title: {
+      en: 'Prompt duel, then rewind all of it',
+      kk: 'Prompt жекпе-жегі, сосын бәрін кері қайтар',
+    },
+    goal: {
+      en: 'The room sees, in the same file, what a vague prompt and a specific prompt actually produce — and that undoing costs nothing.',
+      kk: 'Зал бір файлдың өзінде бұлдыр prompt пен нақты prompt не беретінін көреді — және кері қайтару тегін екенін түсінеді.',
+    },
+    doing: [
+      {
+        en: 'Volunteer A dictates a vague styling prompt out loud, something like "make it look better". Run it. Let the room stare at the arbitrary result in silence for a few seconds.',
+        kk: 'Бірінші ерікті бұлдыр prompt айтады, мысалы «make it look better». Оны орында. Кездейсоқ шыққан нәтижеге зал бірнеше секунд үнсіз қарасын.',
+      },
+      {
+        en: 'Press Esc twice or run /rewind back to the previous checkpoint, and say the sentence: mistakes are cheap here, so try things.',
+        kk: 'Esc-ті екі рет бас немесе `/rewind` пәрменін орындап, алдыңғы сақтау нүктесіне қайт та, негізгі ойды айт: мұнда қате арзан, сондықтан батыл байқап көр.',
+      },
+      {
+        en: 'Volunteer B dictates a specific one: exact palette, exact font size, CSS only, and tell me which rules you changed. Run it. Let the room judge, not you.',
+        kk: 'Екінші ерікті нақтысын айтады: дәл түс палитрасы, дәл шрифт өлшемі, тек CSS және «қай ережелерді өзгерткеніңді айт». Оны орында. Бағаны сен емес, зал берсін.',
+      },
+      {
+        en: 'Name the limit honestly: checkpoints undo file edits, not what a shell command already did. That is what git is for.',
+        kk: 'Шектеуін ашық айт: сақтау нүктелері файл өзгерістерін ғана қайтарады, орындалып кеткен пәрменнің салдарын емес. Ол үшін git бар.',
+      },
+    ],
+  },
+  {
+    from: '1:19',
+    to: '1:25',
+    energy: 'teach',
+    module: 'context-ssot',
+    title: {
+      en: 'Give it a memory, then save the good state',
+      kk: 'Оған жад бер, сосын жақсы күйін сақта',
+    },
+    goal: {
+      en: 'Everyone knows what CLAUDE.md or AGENTS.md is for, and why a boring commit matters more than a pretty screen.',
+      kk: 'Әркім `CLAUDE.md` не `AGENTS.md` не үшін керегін және неге әдемі экраннан гөрі қарапайым commit маңыздырақ екенін біледі.',
+    },
+    doing: [
+      {
+        en: 'Run /init, open the generated file, and add one human line it could never guess: this app must keep working by opening index.html directly, never add a build step.',
+        kk: '`/init` пәрменін орында, шыққан файлды аш және өзі ешқашан таба алмайтын бір адами жолды қос: «бұл қолданба `index.html` файлын тікелей ашқанда жұмыс істеуі керек, құрастыру қадамын қоспа».',
+      },
+      {
+        en: 'Say the rule: short file, read at the start of every session, pruned when it stops being read. A bloated memory file is an ignored memory file.',
+        kk: 'Ережені айт: файл қысқа болсын, әр сеанстың басында оқылады, оқылмай қалса қысқартылады. Ісініп кеткен жад файлы — еленбейтін жад файлы.',
+      },
+      {
+        en: 'Ask the agent to commit with a descriptive message, then show git log --oneline: four commits, four laps of the loop.',
+        kk: 'Agent-тен мазмұнды хабары бар commit жасауды сұра, сосын `git log --oneline` көрсет: төрт commit — циклдың төрт айналымы.',
+      },
+    ],
+  },
+  {
+    from: '1:25',
+    to: '1:34',
+    energy: 'interact',
+    slide: 11,
+    module: 'security',
+    title: {
+      en: 'Spot the bug: twelve lines, three problems',
+      kk: 'Қатені тап: он екі жол, үш мәселе',
+    },
+    goal: {
+      en: 'The room discovers, by arguing with each other rather than listening to you, that plausible code and correct code are different things.',
+      kk: 'Зал сені тыңдап емес, бір-бірімен таласып отырып, «сенімді көрінетін код» пен «дұрыс код» екі бөлек нәрсе екенін өзі ашады.',
+    },
+    doing: [
+      {
+        en: 'Show the snippet. Individual vote A/B/C/D with no talking. Show the split on screen without saying who is right.',
+        kk: 'Код үзіндісін көрсет. Сөйлеспей, әркім жеке A/B/C/D дауысын берсін. Кім дұрыс екенін айтпай, дауыстардың бөлінуін экранға шығар.',
+      },
+      {
+        en: 'Two minutes of pair discussion, then a revote. The second vote is the lesson; the first one was only the hook.',
+        kk: 'Екі минут жұппен талқыла, сосын қайта дауыс бер. Сабақ — екінші дауыс беруде; біріншісі тек қызықтыру үшін болды.',
+      },
+      {
+        en: 'Resolve all three: a secret key shipped to every browser, user input injected straight into HTML, and the string bug where "1000" + "100" becomes "1000100".',
+        kk: 'Үшеуін де талда: әр браузерге тарап кеткен құпия кілт, HTML ішіне тікелей енгізілген пайдаланушы мәтіні және «1000» + «100» = «1000100» болатын мәтін қатесі.',
+      },
+      {
+        en: 'Anchor it in numbers: of 1 645 scanned Lovable apps, 170 exposed names, emails, financial data and API keys. AI co-authored pull requests carried about 1.7 times more issues — 10.83 against 6.45 per pull request.',
+        kk: 'Сандармен бекіт: тексерілген 1 645 Lovable қолданбасының 170-і аттарды, электрондық пошталарды, қаржы деректері мен API кілттерін ашық қалдырған. ЖИ қатысқан pull request-терде мәселе шамамен 1,7 есе көп болған — біреуіне 10,83 қате, адамдікінде 6,45.',
+      },
+    ],
+  },
+  {
+    from: '1:34',
+    to: '1:44',
+    energy: 'demo',
+    module: 'deploy',
+    title: {
+      en: 'Demo 3: break it, debug it, ship it',
+      kk: 'Demo 3: бұз, жөнде, шығар',
+    },
+    goal: {
+      en: 'The room has one repeatable debugging sentence and has watched a folder turn into a public URL in under a minute.',
+      kk: 'Залда қайталап қолдануға келетін бір жөндеу сөйлемі бар және олар бір минуттан аз уақытта қалтаның ашық URL-ге айналғанын көрді.',
+    },
+    doing: [
+      {
+        en: 'Show the symptom in the browser and the red error in the console. Ask the room: what three things do we give the agent? Symptom, expected result, exact error.',
+        kk: 'Браузердегі белгіні және консольдегі қызыл қатені көрсет. Залдан сұра: agent-ке қай үш нәрсені береміз? Белгі, күтілген нәтиже, дәл қате мәтіні.',
+      },
+      {
+        en: 'Paste prompt D: root cause explained in two sentences as if to a first-year student, a failing test first, then the fix, and do not suppress the error.',
+        kk: 'D prompt-ын қой: түбірлі себебін бірінші курс студентіне түсіндіргендей екі сөйлеммен айт, алдымен құлайтын тест жаз, сосын түзет және қатені баса көрсетпей жасырма.',
+      },
+      {
+        en: 'Ship: drag the folder onto Netlify Drop, put the URL in a QR, and let the room open it while you are still talking.',
+        kk: 'Шығар: қалтаны Netlify Drop бетіне сүйреп апар, URL-ді QR-кодқа сал және сен әлі сөйлеп тұрғанда зал оны ашсын.',
+      },
+      {
+        en: 'Say the fine print out loud: an unclaimed Netlify Drop URL is password-protected until you claim it, and anything that needs a build step needs a login.',
+        kk: 'Ұсақ жазуын дауыстап айт: иеленбеген Netlify Drop сілтемесі сен оны өзіңе бекітпейінше құпиясөзбен қорғалады, ал құрастыру қадамы керек жобаға аккаунтқа кіру қажет.',
+      },
+    ],
+    fallback: {
+      en: 'Pre-deployed URL and QR on the slide, plus a screenshot of the console error so the debugging story still works with no browser. Fully offline: play the recording, pause it on the error, make the room shout the three things, then play the fix.',
+      kk: 'Слайдта алдын ала жарияланған сілтеме мен QR-код, қоса консольдегі қатенің скриншоты — сонда браузерсіз де жөндеу әңгімесі жүреді. Мүлде интернетсіз: жазбаны қос, қате тұрған жерде тоқтат, зал үш нәрсені дауыстап айтсын, сосын түзетуді көрсет.',
+    },
+  },
+  {
+    from: '1:44',
+    to: '1:52',
+    energy: 'teach',
+    slide: 5,
+    module: 'why-now',
+    title: {
+      en: 'The honest slide: does this actually make you faster?',
+      kk: 'Шыншыл слайд: бұл шынымен жылдамдата ма?',
+    },
+    goal: {
+      en: 'Nobody leaves oversold. The room can answer a sceptical friend with real numbers instead of enthusiasm.',
+      kk: 'Ешкім артық үміт арқалап кетпесін. Зал күдікті досына шабытпен емес, нақты сандармен жауап бере алады.',
+    },
+    doing: [
+      {
+        en: 'This is the slump. The demos are over, it is minute 105, people are tired. Lower your voice instead of raising it, and say out loud that you are about to argue against your own workshop.',
+        kk: 'Дәл осы жер — шаршау сәті. Демолар бітті, 105-минут, адамдар шаршады. Дауысты көтермей, керісінше бәсеңдет және ашық айт: қазір өз сабағыңа қарсы дәлел келтіресің.',
+      },
+      {
+        en: 'METR, early 2025: 16 experienced developers on their own repositories took 19% longer with AI, while expecting to be 24% faster. The February 2026 update still measures slowdowns — minus 18% and minus 4% — with confidence intervals crossing zero, and METR itself calls that only very weak evidence.',
+        kk: 'METR, 2025 жылдың басы: өз репозиторийлерінде жұмыс істеген 16 тәжірибелі әзірлеуші ЖИ-мен 19% ұзағырақ істеген, ал өздері 24% жылдам боламыз деп күткен. 2026 ж. 24 ақпандағы жаңартуда да баяулау көрінеді — минус 18% және минус 4% — сенім аралықтары нөлден өтеді, ал METR оны «өте әлсіз дәлел» деп атайды.',
+      },
+      {
+        en: 'Stack Overflow 2025: 84% use or plan to use AI, but only 33% trust its accuracy against 46% who distrust it, and 66% are frustrated by answers that are almost right.',
+        kk: 'Stack Overflow 2025: 84% ЖИ-ді қолданады немесе қолданбақ, бірақ дәлдігіне тек 33% сенеді, ал 46% сенбейді; 66%-ын «дәлге жақын, бірақ дәл емес» жауаптар ашуландырады.',
+      },
+      {
+        en: 'Then land it: none of that says do not do this. It says the value sits in the VERIFY step — and that is exactly the part you can learn tonight.',
+        kk: 'Сосын түйінде: бұлардың бірі де «жасама» деп тұрған жоқ. Бұл — құндылық VERIFY қадамында дегені, ал дәл соны бүгін кешке үйренуге болады.',
+      },
+    ],
+  },
+  {
+    from: '1:52',
+    to: '2:00',
+    energy: 'interact',
+    slide: 16,
+    module: 'problem-solving-mindset',
+    title: {
+      en: 'Five rules, two cards, one ask',
+      kk: 'Бес ереже, екі қағаз, бір өтініш',
+    },
+    goal: {
+      en: 'Everyone leaves with five sentences they can repeat from memory and one concrete thing they will do tonight.',
+      kk: 'Әркім жатқа қайталай алатын бес сөйлеммен және бүгін кешке істейтін бір нақты іспен кетеді.',
+    },
+    doing: [
+      {
+        en: 'Redraw the loop from memory and make the room say the five words with you, out loud, twice.',
+        kk: 'Циклды жатқа қайта сыз және бес сөзді залмен бірге дауыстап екі рет айт.',
+      },
+      {
+        en: 'The five rules: say what done looks like; plan before you build; make it prove it; after two failed corrections run /clear and write a better first prompt; commit what works, no secrets in code, low stakes first.',
+        kk: 'Бес ереже: «дайын» деген не екенін айт; құрастырмас бұрын жоспарла; дәлелдеуін талап ет; екі түзету сәтсіз болса `/clear` жасап, жақсырақ бірінші prompt жаз; істеп тұрғанын commit жаса, кодта құпия сақтама, алдымен тәуекелі аз нәрседен баста.',
+      },
+      {
+        en: 'Minute cards: green is one thing you learned, red is one thing still unclear. Stick them on the door on the way out; helpers cluster the red ones into the Q&A bursts.',
+        kk: 'Минут қағаздары: жасылға — үйренген бір нәрсең, қызылға — әлі түсініксіз бір нәрсе. Шыққанда есікке жабыстыр; көмекшілер қызылдарын сұрақ-жауап блогына топтастырады.',
+      },
+      {
+        en: 'The ask, said plainly: reading about this changes nothing. Tonight, one hour, one small thing, one link you can send to somebody. That is the whole point of the next hour.',
+        kk: 'Өтінішті ашық айт: бұл туралы оқу ештеңені өзгертпейді. Бүгін кешке — бір сағат, бір шағын нәрсе, біреуге жібере алатын бір сілтеме. Келесі сағаттың бүкіл мәні — осы.',
+      },
+    ],
+  },
+  {
+    from: '2:00',
+    to: '2:10',
+    energy: 'break',
+    title: {
+      en: 'Break — ten real minutes',
+      kk: 'Үзіліс — толық он минут',
+    },
+    goal: {
+      en: 'The room refills, and the red cards turn into a question list you can actually use.',
+      kk: 'Зал қайта толады, ал қызыл қағаздар шынымен қолданатын сұрақтар тізіміне айналады.',
+    },
+    doing: [
+      {
+        en: 'Helpers cluster the red cards into six to eight questions and hand you the list on paper.',
+        kk: 'Көмекшілер қызыл қағаздарды алты-сегіз сұраққа топтастырып, тізімді саған қағазбен береді.',
+      },
+      {
+        en: 'Reset the laptop to the project cards slide and start the visible 40-minute timer only when people are actually back in their seats.',
+        kk: 'Ноутбукті тапсырма карталары слайдына қайтар және көрінетін 40 минуттық таймерді адамдар шынымен орнына отырғанда ғана қос.',
+      },
+      {
+        en: 'Do not shorten this. A skipped break costs more in the last hour than the ten minutes it saves.',
+        kk: 'Бұны қысқартпа. Өткізіп жіберілген үзіліс соңғы сағатта өзі үнемдеген он минуттан қымбатқа түседі.',
+      },
+    ],
+  },
+
+  // --------------------------------------------- part B: build together + Q&A
+  {
+    from: '2:10',
+    to: '2:15',
+    energy: 'build',
+    title: {
+      en: 'Pick a project, find a partner',
+      kk: 'Тапсырма таңда, жұптас тап',
+    },
+    goal: {
+      en: 'Every pair has one card, one working seat and one person already on the keyboard within five minutes.',
+      kk: 'Бес минут ішінде әр жұпта бір карта, бір жұмыс істейтін орын және пернетақтада отырған бір адам болады.',
+    },
+    doing: [
+      {
+        en: 'Pair by mixed experience, and the less experienced person drives first. Pair everyone, not only the people who look lost.',
+        kk: 'Жұпты тәжірибесі әртүрлі адамдардан құра, пернетақтаға алдымен тәжірибесі азы отырады. Жұпқа бәрін бөл, тек сасып қалғандарды емес.',
+      },
+      {
+        en: 'Each pair picks one of the ten cards, or an idea from the word cloud that fits the same constraints: one page, no login, no paid API, no secrets.',
+        kk: 'Әр жұп он картаның бірін таңдайды немесе сол шектеулерге сай идеяны алады: бір бет, кіру жүйесі жоқ, ақылы API жоқ, құпия деректер жоқ.',
+      },
+      {
+        en: 'Start the visible timer and say the number out loud: forty minutes, three sprints, one link at the end.',
+        kk: 'Көрінетін таймерді қос және санды дауыстап айт: қырық минут, үш кезең, соңында бір сілтеме.',
+      },
+    ],
+  },
+  {
+    from: '2:15',
+    to: '2:25',
+    energy: 'build',
+    module: 'idea-to-prd',
+    title: {
+      en: 'Sprint 1: describe, plan, get anything on screen',
+      kk: '1-кезең: сипатта, жоспарла, экранға бірдеңе шығар',
+    },
+    goal: {
+      en: 'Every pair has something rendering, however ugly. Nothing kills a build session like a blank screen at minute fifteen.',
+      kk: 'Әр жұпта экранда бірдеңе көрінеді, қаншалықты ұсқынсыз болса да. Он бесінші минуттағы бос экраннан артық практиканы өлтіретін нәрсе жоқ.',
+    },
+    doing: [
+      {
+        en: 'Pairs paste the card starter prompt, answer the agent questions honestly, and approve a plan they have actually read.',
+        kk: 'Жұптар картадағы бастапқы prompt-ты қояды, agent сұрақтарына шын жауап береді және шынымен оқыған жоспарды мақұлдайды.',
+      },
+      {
+        en: 'Green card goes up the moment something renders. Helpers go to the red cards; the presenter never leaves the stage to fix one laptop.',
+        kk: 'Экранда бірдеңе көрінген сәтте жасыл қағаз көтеріледі. Көмекшілер қызыл қағаздарға барады; жүргізуші бір ноутбук үшін сахнадан кетпейді.',
+      },
+      {
+        en: 'Build project 1 on the big screen at the same pace as the room, never faster. If you are ahead, stop and wait in silence.',
+        kk: 'Үлкен экранда 1-тапсырманы залмен бірдей қарқынмен жаса, ешқашан алда жүрме. Озып кетсең, тоқта да үнсіз күт.',
+      },
+    ],
+  },
+  {
+    from: '2:25',
+    to: '2:28',
+    energy: 'interact',
+    title: {
+      en: 'Q&A burst 1: three questions while the agents work',
+      kk: '1-сұрақ блогы: agent-тер істеп жатқанда үш сұрақ',
+    },
+    goal: {
+      en: 'Dead waiting time becomes teaching time, and the red cards from the break get answered in public.',
+      kk: 'Бос күту уақыты сабаққа айналады, ал үзілістегі қызыл қағаздар жұрт алдында жауап алады.',
+    },
+    doing: [
+      {
+        en: 'Three questions from the clustered red cards, 45 seconds each, no follow-ups. Say out loud that agent thinking time is exactly when to ask.',
+        kk: 'Топтастырылған қызыл қағаздардан үш сұрақ, әрқайсысына 45 секунд, қосымша сұрақсыз. Agent ойланып тұрған уақыт — дәл сұрақ қоятын уақыт екенін айт.',
+      },
+      {
+        en: 'If a question needs five minutes, say so honestly and park it for the closing block instead of stealing the sprint.',
+        kk: 'Сұраққа бес минут керек болса, соны ашық айт та, кезеңнен уақыт ұрлаудың орнына қорытынды блокқа қалдыр.',
+      },
+    ],
+  },
+  {
+    from: '2:28',
+    to: '2:40',
+    energy: 'build',
+    module: 'test-and-quality',
+    title: {
+      en: 'Sprint 2: one feature, one fix, swap the driver',
+      kk: '2-кезең: бір мүмкіндік, бір түзету, кезекті ауыстыр',
+    },
+    goal: {
+      en: 'Every pair goes round the loop a second time, and both people have touched the keyboard by the end of it.',
+      kk: 'Әр жұп циклдың екінші айналымын жасайды және кезең соңында екеуі де пернетақтаға отырып үлгереді.',
+    },
+    doing: [
+      {
+        en: 'Two minutes into this sprint, call "swap driver" out loud. Do not ask, tell — otherwise the confident one keeps the keyboard all night.',
+        kk: 'Кезең басталғаннан кейін екі минут өткенде «кезекті ауыстыр» деп дауыстап айт. Сұрама, айт — әйтпесе батылырағы пернетақтаны кеш бойы жібермейді.',
+      },
+      {
+        en: 'Helpers enforce the two-strikes rule: two failed corrections on the same bug means /clear and a better first prompt, not a third try.',
+        kk: 'Көмекшілер «екі соққы» ережесін қадағалайды: бір қатеге екі түзету өтпесе, үшінші рет тырыспай, `/clear` жасап, жақсырақ бірінші prompt жазады.',
+      },
+      {
+        en: 'If a pair is drowning, cut their must-have list in half in front of them. At this point scope fails, not skill.',
+        kk: 'Бір жұп батып бара жатса, міндетті талаптар тізімін солардың көзінше екі есе қысқарт. Бұл кезде құлайтын нәрсе — дағды емес, ауқым.',
+      },
+    ],
+  },
+  {
+    from: '2:40',
+    to: '2:43',
+    energy: 'interact',
+    title: {
+      en: 'Q&A burst 2',
+      kk: '2-сұрақ блогы',
+    },
+    goal: {
+      en: 'The second wind: the room hears what is working for other pairs, not only what is broken on their own screen.',
+      kk: 'Екінші тыныс: зал тек өз экранындағы ақауды емес, басқа жұптарда не жұмыс істеп тұрғанын естиді.',
+    },
+    doing: [
+      {
+        en: 'Three more questions, and take one live from the floor if someone is visibly stuck on something the whole room shares.',
+        kk: 'Тағы үш сұрақ; біреу бүкіл залға ортақ нәрседен тұрып қалғаны көрініп тұрса, сұрақты орнынан алып жауап бер.',
+      },
+      {
+        en: 'Name one pair that is shipping well and say exactly what they did differently. Public credit moves a room faster than any slide.',
+        kk: 'Жақсы алға басқан бір жұпты ата және олар нақты нені басқаша істегенін айт. Жұрт алдындағы мақтау кез келген слайдтан күштірек.',
+      },
+    ],
+  },
+  {
+    from: '2:43',
+    to: '2:55',
+    energy: 'build',
+    module: 'deploy',
+    title: {
+      en: 'Sprint 3: verify, then ship',
+      kk: '3-кезең: тексер, сосын шығар',
+    },
+    goal: {
+      en: 'Most of the room ends with a URL that somebody else can open on their own phone.',
+      kk: 'Залдың көбі басқа біреу өз телефонынан аша алатын сілтемемен аяқтайды.',
+    },
+    doing: [
+      {
+        en: 'Read the definition of done from each card out loud, line by line, and have every pair check theirs against it.',
+        kk: 'Әр картадағы «дайын» анықтамасын дауыстап жолма-жол оқы да, әр жұп өзінікін соған салып тексерсін.',
+      },
+      {
+        en: 'Deploy: drag onto Netlify Drop, publish the artifact, or share the AI Studio link. Then post the link plus one line of description in the Telegram group.',
+        kk: 'Жариялау: Netlify Drop бетіне сүйреп апар, artifact-ты жарияла немесе AI Studio сілтемесімен бөліс. Сосын Telegram тобына сілтемені және бір жол сипаттаманы жаз.',
+      },
+      {
+        en: 'Say the honest thing about unfinished work: a half-built app with a live link beats a perfect one on a laptop that nobody will ever open.',
+        kk: 'Аяқталмаған жұмыс туралы шынын айт: тірі сілтемесі бар жартылай қолданба ешкім ашпайтын ноутбуктегі мінсіз қолданбадан артық.',
+      },
+    ],
+  },
+  {
+    from: '2:55',
+    to: '3:05',
+    energy: 'interact',
+    slide: 15,
+    title: {
+      en: 'Demo gallery: 90 seconds each',
+      kk: 'Демо галереясы: әрқайсысына 90 секунд',
+    },
+    goal: {
+      en: 'The room watches people exactly like them ship something, and learns that the best story of the night is a bug story.',
+      kk: 'Зал дәл өздеріндей адамдардың бірдеңе шығарғанын көреді және кештің ең жақсы әңгімесі — қате туралы әңгіме екенін ұғады.',
+    },
+    doing: [
+      {
+        en: 'Four or five volunteer pairs, 90 seconds each, opened from their own link on the big screen — never from your laptop.',
+        kk: 'Төрт-бес ерікті жұп, әрқайсысына 90 секунд, үлкен экранда өз сілтемесінен ашылады — сенің ноутбугыңнан емес.',
+      },
+      {
+        en: 'Three questions only: what did you ask for, what broke, how did you fix it.',
+        kk: 'Тек үш сұрақ: нені сұрадың, не бұзылды, оны қалай түзеттің.',
+      },
+      {
+        en: 'Applaud the best bug story, not the prettiest app, and say out loud why you are doing that.',
+        kk: 'Ең әдемі қолданбаны емес, қате туралы ең жақсы әңгімені мақта және неге олай істеп тұрғаныңды дауыстап айт.',
+      },
+    ],
+  },
+  {
+    from: '3:05',
+    to: '3:10',
+    energy: 'teach',
+    slide: 16,
+    module: 'overnight-builds',
+    title: {
+      en: 'Close: the seven days that matter more than tonight',
+      kk: 'Қорытынды: бүгінгі кештен маңыздырақ жеті күн',
+    },
+    goal: {
+      en: 'Everyone leaves with a plan for tomorrow, a place to post it, and the feeling that they have already started.',
+      kk: 'Әркім ертеңгі жоспармен, оны жариялайтын орынмен және «бастап қойдым» деген сезіммен кетеді.',
+    },
+    doing: [
+      {
+        en: 'The seven-day plan on one slide: 30 to 45 minutes a day, one deliverable a day, posted in the group. Read day 1 out loud so it sounds small.',
+        kk: 'Бір слайдта жеті күндік жоспар: күніне 30-45 минут, күніне бір нәтиже, топқа жарияланады. 1-күнді дауыстап оқы — сонда ол шағын болып естіледі.',
+      },
+      {
+        en: 'The community: the QairuHub group, this site, and the follow-up call in a week where anyone gets 90 seconds to show what they built.',
+        kk: 'Қауымдастық: QairuHub тобы, осы сайт және бір аптадан кейінгі онлайн кездесу — онда әркімге жасағанын көрсетуге 90 секунд беріледі.',
+      },
+      {
+        en: 'The last line: the only difference between the people who demoed tonight and the people who did not is that they typed. Go and type.',
+        kk: 'Соңғы сөз: бүгін демо көрсеткендер мен көрсетпегендердің жалғыз айырмасы — біріншілері жазып көрді. Бар да, жазып көр.',
+      },
+      {
+        en: 'Group photo, then hold the room for ten minutes of nothing but questions. That is where the real ones come out.',
+        kk: 'Ортақ фото, сосын тағы он минут тек сұраққа арнап қал. Ең шынайы сұрақтар дәл сол жерде шығады.',
+      },
+    ],
+  },
 ];
+

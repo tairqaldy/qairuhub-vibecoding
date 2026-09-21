@@ -1,33 +1,31 @@
 [
   // --- prompting -----------------------------------------------------------
   {
-    en: 'zero-shot prompting',
-    kk: 'zero-shot',
-    keepLatin: true,
-    alt: 'мысалсыз промпт',
+    en: 'user prompt',
+    kk: 'пайдаланушы промпты',
+    keepLatin: false,
     group: 'prompting',
     def: {
-      en: 'Asking for the job with no examples at all, just the instruction itself.',
-      kk: 'Zero-shot — бірде-бір мысал бермей, тапсырманың өзін ғана жазу.',
+      en: 'The message you type yourself, as opposed to the system prompt that was set once for the whole session.',
+      kk: 'Пайдаланушы промпты — сеанс басында бір рет қойылған жүйелік промптан бөлек, өзің теріп жіберетін хабар.',
     },
     example: {
-      en: 'Start zero-shot and add a worked example only when the answer misses the mark.',
-      kk: 'Алдымен zero-shot тәсілімен сұра, жауап көңілден шықпаса ғана үлгі мысал қос.',
+      en: 'Keep the rules in the system prompt and put the task in the user prompt.',
+      kk: 'Ережені жүйелік промптта қалдыр, тапсырманы пайдаланушы промптына жаз.',
     },
   },
   {
-    en: 'chain of thought',
-    kk: 'ойлау тізбегі',
+    en: 'structured prompt',
+    kk: 'құрылымды промпт',
     keepLatin: false,
-    alt: 'chain of thought',
     group: 'prompting',
     def: {
-      en: 'Asking the model to work through the steps before it gives the answer, which helps a lot on hard problems.',
-      kk: 'Ойлау тізбегі — модельден жауапты бірден емес, қадамдарын жазып барып беруді сұрау; қиын есепте көп көмектеседі.',
+      en: 'A prompt split into labelled parts - task, context, rules, format - so that nothing is lost inside one long paragraph.',
+      kk: 'Құрылымды промпт — тапсырма, контекст, ереже, пішім деп бөлікке бөліп жазылған промпт; сонда ұзын абзацтың ішінде ештеңе жоғалмайды.',
     },
     example: {
-      en: 'Write "think step by step first, then answer".',
-      kk: '«Алдымен қадамдап ойлан, содан кейін жауап бер» деп жаз.',
+      en: 'Four short labelled blocks work better than one paragraph holding everything.',
+      kk: 'Бәрін бір абзацқа тықпалағаннан гөрі, төрт қысқа бөлікке бөлген артық.',
     },
   },
   {
@@ -45,36 +43,6 @@
     },
   },
   {
-    en: 'role prompt',
-    kk: 'рөлдік промпт',
-    keepLatin: false,
-    alt: 'role prompt',
-    group: 'prompting',
-    def: {
-      en: 'Opening the prompt by telling the model who to be, which changes its tone and how deep it goes.',
-      kk: 'Рөлдік промпт — модельге кім болу керегін айтып бастау; содан жауаптың мәнері мен тереңдігі өзгереді.',
-    },
-    example: {
-      en: '"You are an experienced backend developer" gives a different answer than no role at all.',
-      kk: '«Сен тәжірибелі backend әзірлеушісің» деп бастасаң, жауап мүлде басқаша шығады.',
-    },
-  },
-  {
-    en: 'master prompt',
-    kk: 'негізгі промпт',
-    keepLatin: false,
-    alt: 'master prompt',
-    group: 'prompting',
-    def: {
-      en: 'One long prompt you write carefully once and then reuse for every task of the same kind.',
-      kk: 'Негізгі промпт — бір рет мұқият жазып алып, сол тектес тапсырманың бәріне қайта қолданатын ұзын промпт.',
-    },
-    example: {
-      en: 'Keep your master prompt in a file instead of retyping it every time.',
-      kk: 'Негізгі промптыңды файлға сақтап қой, әр жолы қайта теріп отырма.',
-    },
-  },
-  {
     en: 'task decomposition',
     kk: 'тапсырманы бөлшектеу',
     keepLatin: false,
@@ -86,6 +54,20 @@
     example: {
       en: 'Split the task into small steps and check the result after each one.',
       kk: 'Тапсырманы шағын қадамдарға бөл де, әр қадамнан кейін нәтижені тексер.',
+    },
+  },
+  {
+    en: 'negative example',
+    kk: 'теріс мысал',
+    keepLatin: false,
+    group: 'prompting',
+    def: {
+      en: 'An example of what you do not want, given so that the model can stay away from it.',
+      kk: 'Теріс мысал — модель қашық жүрсін деп әдейі көрсетілетін «былай болмасын» деген мысал.',
+    },
+    example: {
+      en: 'One good example plus one bad one teaches faster than a page of rules.',
+      kk: 'Бір жақсы мысал мен бір теріс мысал бір бет ережеден тез үйретеді.',
     },
   },
   {
@@ -131,6 +113,20 @@
     },
   },
   {
+    en: 'rubric',
+    kk: 'бағалау кестесі',
+    keepLatin: false,
+    group: 'prompting',
+    def: {
+      en: 'A short list of what a good answer must contain, used to judge what the model produced.',
+      kk: 'Бағалау кестесі — жақсы жауапта не болуға тиіс екенін тізіп жазып қою; модельдің нәтижесі соған қарап бағаланады.',
+    },
+    example: {
+      en: 'Give the rubric to a second agent and let it grade the first one.',
+      kk: 'Бағалау кестесін екінші агентке беріп, біріншінің жұмысын соған тексерт.',
+    },
+  },
+  {
     en: 'grounding',
     kk: 'дереккөзге сүйену',
     keepLatin: false,
@@ -146,46 +142,59 @@
     },
   },
   {
-    en: 'output format',
-    kk: 'шығыс пішімі',
+    en: 'style guide',
+    kk: 'стиль нұсқаулығы',
     keepLatin: false,
     group: 'prompting',
     def: {
-      en: 'Saying exactly what shape the answer must take: a table, JSON, five bullet points, one file.',
-      kk: 'Шығыс пішімі — жауап қандай түрде болу керегін нақты айту: кесте, JSON, бес тармақ немесе бір файл.',
+      en: 'The written rules for how your text or code should look, handed to the model so its output matches the rest.',
+      kk: 'Стиль нұсқаулығы — мәтінің мен кодың қандай болуға тиіс екенін жазып қойған ереже; модельдің нәтижесі қалғанынан айнымасын деп беріледі.',
     },
     example: {
-      en: 'Name the output format and you stop getting an essay where you wanted a list.',
-      kk: 'Шығыс пішімін нақты айтсаң, тізім сұрағанда шығарма алып отырмайсың.',
+      en: 'Two lines of style guide save an hour of rewriting.',
+      kk: 'Стиль нұсқаулығындағы екі жол бір сағаттық қайта жазудан құтқарады.',
     },
   },
   {
-    en: 'requirement',
-    kk: 'талап',
+    en: 'tone of voice',
+    kk: 'сөйлеу мәнері',
     keepLatin: false,
     group: 'prompting',
     def: {
-      en: 'One thing the product must do, written so that you can check it later.',
-      kk: 'Талап — өнім міндетті түрде істейтін бір нәрсе; кейін тексеруге келетіндей етіп жазылады.',
+      en: 'How your product talks to people: warm or formal, short or detailed, informal or polite.',
+      kk: 'Сөйлеу мәнері — өнімнің адамға қалай тіл қататыны: жылы ма, ресми ме, қысқа ма, толық па, «сен» бе, «сіз» бе.',
     },
     example: {
-      en: '"Make it fast" is not a requirement; "the page opens in under two seconds" is.',
-      kk: '«Жылдам болсын» — талап емес; «бет екі секундтан аз уақытта ашылады» — талап.',
+      en: 'Decide the tone once and put it in the prompt, or every screen will sound different.',
+      kk: 'Мәнерді бір рет шешіп, промптқа жазып қой, әйтпесе әр бет әртүрлі сөйлейді.',
     },
   },
   {
-    en: 'BRD (business requirements document)',
-    kk: 'BRD',
-    keepLatin: true,
-    alt: 'бизнес талаптарының құжаты',
+    en: 'assumption',
+    kk: 'жорамал',
+    keepLatin: false,
     group: 'prompting',
     def: {
-      en: 'A document saying why the business wants this at all and what it expects to gain from it.',
-      kk: 'BRD — бизнес талаптарының құжаты: компанияға бұл не үшін керек және одан не ұтады.',
+      en: 'Something you took for granted without checking; writing it down lets someone catch it early.',
+      kk: 'Жорамал — тексермей-ақ шын деп қабылдаған нәрсе; жазып қойсаң, оны біреу ерте байқайды.',
     },
     example: {
-      en: 'The BRD answers "why", the PRD answers "what".',
-      kk: 'BRD құжаты «неге» дегенге жауап береді, PRD «нені» дегенге.',
+      en: 'List your assumptions at the end of the spec and mark the risky ones.',
+      kk: 'Спецификацияның соңына жорамалдарыңды тізіп, қайсысы қауіпті екенін белгіле.',
+    },
+  },
+  {
+    en: 'open question',
+    kk: 'шешілмеген сұрақ',
+    keepLatin: false,
+    group: 'prompting',
+    def: {
+      en: 'Something in the plan that nobody has decided yet, written down instead of silently guessed.',
+      kk: 'Шешілмеген сұрақ — жоспарда әлі шешілмей тұрған тұс; үнсіз болжап кетпей, ашық жазып қойылады.',
+    },
+    example: {
+      en: 'Three open questions at the top of the spec save three wrong features.',
+      kk: 'Спецификацияның басындағы үш шешілмеген сұрақ үш қате мүмкіндіктен сақтайды.',
     },
   },
   {
@@ -203,153 +212,7 @@
       kk: '«Мақсат емес» тізімі агенттің сұралмаған кіру бетін қосып қоюынан сақтайды.',
     },
   },
-  {
-    en: 'definition of done',
-    kk: 'дайындық өлшемі',
-    keepLatin: false,
-    alt: 'definition of done',
-    group: 'prompting',
-    def: {
-      en: 'The rule that says when any piece of work counts as finished: tested, reviewed, deployed, written down.',
-      kk: 'Дайындық өлшемі — кез келген жұмыс қашан біткен саналатынын айтатын ереже: тексерілді, қаралды, шығарылды, жазылды.',
-    },
-    example: {
-      en: 'Acceptance criteria belong to one feature; the definition of done is the same for everything.',
-      kk: 'Қабылдау шарттары әр мүмкіндікке бөлек, ал дайындық өлшемі бәріне ортақ.',
-    },
-  },
-  {
-    en: 'scope creep',
-    kk: 'ауқымның ұлғайып кетуі',
-    keepLatin: false,
-    alt: 'scope creep',
-    group: 'prompting',
-    def: {
-      en: 'The quiet growth of a task as "just one more small thing" keeps getting added to it.',
-      kk: 'Ауқымның ұлғайып кетуі — «тағы бір ғана кішкене нәрсе» деп қосыла бергеннен тапсырманың байқаусызда өсуі.',
-    },
-    example: {
-      en: 'A demo that never ships is usually scope creep, not a hard problem.',
-      kk: 'Шықпай қалған демоның себебі — көбіне қиын мәселе емес, ауқымның ұлғайып кетуі.',
-    },
-  },
-  {
-    en: 'constraint',
-    kk: 'шектеу',
-    keepLatin: false,
-    group: 'prompting',
-    def: {
-      en: 'A limit you accept on purpose: a deadline, a budget, one page only, no paid services.',
-      kk: 'Шектеу — әдейі қабылдайтын шек: мерзім, бюджет, «тек бір бет», «ақылы қызмет жоқ».',
-    },
-    example: {
-      en: 'Tell the agent your constraints or it will invent its own.',
-      kk: 'Шектеулеріңді агентке алдын ала айт, әйтпесе ол өзінікін ойлап табады.',
-    },
-  },
-  {
-    en: 'edge case',
-    kk: 'шеткі жағдай',
-    keepLatin: false,
-    alt: 'edge case',
-    group: 'prompting',
-    def: {
-      en: 'A rare but real situation at the edge of normal use: an empty list, a very long name, no internet.',
-      kk: 'Шеткі жағдай — сирек, бірақ шын болатын жағдай: бос тізім, тым ұзын атау, интернеттің жоқтығы.',
-    },
-    example: {
-      en: 'Ask for the edge cases first: that is where the bugs live.',
-      kk: 'Алдымен шеткі жағдайларды сұра — қате көбіне соларда жатады.',
-    },
-  },
   // --- product -------------------------------------------------------------
-  {
-    en: 'user story',
-    kk: 'пайдаланушы тарихы',
-    keepLatin: false,
-    avoid: 'юзер-стори',
-    group: 'product',
-    def: {
-      en: 'One sentence naming who wants what and why: as a student I want X so that Y.',
-      kk: 'Пайдаланушы тарихы — кім, нені, не үшін қалайтынын бір сөйлеммен жазу: «студент ретінде мен … қалаймын, себебі …».',
-    },
-    example: {
-      en: 'Turn each user story into one task for the agent.',
-      kk: 'Әр пайдаланушы тарихын агентке берілетін бір тапсырмаға айналдыр.',
-    },
-  },
-  {
-    en: 'jobs to be done',
-    kk: 'шешілетін міндет',
-    keepLatin: false,
-    alt: 'jobs to be done',
-    group: 'product',
-    def: {
-      en: 'The idea that a person "hires" your product to get one specific job done in their life.',
-      kk: 'Шешілетін міндет — адам сенің өніміңді өз өміріндегі нақты бір істі тындыру үшін «жалдайды» деген көзқарас.',
-    },
-    example: {
-      en: 'Nobody wants a note app; they want to stop forgetting things.',
-      kk: 'Ешкім жазба қолданбасын қаламайды — ұмытпауды қалайды.',
-    },
-  },
-  {
-    en: 'persona',
-    kk: 'пайдаланушы бейнесі',
-    keepLatin: false,
-    alt: 'персона',
-    group: 'product',
-    def: {
-      en: 'A short portrait of one typical user, built from real conversations rather than from imagination.',
-      kk: 'Пайдаланушы бейнесі — ойдан шығарылмай, шын әңгімелерден құралған бір типтік пайдаланушының қысқаша портреті.',
-    },
-    example: {
-      en: 'Build for one persona: building for everyone reaches nobody.',
-      kk: 'Бір пайдаланушы бейнесіне қарап жаса; бәріне арнағаның ешкімге жетпейді.',
-    },
-  },
-  {
-    en: 'user journey',
-    kk: 'пайдаланушы жолы',
-    keepLatin: false,
-    group: 'product',
-    def: {
-      en: 'The whole path a person takes, from first hearing about your product to using it every week.',
-      kk: 'Пайдаланушы жолы — адамның өнім туралы алғаш естіген сәтінен бастап, оны апта сайын қолданғанға дейінгі бүкіл жолы.',
-    },
-    example: {
-      en: 'Walk the journey yourself on a phone before you show it to anyone.',
-      kk: 'Біреуге көрсетер алдында сол жолды телефоннан өзің өтіп шық.',
-    },
-  },
-  {
-    en: 'target audience',
-    kk: 'мақсатты аудитория',
-    keepLatin: false,
-    group: 'product',
-    def: {
-      en: 'The specific group of people this product is made for.',
-      kk: 'Мақсатты аудитория — өнімнің нақты кімге арналғаны.',
-    },
-    example: {
-      en: '"Everyone" is not a target audience.',
-      kk: '«Барлығы» деген — мақсатты аудитория емес.',
-    },
-  },
-  {
-    en: 'problem statement',
-    kk: 'мәселенің тұжырымы',
-    keepLatin: false,
-    group: 'product',
-    def: {
-      en: 'One or two sentences saying whose problem this is, when it happens and why it hurts.',
-      kk: 'Мәселенің тұжырымы — бұл кімнің мәселесі, қашан кездеседі және неге ауыр екенін бір-екі сөйлеммен айту.',
-    },
-    example: {
-      en: 'Start every project with the problem statement, not with the technology.',
-      kk: 'Әр жобаны технологиядан емес, мәселенің тұжырымынан баста.',
-    },
-  },
   {
     en: 'user research',
     kk: 'пайдаланушыны зерттеу',
@@ -362,6 +225,34 @@
     example: {
       en: 'Five real conversations are worth more than fifty guesses.',
       kk: 'Бес шынайы әңгіме елу болжамнан құнды.',
+    },
+  },
+  {
+    en: 'user interview',
+    kk: 'пайдаланушымен сұхбат',
+    keepLatin: false,
+    group: 'product',
+    def: {
+      en: 'A one-to-one conversation in which you ask what the person did, not what they would like.',
+      kk: 'Пайдаланушымен сұхбат — адамның не қалайтынын емес, не істегенін сұрайтын жеке әңгіме.',
+    },
+    example: {
+      en: 'Ask: tell me about the last time this problem came up.',
+      kk: '«Бұл мәселе соңғы рет қашан кездесті, соны айтшы» деп сұра.',
+    },
+  },
+  {
+    en: 'survey',
+    kk: 'сауалнама',
+    keepLatin: false,
+    group: 'product',
+    def: {
+      en: 'The same short set of questions sent to many people: good for counting, weak for understanding.',
+      kk: 'Сауалнама — көп адамға жіберілетін бірдей қысқа сұрақтар: санауға жақсы, түсінуге әлсіз.',
+    },
+    example: {
+      en: 'Five questions get answered; twenty get abandoned.',
+      kk: 'Бес сұраққа жауап береді, жиырмасын аяқтамай тастайды.',
     },
   },
   {
@@ -390,6 +281,20 @@
     example: {
       en: 'If your value proposition needs a paragraph, it is not ready yet.',
       kk: 'Құндылық ұсынысың бір абзац болса, ол әлі дайын емес.',
+    },
+  },
+  {
+    en: 'positioning',
+    kk: 'өнімнің орны',
+    keepLatin: false,
+    group: 'product',
+    def: {
+      en: 'How people describe your product to someone else: what it is, who it is for and what it is not.',
+      kk: 'Өнімнің орны — адам сенің өніміңді басқаға қалай түсіндіретіні: бұл не, кімге арналған және не емес.',
+    },
+    example: {
+      en: 'If two users describe you differently, the positioning is not finished.',
+      kk: 'Екі пайдаланушы екі түрлі сипаттаса, өнімнің орны әлі анықталмаған.',
     },
   },
   {
@@ -430,7 +335,7 @@
       kk: 'Эксперимент — болжамның расталатын-расталмайтынын білу үшін жүргізілетін шағын әрі арзан сынақ.',
     },
     example: {
-      en: 'One landing page and twenty users is already an experiment.',
+      en: 'One landing page and twenty users already count as an experiment.',
       kk: 'Бір лендинг пен жиырма пайдаланушының өзі — эксперимент.',
     },
   },
@@ -449,63 +354,18 @@
     },
   },
   {
-    en: 'validation',
-    kk: 'идеяны тексеру',
+    en: 'cohort',
+    kk: 'когорта',
     keepLatin: false,
-    alt: 'валидация',
+    alt: 'бір мезгілде келген топ',
     group: 'product',
     def: {
-      en: 'Checking with real people that the thing you plan to build is actually wanted, before you build it.',
-      kk: 'Идеяны тексеру — жасамақ болған нәрсеңнің шынымен керек екенін жасар алдында адамдардан сұрап білу.',
+      en: 'A group of users counted together by when they arrived, so one week can be compared honestly with another.',
+      kk: 'Когорта — қашан келгеніне қарай бір топқа жинақталған пайдаланушылар; сонда бір аптаны екіншісімен әділ салыстыруға болады.',
     },
     example: {
-      en: 'Ten conversations before ten thousand lines of code.',
-      kk: 'Он мың жол код жазбас бұрын он адаммен сөйлес.',
-    },
-  },
-  {
-    en: 'feedback loop',
-    kk: 'кері байланыс айналымы',
-    keepLatin: false,
-    group: 'product',
-    def: {
-      en: 'The repeating cycle of ship, watch, listen, change: the shorter it is, the faster you learn.',
-      kk: 'Кері байланыс айналымы — шығару, бақылау, тыңдау, өзгерту деген қайталанатын айналым; ол неғұрлым қысқа болса, соғұрлым тез үйренесің.',
-    },
-    example: {
-      en: 'A one-day feedback loop teaches more than a one-month plan.',
-      kk: 'Бір күндік кері байланыс айналымы бір айлық жоспардан көп үйретеді.',
-    },
-  },
-  {
-    en: 'changelog',
-    kk: 'өзгерістер журналы',
-    keepLatin: false,
-    alt: 'changelog',
-    group: 'product',
-    def: {
-      en: 'A dated list of what changed in each version, written for the people who use the product.',
-      kk: 'Өзгерістер журналы — әр нұсқада не өзгергенін күнімен жазып отыратын тізім; өнімді қолданатын адамға арналады.',
-    },
-    example: {
-      en: 'Two lines per release are enough to show the product is alive.',
-      kk: 'Әр шығарылымға екі жол жазғаның да пайдаланушыға өнімнің тірі екенін сездіреді.',
-    },
-  },
-  {
-    en: 'onboarding',
-    kk: 'алғашқы таныстыру',
-    keepLatin: false,
-    alt: 'onboarding',
-    avoid: 'онбординг',
-    group: 'product',
-    def: {
-      en: 'The first few minutes a new user spends with your product, from opening it to getting one useful result.',
-      kk: 'Алғашқы таныстыру — жаңа пайдаланушының өнімді ашқаннан бастап, бірінші пайдалы нәтижені алғанға дейінгі алғашқы бірнеше минуты.',
-    },
-    example: {
-      en: 'If the first result takes more than a minute, most people leave.',
-      kk: 'Бірінші нәтиже бір минуттан көп уақыт алса, адамдардың көбі кетіп қалады.',
+      en: 'Look at retention by cohort instead of at one big number.',
+      kk: 'Ұстап қалуды бір үлкен санмен емес, когортамен бөліп қара.',
     },
   },
   {
@@ -551,35 +411,31 @@
     },
   },
   {
-    en: 'retention',
-    kk: 'пайдаланушыны ұстап қалу',
+    en: 'user acquisition',
+    kk: 'пайдаланушы тарту',
     keepLatin: false,
-    alt: 'retention',
-    avoid: 'удержание',
     group: 'product',
     def: {
-      en: 'The share of people who come back and keep using the product after the first time.',
-      kk: 'Пайдаланушыны ұстап қалу — бір рет көргеннен кейін қайта оралып, өнімді қолдана беретін адамдардың үлесі.',
+      en: 'The work of getting new people to try the product, and what each new person costs you.',
+      kk: 'Пайдаланушы тарту — өнімді жаңа адамдарға қолдандыру жұмысы және әр жаңа адамның қанша шығынға түсетіні.',
     },
     example: {
-      en: 'A hundred sign-ups mean little if only ten people come back.',
-      kk: 'Жүз адам тіркелгенмен, қайта оралғаны он болса, оның мәні аз.',
+      en: 'The first hundred users come from your own hands, not from ads.',
+      kk: 'Алғашқы жүз пайдаланушы жарнамадан емес, өз қолыңнан келеді.',
     },
   },
   {
-    en: 'churn',
-    kk: 'пайдаланушының кетуі',
+    en: 'word of mouth',
+    kk: 'ауыздан-ауызға тарау',
     keepLatin: false,
-    alt: 'churn',
-    avoid: 'отток',
     group: 'product',
     def: {
-      en: 'The share of users who stop using the product over a given period.',
-      kk: 'Пайдаланушының кетуі — белгілі бір уақыт ішінде өнімді қолдануды тоқтатқандардың үлесі.',
+      en: 'People telling other people about your product without being paid or asked to.',
+      kk: 'Ауыздан-ауызға тарау — адамдардың ақысыз, сұрамай-ақ сенің өнімің туралы басқаға айтуы.',
     },
     example: {
-      en: 'Ask the ones who left why: they answer more honestly.',
-      kk: 'Кеткендерден себебін сұра — олар шынын ашығырақ айтады.',
+      en: 'Word of mouth starts when the product is genuinely useful to ten people.',
+      kk: 'Ауыздан-ауызға тарау өнім он адамға шын пайдалы болғанда басталады.',
     },
   },
   {
@@ -613,6 +469,34 @@
     },
   },
   {
+    en: 'revenue',
+    kk: 'табыс',
+    keepLatin: false,
+    group: 'product',
+    def: {
+      en: 'The money that comes in from users, before any costs are taken off.',
+      kk: 'Табыс — шығын шегерілмей тұрғандағы, пайдаланушылардан түскен ақша.',
+    },
+    example: {
+      en: 'The first paying user changes the project more than the first thousand visitors.',
+      kk: 'Бірінші төлеген пайдаланушы жобаны алғашқы мың келушіден күштірек өзгертеді.',
+    },
+  },
+  {
+    en: 'cost',
+    kk: 'шығын',
+    keepLatin: false,
+    group: 'product',
+    def: {
+      en: 'The money going out: servers, model tokens, domains and the tools you pay for.',
+      kk: 'Шығын — сыртқа кететін ақша: сервер, модель токендері, домен және ақылы құралдар.',
+    },
+    example: {
+      en: 'With an AI feature inside, the cost grows with every user, so check it early.',
+      kk: 'Ішінде ЖИ мүмкіндігі болса, шығын әр пайдаланушымен бірге өседі — оны ерте тексер.',
+    },
+  },
+  {
     en: 'unit economics',
     kk: 'бірлік экономикасы',
     keepLatin: false,
@@ -627,65 +511,32 @@
     },
   },
   {
-    en: 'product-market fit',
-    kk: 'өнім мен нарықтың сәйкестігі',
+    en: 'milestone',
+    kk: 'межелі кезең',
     keepLatin: false,
-    alt: 'product-market fit (PMF)',
     group: 'product',
     def: {
-      en: 'The point where enough people want what you built that they come back without being asked.',
-      kk: 'Өнім мен нарықтың сәйкестігі — жасағаныңды қалайтын адам жеткілікті болып, олар сұратпай-ақ қайта оралатын сәт.',
+      en: 'A visible point in the plan that you either reach on time or you do not.',
+      kk: 'Межелі кезең — жоспардағы нақты нүкте: оған не уақытында жетесің, не жетпейсің.',
     },
     example: {
-      en: 'You can feel product-market fit: people complain the moment it breaks.',
-      kk: 'Өнім мен нарық сәйкескенін сезесің: өнім бұзылса, адамдар бірден шағымданады.',
+      en: 'Set the milestone at the demo, not at the perfect version.',
+      kk: 'Межелі кезеңді мінсіз нұсқаға емес, демоға қой.',
     },
   },
   {
-    en: 'pivot',
-    kk: 'бағытты бұру',
+    en: 'retrospective',
+    kk: 'қорытынды талқы',
     keepLatin: false,
-    alt: 'pivot',
-    avoid: 'пивот',
+    alt: 'ретроспектива',
     group: 'product',
     def: {
-      en: 'Changing the idea while keeping what you learned, because the first version did not find its users.',
-      kk: 'Бағытты бұру — бірінші нұсқа өз адамын таппағанда, үйренгеніңді сақтап қалып, идеяны өзгерту.',
+      en: 'A short talk after a piece of work about what helped, what got in the way and what you will change next time.',
+      kk: 'Қорытынды талқы — жұмыс біткен соң не көмектесті, не кедергі болды, келесіде нені өзгертеміз деп отырып сөйлесу.',
     },
     example: {
-      en: 'A pivot is not a failure; refusing to pivot usually is.',
-      kk: 'Бағытты бұру — сәтсіздік емес; бұрмай қою көбіне сәтсіздік.',
-    },
-  },
-  {
-    en: 'trade-off',
-    kk: 'айырбас',
-    keepLatin: false,
-    alt: 'trade-off',
-    avoid: 'трейд-офф',
-    group: 'product',
-    def: {
-      en: 'Gaining one thing by giving up another: speed for features, simplicity for power.',
-      kk: 'Айырбас — бірдеңені алу үшін екіншісінен бас тарту: мүмкіндік есебінен жылдамдық, қуат есебінен қарапайымдылық.',
-    },
-    example: {
-      en: 'Say the trade-off out loud and it becomes a decision instead of an accident.',
-      kk: 'Айырбасты дауыстап айт — сонда ол кездейсоқтық емес, саналы шешім болады.',
-    },
-  },
-  {
-    en: 'stakeholder',
-    kk: 'мүдделі тарап',
-    keepLatin: false,
-    avoid: 'стейкхолдер',
-    group: 'product',
-    def: {
-      en: 'Anyone whose interests the project touches: the user, the customer, the teacher, the investor.',
-      kk: 'Мүдделі тарап — жоба мүддесіне тиетін кез келген адам: пайдаланушы, тапсырыс беруші, оқытушы, инвестор.',
-    },
-    example: {
-      en: 'Show the stakeholders a working demo, not a slide.',
-      kk: 'Мүдделі тараптарға слайд емес, істеп тұрған демо көрсет.',
+      en: 'Fifteen minutes and three lines written down are enough.',
+      kk: 'Он бес минут пен жазып алған үш жол жетіп жатыр.',
     },
   },
 ];
