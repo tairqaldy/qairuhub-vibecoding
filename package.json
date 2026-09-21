@@ -16,7 +16,8 @@
     "deploy": "npm run build && wrangler pages deploy dist --project-name=vibecoding --branch=main",
     "shots": "node scripts/shots.mjs",
     "og": "node scripts/make-og.mjs",
-    "evidence": "node scripts/capture-evidence.mjs"
+    "evidence": "node scripts/capture-evidence.mjs",
+    "images": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
@@ -41,6 +42,7 @@
     "@types/react-dom": "^19.3.0",
     "fontkit": "^2.0.4",
     "playwright": "^1.63.0",
+    "sharp": "^0.35.4",
     "typescript": "^6.0.3",
     "wrangler": "^4.136.1"
   }

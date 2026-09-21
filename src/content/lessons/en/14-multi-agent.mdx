@@ -22,6 +22,16 @@ Anthropic's January 2026 guidance on multi-agent systems puts the order of opera
   <Stat value="+90.2%" label="over one Opus 4 on Anthropic's research eval" source="Anthropic, Jun 2025" href="https://www.anthropic.com/engineering/multi-agent-research-system" tone="good" />
 </StatRow>
 
+<Post
+  author="Boris Cherny"
+  handle="@bcherny"
+  date="2 Jan 2026"
+  href="https://x.com/bcherny/status/2007179832300581177"
+  platform="x"
+>
+The person who built Claude Code describes his own setup: five sessions running locally plus five to ten on the web at the same time, each started in Plan mode, all sharing one `CLAUDE.md` checked into git that the whole team fixes whenever Claude gets something wrong. Read that as a ceiling, not a starting point. He is running his own tool on a codebase he knows by heart, and the shared file is doing at least as much work as the parallelism.
+</Post>
+
 The sharpest counter-argument is Walden Yan's [Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents) at Cognition, June 2025. Two principles: agents must share context — the full trace, not a tidy summary — and every action an agent takes carries a decision it never announces. His example is two subagents building one game, a Mario-style background and a bird that does not match it, leaving the lead to merge incompatible assumptions. One correction before you repeat that post: its claim that Claude Code subagents cannot write code in parallel was true in mid-2025 and is not true now. The principle survives; the product description does not.
 
 <Callout type="warn" title="Parallel agents do not fail loudly">
@@ -66,6 +76,16 @@ The vocabulary comes from [Building effective agents](https://www.anthropic.com/
 The worked example is Anthropic's [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system), June 2025: a lead Opus 4 agent plans the search and spawns Sonnet 4 subagents that run in parallel, each searching in its own clean context window and returning a condensed summary to the lead. It outperformed single-agent Opus 4 by 90.2% on their internal research eval.
 
 Now the honest half of the same post. Token usage alone explained about 80% of the performance variance on a browsing benchmark — the architecture works largely because it spends more tokens, in more windows, at once. The post also says tasks that need shared context or carry many dependencies are a poor fit, and that most coding work has fewer genuinely parallel parts than research does.
+
+<Post
+  author="Andrej Karpathy"
+  handle="@karpathy"
+  date="Feb 2026"
+  href="https://x.com/karpathy/status/2027521323275325622"
+  platform="x"
+>
+He ran eight agents at once on nanochat experiments — four Claude, four Codex — and reported back that it does not work yet, that the result was a mess, and that he still finds the direction interesting. The man who named vibe coding, on his own research code, could not make a fleet of them pay off. If your split is less clean than his, expect less.
+</Post>
 
 <Deeper title="The summary is the trick, not the parallelism">
 Anthropic's [context engineering post](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) lists three techniques for long-horizon work: compaction, notes written to disk outside the window, and sub-agent architectures — clean windows for focused subtasks, with condensed summaries returned to the lead.

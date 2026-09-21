@@ -198,6 +198,17 @@ Tests catch behaviour. They do not catch the slow rot — and there is now a lar
 
 Copy-pasted lines went from 9.4% of changes to 15.7% in the first half of 2026, while cross-file reuse fell 35%. This is not a claim that AI writes bad code. It is a claim about what *unreviewed* AI code does to a repository over time: an agent asked to add a feature will happily write a fifth copy of a function that already exists four times, because writing is cheap for it and searching costs context. Nobody decided to accumulate that debt. It accumulated because no human read the diff.
 
+<Post
+  author="YHCJ"
+  handle="ycj.bearblog.dev"
+  date="8 Sep 2026"
+  href="https://ycj.bearblog.dev/ai-again/"
+  platform="blog"
+  stat="HN: 52 points · 123 comments"
+>
+His business partner sent him a 5,236-line pull request for payments, written with an agent and never run. The endpoints did not work, and not one of them had been called a single time. The diff reads like a finished feature — and that is the whole problem. Somebody has to be the first person who actually executes the code, and on that PR nobody had been.
+</Post>
+
 <Deeper title="How much to trust these numbers">
 GitClear sells code-quality tooling, and the study is correlational — there is no AI-versus-non-AI control group. One more caveat: the "moved lines" metric can undercount refactoring when an agent rewrites a function in place rather than relocating it. A separate vendor study from [CodeRabbit](https://www.coderabbit.ai/newsroom/state-of-ai-vs-human-code-generation-report) (17 Dec 2025, 470 open-source PRs) found AI-co-authored pull requests carried about 1.7x more issues — 10.83 versus 6.45 per PR — with logic errors 1.75x higher. The same dataset found human PRs had 1.76x more spelling errors and 1.32x more testability issues, which is a useful reminder that nobody in this comparison is clean. Treat all of it as a direction, not a measurement.
 </Deeper>
@@ -240,6 +251,19 @@ If you genuinely find nothing serious, say so plainly — do not invent findings
 The pattern above has a name. Anthropic's "Building effective agents" calls it the **evaluator-optimizer** loop: one model generates, a second critiques against explicit criteria, and the output goes back around until the critic is satisfied ([19 Dec 2024](https://www.anthropic.com/engineering/building-effective-agents)). The long-running harness post gives the reason it is worth the extra tokens in one line — agents grade their own work too generously, so the evaluator is kept structurally separate and drives the real running app rather than reading the code. The [multi-agent guidance from January 2026](https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them) packages the same idea for daily use as a verification subagent: one agent whose only job is to test and validate, instructed that it must run the complete suite before it is allowed to pass anything.
 
 You do not need any of that infrastructure today. The beginner version is two keystrokes: `/clear`, then paste the review prompt. A fresh context reviews better because it is not attached to code it just wrote.
+
+Now the uncomfortable part. The person whose red/green guide this module leans on does not follow his own rule any more.
+
+<Post
+  author="Simon Willison"
+  handle="simonwillison.net"
+  date="6 May 2026"
+  href="https://simonwillison.net/2026/May/6/vibe-coding-and-agentic-engineering/"
+  platform="blog"
+  stat="HN: 787 points · 885 comments"
+>
+Title and confession in one: "Vibe coding and agentic engineering are getting closer than I'd like". He admits he no longer reads every line Claude Code writes, says he feels guilty about it, and names the mechanism — normalization of deviance. Each time skipping the review works out, skipping it feels more reasonable next time, until the one diff that needed reading goes through unread. Read that as a warning about you, not about him: this discipline is not something you learn once, it is something you lose slowly.
+</Post>
 
 <Checklist
   id="m10-proof"

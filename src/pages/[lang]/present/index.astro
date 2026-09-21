@@ -163,7 +163,7 @@ const deck = slides[lang];
   ul { margin: 34px 0 0; padding: 0; list-style: none; display: grid; gap: 18px; max-width: 30ch; }
   ul li { padding-left: 30px; position: relative; font-size: clamp(18px, 2.3vw, 25px); line-height: 1.4; color: rgb(255 255 255 / 0.9); }
   ul li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 14px; height: 2px; background: var(--color-signal); }
-  .num { position: absolute; bottom: 26px; left: 0; margin: 0; font: 400 12px/1 var(--font-mono); color: var(--color-faint); }
+  .num { position: fixed; top: 26px; right: 26px; margin: 0; font: 400 12px/1 var(--font-mono); color: var(--color-faint); }
   .controls { position: fixed; right: 20px; bottom: 20px; display: flex; gap: 8px; z-index: 6; }
   .controls button, .controls a { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--color-line-strong); background: rgb(8 12 32 / 0.8); color: #fff; font-size: 15px; cursor: pointer; text-decoration: none; backdrop-filter: blur(8px); }
   .controls button:hover, .controls a:hover { background: var(--color-signal); border-color: transparent; }

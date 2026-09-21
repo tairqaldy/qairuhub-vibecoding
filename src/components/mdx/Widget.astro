@@ -13,6 +13,7 @@ import GuessTheNumber from '@/components/widgets/GuessTheNumber';
 import ContextMeter from '@/components/widgets/ContextMeter';
 import PromptLab from '@/components/widgets/PromptLab';
 import Orchestrator from '@/components/widgets/Orchestrator';
+import Certificate from '@/components/widgets/Certificate';
 
 interface Props {
   name:
@@ -27,7 +28,8 @@ interface Props {
     | 'guess-the-number'
     | 'context-meter'
     | 'prompt-lab'
-    | 'orchestrator';
+    | 'orchestrator'
+    | 'certificate';
 }
 const { name } = Astro.props;
 const lang = langFromUrl(Astro.url);
@@ -45,3 +47,4 @@ const lang = langFromUrl(Astro.url);
 {name === 'context-meter' && <ContextMeter client:visible lang={lang} />}
 {name === 'prompt-lab' && <PromptLab client:visible lang={lang} />}
 {name === 'orchestrator' && <Orchestrator client:visible lang={lang} />}
+{name === 'certificate' && <Certificate client:visible lang={lang} />}

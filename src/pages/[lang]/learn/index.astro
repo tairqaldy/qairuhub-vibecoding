@@ -4,6 +4,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import type { Lang } from '@/data/curriculum';
 import { acts, modules, totalXp } from '@/data/curriculum';
 import { href, useT } from '@/i18n/ui';
+import Certificate from '@/components/widgets/Certificate';
 
 export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
 
@@ -22,6 +23,7 @@ const c = {
     totalTime: 'about 2 hours 30 minutes end to end',
     yourXp: 'your XP',
     step: 'Cycle step',
+    cardK: 'Your card',
   },
   kk: {
     title: 'Жол',
@@ -34,6 +36,7 @@ const c = {
     totalTime: 'басынан аяғына дейін шамамен 2 сағат 30 минут',
     yourXp: 'сенің XP',
     step: 'Цикл қадамы',
+    cardK: 'Сенің картаң',
   },
 }[lang];
 ---
@@ -88,6 +91,11 @@ const c = {
       </section>
     ))
   }
+
+  <section class="wrap band" data-reveal>
+    <p class="eyebrow"><b>★</b> {c.cardK}</p>
+    <Certificate client:visible lang={lang} />
+  </section>
 </BaseLayout>
 
 <style>

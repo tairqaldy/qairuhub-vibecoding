@@ -63,6 +63,10 @@ The generated version of that mistake has a CVE. In March 2025 the researcher Ma
 
 Understand why before you ship anything on Supabase or Firebase. The browser talks to the database directly, with a key that is public by design. Row Level Security policies are the *only* thing between the internet and your tables. An agent asked for "a sign-up form" produces working CRUD and no policies — and the app behaves identically either way. In January 2026 Wiz found the same shape in Moltbook: key in the client bundle, no RLS, unauthenticated read *and write*, 1.5 million API tokens exposed ([Wiz](https://www.wiz.io/blog/exposed-moltbook-database-reveals-millions-of-api-keys)).
 
+<Post author="Harley Kimball" handle="@infinitelogins" date="1 Jun 2025" href="https://threadreaderapp.com/thread/1929017755136561402.html" platform="x">
+Kimball shipped a Lovable + Cursor + Supabase app in three days and was broken into twice, then wrote up both breaches in public. Neither one was a missing RLS policy. First: a Postgres view ran with its owner's privileges, so reading through the view walked past row level security entirely. Second: he had removed the sign-up form from the interface, but Supabase Auth still accepted sign-ups, so anyone could create an account. Switching RLS on is where this section starts, not where it ends. Check whose privileges your views run with, and check the settings the interface no longer shows.
+</Post>
+
 <StatRow>
   <Stat value="45%" label="of AI-generated code samples failed security tests" source="Veracode, Jul 2025" href="https://www.veracode.com/blog/genai-code-security-report/" tone="warn" />
   <Stat value="10.3%" label="of scanned Lovable apps had exploitable data access" source="Matt Palmer, May 2025" href="https://mattpalmer.io/posts/2025/05/statement-on-CVE-2025-48757/" tone="warn" />
@@ -166,6 +170,10 @@ curl "https://YOUR-PROJECT.supabase.co/rest/v1/signups?select=*" \
 An empty array means RLS is working. Rows mean every stranger on the internet gets the same rows.
 
 **Rate limits and spend caps on everything paid.** In March 2025 a founder shipped a SaaS built with Cursor, posted about it, and within roughly 48 hours wrote "guys, i'm under attack" — maxed-out API keys and people walking past a subscription check that lived only in front-end JavaScript ([techstartups.com](https://techstartups.com/2025/03/26/when-vibe-coding-goes-wrong/)). "Nobody would attack my small app" is measurably false: Anthropic's August 2025 threat report describes one criminal using Claude Code against at least 17 organisations ([Anthropic](https://www.anthropic.com/news/detecting-countering-misuse-aug-2025)).
+
+<Post author="leojr94" handle="@leojr94_" date="17 Mar 2025" href="https://x.com/leojr94_/status/1901560276488511759" platform="x">
+That is the thread. He says he is not technical and built the product with Cursor; the subscription check people walked past lived in front-end JavaScript, and strangers were writing to his database. The useful part is what he posts next: every API key rolled and moved into environment variables, authentication added to the API endpoints, CORS restricted to trusted domains. Three controls, no new framework, and none of them a better prompt. Then he stopped building in public.
+</Post>
 
 **Dependencies get checked before they get installed.** For every package the agent adds, open the registry page: does it exist, how old is it, how many downloads, does the repository link go anywhere real? Commit the lockfile, run `npm audit`.
 

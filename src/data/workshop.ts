@@ -853,3 +853,617 @@ export const runOfShow: Segment[] = [
   },
 ];
 
+// ------------------------------------------------------------- before the event
+// Sent five days before, repeated one day before. Source: research section 5.
+// `who` exists so that nobody reads an instruction that does not apply to them
+// and concludes they cannot come.
+
+export const beforeEvent: { title: L; body: L; who: L }[] = [
+  {
+    who: { en: 'everyone', kk: 'бәріне' },
+    title: {
+      en: 'A charged laptop and your phone',
+      kk: 'Зарядталған ноутбук және телефон',
+    },
+    body: {
+      en: 'The phone is not optional: half the room interactions run through a QR code, and you will test what you build on a real phone screen. A laptop is better, but the browser track works from a phone alone.',
+      kk: 'Телефон міндетті: залдағы әрекеттердің жартысы QR-код арқылы өтеді, әрі жасағаныңды нақты телефон экранында сынайсың. Ноутбук жақсырақ, бірақ браузер жолы тек телефонмен де жүреді.',
+    },
+  },
+  {
+    who: { en: 'everyone', kk: 'бәріне' },
+    title: {
+      en: 'Join the Telegram group before you arrive',
+      kk: 'Келмес бұрын Telegram тобына қосыл',
+    },
+    body: {
+      en: 'Every prompt, link and QR code of the evening is posted there, and that is where helpers answer you during the build session. Joining at the door costs you the first ten minutes.',
+      kk: 'Кештегі әрбір prompt, сілтеме және QR-код сонда жарияланады, ал практика кезінде көмекшілер саған сол жерде жауап береді. Есік алдында қосылсаң, алғашқы он минутыңды жоғалтасың.',
+    },
+  },
+  {
+    who: { en: 'everyone', kk: 'бәріне' },
+    title: {
+      en: 'A free GitHub account',
+      kk: 'Тегін GitHub аккаунты',
+    },
+    body: {
+      en: 'You will not need git in the first hour, but you will need somewhere to put the thing you build. Students: apply for GitHub Education at the same time — verified students get the Copilot Student plan, which is one of the zero-cost ways into the build session.',
+      kk: 'Бірінші сағатта git керек болмайды, бірақ жасаған нәрсеңді қоятын орын керек болады. Студент болсаң, бірге GitHub Education-ға өтінім бер: расталған студенттерге Copilot Student жоспары беріледі, ал бұл — практика бөліміне тегін кіретін жолдардың бірі.',
+    },
+  },
+  {
+    who: { en: 'if you have a laptop', kk: 'ноутбугың болса' },
+    title: {
+      en: 'Do every install at home, never at the venue',
+      kk: 'Барлық орнатуды үйде жаса, залда емес',
+    },
+    body: {
+      en: 'Venue wifi will not survive fifty simultaneous downloads. Install and log in at home, open the tool once and confirm it actually starts. If something is still broken, come 20 to 30 minutes early — helpers fix installs at the setup desk, not from the stage.',
+      kk: 'Залдағы wi-fi елу адамның бір мезгілде жүктеуіне шыдамайды. Үйде орнат, аккаунтқа кір, құралды бір рет ашып, шынымен іске қосылатынын тексер. Әлі де бірдеңе бұзық болса, 20-30 минут ерте кел: көмекшілер орнатуды сахнадан емес, дайындық үстелінде түзетеді.',
+    },
+  },
+  {
+    who: { en: 'if you will pay for one month', kk: 'бір айға төлей алсаң' },
+    title: {
+      en: 'Track B: Claude Code in a real folder',
+      kk: 'B жолы: нақты қалтадағы Claude Code',
+    },
+    body: {
+      en: 'Claude Code needs a paid plan: Pro is 20 dollars a month, or 17 a month billed annually. The easiest route is the Desktop app Code tab — no terminal, no Node.js. If you want the terminal, the native installer needs no admin rights and no WSL on Windows. Then check it: `claude --version` should print a version, and `claude doctor` diagnoses the rest. Requirements are modest, because the model runs in the cloud: Windows 10 1809 or newer, macOS 13 or newer, Ubuntu 20.04 or newer, 4 GB of RAM.',
+      kk: 'Claude Code-қа ақылы жазылым керек: Pro айына 20 доллар, жылдық төлемде айына 17 доллар. Ең оңай жол — Desktop қолданбасының Code қойындысы: терминал да, Node.js та керек емес. Терминалды қаласаң, Windows-та жеке орнатқышқа әкімші құқығы да, WSL де қажет емес. Сосын тексер: `claude --version` нұсқаны көрсетуі керек, ал `claude doctor` қалғанын анықтайды. Талаптар шағын, себебі модель бұлтта жұмыс істейді: Windows 10 1809 немесе жаңасы, macOS 13 немесе жаңасы, Ubuntu 20.04 немесе жаңасы, 4 ГБ жад.',
+    },
+  },
+  {
+    who: { en: 'if you cannot install anything', kk: 'ештеңе орната алмасаң' },
+    title: {
+      en: 'Track A: the browser, zero cost, nothing to install',
+      kk: 'A жолы: браузер, тегін, ештеңе орнатпайсың',
+    },
+    body: {
+      en: 'This is the fallback that means nobody is left out, and plenty of people will build the whole evening here. Create a free account at claude.ai — Kazakhstan is on the supported-countries list, so no VPN — and in Settings, Capabilities, switch on Code execution and file creation so artifacts work. Then sign in to Google AI Studio with any Google account and open Build. Both run on a phone, a borrowed laptop or a university computer.',
+      kk: 'Бұл — ешкім шет қалмайтын қосалқы жол, әрі көп адам бүкіл кешті осында өткізеді. claude.ai сайтында тегін аккаунт аш — Қазақстан қолдау көрсетілетін елдер тізімінде, сондықтан VPN керек емес — сосын «Параметрлер», «Capabilities» бөлімінде «Code execution and file creation» дегенді қос, сонда artifact-тар жұмыс істейді. Одан кейін кез келген Google аккаунтымен Google AI Studio-ға кіріп, Build бөлімін аш. Екеуі де телефонда, біреуден сұраған ноутбукте немесе университет компьютерінде жүреді.',
+    },
+  },
+  {
+    who: { en: 'if you already write code and will not pay', kk: 'код жазып жүрсең, бірақ төлемейтін болсаң' },
+    title: {
+      en: 'Track C: a free agent in your folder',
+      kk: 'C жолы: қалтаңдағы тегін agent',
+    },
+    body: {
+      en: 'Three zero-cost options, each with fine print worth reading before you rely on it. Codex CLI works on a free ChatGPT account, but the free limits are not published anywhere. The Antigravity Individual plan is 0 dollars with basic weekly rate limits, and users report exhausting them in minutes. Copilot Free gives 2 000 completions and 50 chat requests a month, which one evening of building can finish. Test yours at home on a small task.',
+      kk: 'Үш тегін нұсқа бар, әрқайсысының сүйенер алдында оқитын ұсақ жазуы бар. Codex CLI тегін ChatGPT аккаунтымен жұмыс істейді, бірақ тегін шектеулері еш жерде жарияланбаған. Antigravity-дің Individual жоспары 0 доллар, апталық негізгі шектеулерімен, ал пайдаланушылар оны бірнеше минутта таусып алатынын айтады. Copilot Free айына 2 000 толықтыру және 50 чат сұрауын береді, мұны бір кештік жұмыс бітіріп тастайды. Өзіңдікін үйде шағын тапсырмамен сынап көр.',
+    },
+  },
+  {
+    who: { en: 'everyone', kk: 'бәріне' },
+    title: {
+      en: 'Decide your data setting before you paste anything',
+      kk: 'Бірдеңе қоймас бұрын деректер параметрін шеш',
+    },
+    body: {
+      en: 'On Free, Pro and Max you choose whether your data may be used for model training, at claude.ai/settings/data-privacy-controls. With it on, retention is 5 years; with it off, 30 days. Decide once, at home, calmly. The rule that matters more than the setting: never paste other people personal data or your employer secrets into any AI tool, tonight or ever.',
+      kk: 'Free, Pro және Max жоспарларында деректеріңнің модельді оқытуға пайдаланылуын өзің шешесің — claude.ai/settings/data-privacy-controls бетінде. Қосулы болса, сақтау мерзімі 5 жыл; өшірулі болса, 30 күн. Мұны үйде, асықпай, бір рет шеш. Ал параметрден де маңыздырақ ереже: бөгде адамдардың дербес деректерін немесе жұмыс орныңның құпияларын ешқандай ЖИ құралына қойма — бүгін де, ешқашан да.',
+    },
+  },
+];
+
+// ---------------------------------------------------------------- presenter kit
+// Packed the night before, checked at T-2 minutes. One person presents, so every
+// item here exists to remove one thing you would otherwise have to think about on stage.
+
+export const presenterKit: { title: L; body: L }[] = [
+  {
+    title: {
+      en: 'Terminal at 20pt or larger, light theme',
+      kk: 'Терминал шрифті 20pt немесе үлкенірек, жарық режим',
+    },
+    body: {
+      en: 'Black text on white beats any dark theme on a projector, and the back row decides your font size, not your laptop screen. Set it the night before and never touch it during the talk. Same for the editor and the browser.',
+      kk: 'Проекторда ақ фондағы қара мәтін кез келген қараңғы режимнен артық, ал шрифт өлшемін ноутбугың емес, артқы қатар шешеді. Кеше кешке орнатып қой да, сөйлеу кезінде мүлде қолыңды тигізбе. Редактор мен браузерде де солай.',
+    },
+  },
+  {
+    title: {
+      en: 'Browser zoomed to 150 per cent, everything else closed',
+      kk: 'Браузерде бет 150 пайызға ұлғайтылған, қалғаны жабық',
+    },
+    body: {
+      en: 'Press Ctrl and plus until a person in the last row can read a URL out loud. Close every unrelated tab and window: a stray bookmark bar with a personal link is a story the room will remember better than your demo.',
+      kk: 'Артқы қатардағы адам URL-ді дауыстап оқи алғанша Ctrl мен + бас. Қатысы жоқ барлық қойынды мен терезені жап: бетбелгілер жолағындағы кездейсоқ жеке сілтеме зал есінде демоңнан да жақсы қалады.',
+    },
+  },
+  {
+    title: {
+      en: 'Tabs pre-opened, in the order you will need them',
+      kk: 'Қойындылар алдын ала, керек ретімен ашылған',
+    },
+    body: {
+      en: 'claude.ai with the demo chat ready, Google AI Studio Build as the Demo 1 fallback, the pre-published Dastarkhan Split link, the Netlify Drop page, status.claude.com, and the slide deck. Nothing else. You should never search for a tab while a room of a hundred people watches.',
+      kk: 'Демоға дайын чаты бар claude.ai, Demo 1-дің қосалқы жолы ретінде Google AI Studio Build, алдын ала жарияланған Dastarkhan Split сілтемесі, Netlify Drop беті, status.claude.com және слайдтар. Басқа ештеңе жоқ. Жүз адам қарап отырғанда қойынды іздеп отыруға болмайды.',
+    },
+  },
+  {
+    title: {
+      en: 'The demo repo, tagged at every checkpoint',
+      kk: 'Әр қадамда тегі қойылған демо репозиторийі',
+    },
+    body: {
+      en: 'One repo with a tag per step: step-0-empty, step-1-plan with PLAN.md already saved, step-2-built, step-3-tested, step-4-styled, plus the bug-demo branch for Demo 3. When something stalls you run one checkout, say out loud that this is a checkpoint from rehearsal, and keep moving. This is what turns a dead demo into a 15-second pause.',
+      kk: 'Әр қадамға бір тегі бар жалғыз репозиторий: step-0-empty, PLAN.md сақталып қойылған step-1-plan, step-2-built, step-3-tested, step-4-styled, қоса Demo 3 үшін bug-demo тармағы. Бірдеңе тоқтап қалса, бір checkout жасайсың, бұл дайындық кезіндегі сақтау нүктесі екенін ашық айтасың да, әрі қарай жүресің. Дәл осы нәрсе өлі демоны 15 секундтық кідіріске айналдырады.',
+    },
+  },
+  {
+    title: {
+      en: 'An offline copy of every page you will show',
+      kk: 'Экранда көрсететін әр беттің интернетсіз көшірмесі',
+    },
+    body: {
+      en: 'Screenshot or save every URL that appears on a slide: the pricing page, the supported-countries list, the survey charts, the METR chart, the news headlines. Some of them refuse automated fetching anyway, so open them by hand and capture them. If the wifi dies you still have the whole evidence half of the talk.',
+      kk: 'Слайдта шығатын әрбір URL-ді скриншотқа түсір немесе сақтап қой: баға беті, қолдау көрсетілетін елдер тізімі, сауалнама диаграммалары, METR диаграммасы, жаңалық тақырыптары. Кейбірі автоматты жүктеуге бәрібір көнбейді, сондықтан оларды қолмен ашып түсіріп ал. Wi-fi өлсе де, сөзіңнің дәлелдерге негізделген жартысы қолыңда қалады.',
+    },
+  },
+  {
+    title: {
+      en: 'Silent screen recordings of all three demos',
+      kk: 'Үш демоның үнсіз экран жазбалары',
+    },
+    body: {
+      en: 'Recorded the day before, on the machine you will actually present from. You narrate over them live and ask the same prediction questions, so the room barely notices. A recording you narrate is a talk; a demo you debug on stage is a hostage situation.',
+      kk: 'Кеше жазылған, дәл сөйлейтін ноутбугыңда. Оларды тірі дауыспен түсіндіріп, дәл сол болжам сұрақтарын қоясың, сондықтан зал байқамай да қалады. Түсіндіріп отырған жазба — бұл сабақ; сахнада жөндеп отырған демо — бұл кепілге алу.',
+    },
+  },
+  {
+    title: {
+      en: 'Phone hotspot on a second carrier, already tested',
+      kk: 'Екінші оператордағы телефон интернеті, алдын ала сыналған',
+    },
+    body: {
+      en: 'The venue wifi and your hotspot must not be the same network. Connect the laptop to the hotspot once before doors open so there is no password dialog at minute four. Switching is step one of the fallback ladder and it should take you ten seconds.',
+      kk: 'Залдағы wi-fi мен телефонындағы интернет бір желі болмауы керек. Есік ашылмай тұрып ноутбукті телефон интернетіне бір рет қосып қой, сонда төртінші минутта құпиясөз терезесі шықпайды. Ауысу — қосалқы баспалдақтың бірінші қадамы, оған он секунд кетуі тиіс.',
+    },
+  },
+  {
+    title: {
+      en: 'Notifications off, and a bare demo account',
+      kk: 'Хабарландырулар өшірулі, демоға арналған бос аккаунт',
+    },
+    body: {
+      en: 'Do not disturb on the laptop and the phone, every chat app quit, a clean desktop. Better still, present from a separate user account on the machine that looks like a learner machine: no aliases, no custom shell, no half-finished projects. When your setup matches theirs, they can copy what they see.',
+      kk: 'Ноутбукте де, телефонда да мазаламау режимі, барлық чат қолданбасы жабық, үстелде артық ештеңе жоқ. Одан да жақсысы — ноутбуктегі бөлек, үйренушінің құрылғысындай көрінетін тіркелгіден сөйле: бүркеншік пәрмендер жоқ, өзгертілген shell жоқ, жартылай бітпеген жобалар жоқ. Ортаң олардікімен бірдей болса, көргенін қайталай алады.',
+    },
+  },
+  {
+    title: {
+      en: 'A second machine, logged in, at the same checkpoint',
+      kk: 'Екінші ноутбук, аккаунтқа кірген, сол қадамда тұрған',
+    },
+    body: {
+      en: 'Logged into a different account, on the same repo tag, screen unlocked, plugged in. A login failure or a usage limit on the main laptop then costs you the time it takes to walk two steps. Also useful for the demo gallery, when a pair cannot get their link open.',
+      kk: 'Басқа аккаунтқа кірген, сол репозиторий тегінде тұрған, экраны ашық, қуатқа қосулы. Сонда негізгі ноутбуктегі кіру мәселесі немесе шектеу екі қадам жүруге кететін уақытқа ғана тұрады. Демо галереясында бір жұп сілтемесін аша алмай қалғанда да керек болады.',
+    },
+  },
+  {
+    title: {
+      en: 'A Claude account you have not used today',
+      kk: 'Бүгін пайдаланбаған Claude аккаунты',
+    },
+    body: {
+      en: 'Usage resets on a rolling five-hour window and a weekly one, so rehearsing all afternoon on the account you will present with is how a demo dies at minute nine. Rehearse on one account, present on another, and check status.claude.com at T-2.',
+      kk: 'Шектеу жылжымалы бес сағаттық және апталық терезе бойынша жаңарады, сондықтан түс ауа бойы сөйлейтін аккаунтыңмен дайындалу — демоның тоғызыншы минутта өлуінің қысқа жолы. Бір аккаунтпен дайындал, екіншісімен сөйле, ал T-2 сәтінде status.claude.com бетін тексер.',
+    },
+  },
+  {
+    title: {
+      en: 'Every demo prompt in one text file, in order',
+      kk: 'Барлық демо prompt-ы бір мәтін файлында, ретімен',
+    },
+    body: {
+      en: 'Numbered, in the order you will paste them, open in a window you can reach without searching. Never type a demo prompt live: one typo on stage costs 40 seconds and all your momentum, and the room starts reading your typing instead of your point.',
+      kk: 'Нөмірленген, қоятын ретімен, іздемей-ақ жететін терезеде ашық тұрсын. Демо prompt-ын ешқашан сахнада терме: бір қате әріп 40 секундты және бүкіл қарқынды алып кетеді, ал зал ойыңды емес, теріп жатқаныңды оқи бастайды.',
+    },
+  },
+  {
+    title: {
+      en: 'Green and red cards, one pair per person',
+      kk: 'Жасыл және қызыл қағаздар, әр адамға бір жұптан',
+    },
+    body: {
+      en: 'Cut them the night before and count them twice. Green means I am fine, red means I need help, and they run the whole evening: the row walk, the build sprints, the minute cards at the end. Draw a different shape on each colour too, because colour blindness is common enough to matter in a room of a hundred.',
+      kk: 'Кеше кешке қиып, екі рет санап шық. Жасыл — бәрі дұрыс, қызыл — көмек керек, әрі олар бүкіл кешті басқарады: қатарларды аралау, практика кезеңдері, соңындағы минут қағаздары. Әр түске бөлек пішін де сыз, себебі жүз адамдық залда түсті ажырата алмау кездесетін нәрсе.',
+    },
+  },
+  {
+    title: {
+      en: 'Timing checkpoints taped to the laptop',
+      kk: 'Ноутбукке жабыстырылған уақыт белгілері',
+    },
+    body: {
+      en: 'Five numbers on one card, where only you can see them: 0:21 Demo 1 is finished, 0:52 you are inside the folder, 1:34 Demo 3 starts, 2:00 the break starts on time, 2:55 the gallery starts whatever is unfinished. If you are more than four minutes behind at any of them, cut a teaching beat, never the break and never the gallery.',
+      kk: 'Бір қағазда бес сан, тек саған көрінетін жерде: 0:21 — Demo 1 бітті, 0:52 — қалтаның ішіндесің, 1:34 — Demo 3 басталды, 2:00 — үзіліс уақытында басталды, 2:55 — не бітпесе де галерея басталды. Солардың бірінде төрт минуттан көп қалып қойсаң, түсіндіру бөлігін қысқарт, ал үзіліс пен галереяға тиіспе.',
+    },
+  },
+  {
+    title: {
+      en: 'Water, a mic, and helpers who know the crib sheet',
+      kk: 'Су, микрофон және жадынаманы білетін көмекшілер',
+    },
+    body: {
+      en: 'A bottle within reach, because you will talk for three hours. A mic even in a small room, because you will face the screen sometimes. And one helper per ten people, briefed on four moves: cut the must-have list in half, two failed corrections means `/clear`, Esc to redirect a wandering agent, `/rewind` when something that worked is broken.',
+      kk: 'Қол жететін жерде бір бөтелке су, себебі үш сағат сөйлейсің. Шағын залда да микрофон, себебі кейде экранға қарап қаласың. Және әр он адамға бір көмекші, төрт әрекетті біліп тұрсын: міндетті талаптар тізімін екі есе қысқарту, екі түзету сәтсіз болса `/clear`, адасып кеткен agent-ті Esc арқылы қайта бағыттау, істеп тұрған нәрсе бұзылса `/rewind`.',
+    },
+  },
+];
+
+// ----------------------------------------------------------------- interactions
+// Keyed to the clock in runOfShow. `prompt` is the exact sentence the presenter
+// says out loud — written out because improvised instructions produce silence,
+// and a room that does not understand the task assumes it is their fault.
+
+export const interactions: { at: string; kind: L; prompt: L; why: L }[] = [
+  {
+    at: '-0:08',
+    kind: { en: 'Entry poll', kk: 'Кіру сауалнамасы' },
+    prompt: {
+      en: 'Two questions before we start, and please answer honestly, because I am going to change how I explain things based on your answers. One: never written code, written a little, or you write code for money? Two: which of these AI tools have you actually opened yourself — not read about, opened?',
+      kk: 'Бастар алдында екі сұрақ, және шыныңды айт, себебі мен жауаптарыңа қарап түсіндіру тәсілімді өзгертемін. Біріншісі: ешқашан код жазбағансың ба, сәл-пәл жаздың ба, әлде код жазып ақша табасың ба? Екіншісі: осы ЖИ құралдарының қайсысын шынымен өзің ашып көрдің — оқығаның емес, ашып көргенің?',
+    },
+    why: {
+      en: 'It calibrates your vocabulary for the next three hours, and it tells you how to balance the pairs later. More importantly it is public: beginners find out in the first minute that they are the majority, which is the single cheapest way to stop them leaving at the break.',
+      kk: 'Бұл алдағы үш сағатқа сөздігіңді реттейді және кейін жұптарды қалай теңестіру керегін айтады. Одан маңыздысы — ол ашық: бастаушылар бірінші минутта көпшілік өздері екенін біледі, ал бұл — олардың үзілісте кетіп қалмауының ең арзан тәсілі.',
+    },
+  },
+  {
+    at: '0:06',
+    kind: { en: 'Three rules, said once', kk: 'Үш ереже, бір рет айтылады' },
+    prompt: {
+      en: 'Three rules for tonight. First: if you are stuck, put the red card up — you do not raise your hand and you do not say a word, a helper comes to you. Second: ask your question in Kazakh, Russian or English, whichever comes out faster, I do not care which. Third: errors are not the failure, they are the lesson — the best story of tonight will be somebody bug story, and I mean that literally, there is applause for it at the end.',
+      kk: 'Бүгінгі үш ереже. Біріншісі: тұрып қалсаң, қызыл қағазды көтер — қол көтерудің де, дауыстаудың да қажеті жоқ, көмекші өзі келеді. Екіншісі: сұрағыңды қазақша, орысша немесе ағылшынша қой, қайсысы тез шықса, маған бәрібір. Үшіншісі: қате — сәтсіздік емес, сабақтың өзі. Бүгінгі ең жақсы әңгіме біреудің қате туралы әңгімесі болады, мұны сөзбе-сөз айтып тұрмын: соңында оған қошемет бар.',
+    },
+    why: {
+      en: 'The red card removes the social cost of being stuck, which is the real reason people sit in silence for forty minutes. Naming the three languages out loud matters in this room specifically: people hesitate more over which language to ask in than over the question itself.',
+      kk: 'Қызыл қағаз тұрып қалудың әлеуметтік бағасын жояды, ал адамдардың қырық минут үнсіз отыруының нағыз себебі — сол. Үш тілді дауыстап атау дәл осы залда маңызды: адамдар сұрақтың өзінен гөрі, оны қай тілде қою керегіне көбірек кідіреді.',
+    },
+  },
+  {
+    at: '0:08',
+    kind: { en: 'Predict before the reveal', kk: 'Нәтижеге дейінгі болжам' },
+    prompt: {
+      en: 'Before I turn this around — hands up if you think the rounded amounts will add up exactly to the bill total. Hands down. Hands up if you think the Kazakh labels will all be correct. Keep your hand there, I want everyone to see this number. Right — remember what you just voted, because in ten minutes you will find out whether you were right.',
+      kk: 'Мұны бұрып көрсетер алдында — дөңгелектенген сомалар есепшоттың жалпы сомасына дәл келеді деп ойласаң, қолыңды көтер. Түсір. Қазақша жазулардың бәрі дұрыс шығады деп ойласаң, қолыңды көтер. Қолыңды сол күйі ұста, бұл санды бәрі көрсін. Жақсы — қалай дауыс бергеніңді есіңде сақта, он минуттан кейін дұрыс болжағаныңды білесің.',
+    },
+    why: {
+      en: 'A prediction makes people commit, and a committed guess is what makes the answer stick. Wrong guesses cost nothing here, which is exactly the relationship with being wrong that you want them to carry into the build session.',
+      kk: 'Болжам адамды шешім қабылдауға мәжбүрлейді, ал айтылған болжамнан кейін жауап есте қалады. Мұнда қате болжам ештеңеге тұрмайды, ал қателікке деген дәл осындай қатынасты олардың практика бөліміне алып баруы керек.',
+    },
+  },
+  {
+    at: '0:23',
+    kind: { en: 'Phones out, two minutes', kk: 'Телефондар қолға, екі минут' },
+    prompt: {
+      en: 'Open this QR on your phone and break it. You have two minutes and the timer is on the screen. Try a negative price. Try zero people on one item. Put an emoji where a name goes. Type a bill of one billion tenge. Shout out anything that looks wrong — do not put your hand up, just shout, I will write the best three straight into the fix prompt.',
+      kk: 'Осы QR-кодты телефоныңнан ашып, оны бұзып көр. Екі минут уақытың бар, таймер экранда. Теріс бағаны байқап көр. Бір тағамға нөл адам қой. Ат орнына эмодзи жаз. Бір миллиард теңгелік есепшот тер. Тұрпайы көрінген нәрсені дауыстап айт — қол көтерме, жай дауыста, ең қызық үшеуін мен бірден түзету prompt-ына жазамын.',
+    },
+    why: {
+      en: 'Two minutes of a hundred people is more input variety than any test suite they will write tonight, and they discover that themselves rather than hearing it from you. It also converts the passive half of the room into participants before the concept block, which is where you would otherwise lose them.',
+      kk: 'Жүз адамның екі минуты — бүгін жазатын кез келген тесттен әлдеқайда алуан түрлі енгізу, әрі оны олар сенен естімей, өздері ашады. Сонымен бірге залдың енжар жартысы теориялық бөлікке дейін қатысушыға айналады, әйтпесе оларды дәл сол жерде жоғалтар едің.',
+    },
+  },
+  {
+    at: '0:38',
+    kind: { en: 'Stand up and talk to one person', kk: 'Тұрып, бір адаммен сөйлес' },
+    prompt: {
+      en: 'Everybody stand up. Yes, everybody, including the back row. Turn to the person next to you. Ninety seconds each, and I will tell you when to swap: what would you build for your family business, your university or your city? Not something impressive — something that annoys you every week. Then one line into the Telegram group, and I will read three of them out loud.',
+      kk: 'Бәрі орнынан тұрсын. Иә, бәрі, артқы қатарды қоса. Қасыңдағы адамға бұрыл. Әрқайсысына 90 секунд, ауысатын кезді мен айтамын: отбасы ісіне, университетіңе немесе қалаңа не жасар едің? Таңғаларлық нәрсе емес — апта сайын ашуыңды келтіретін нәрсе. Сосын Telegram тобына бір жол жаз, мен үшеуін дауыстап оқимын.',
+    },
+    why: {
+      en: 'This lands at the forty-minute trough, and standing up is worth more than any slide you could put there. It also produces the raw material for the build session: by the break you have a list of real problems from the actual room, not from a template.',
+      kk: 'Бұл қырқыншы минуттағы шаршау сәтіне тап келеді, ал орныңнан тұру сол жерге қоятын кез келген слайдтан пайдалы. Сонымен бірге практика бөліміне шикізат береді: үзіліске дейін қолыңда үлгіден емес, нақты залдан жиналған шынайы мәселелер тізімі болады.',
+    },
+  },
+  {
+    at: '0:43',
+    kind: { en: 'Hands up per tool', kk: 'Әр құралға қол көтеру' },
+    prompt: {
+      en: 'I am going to name nine tools and I want a hand up for every single one you have opened. Claude.ai artifacts. Google AI Studio Build. Claude Code. Codex CLI. Cursor. Antigravity. Copilot in VS Code. Lovable. Bolt. Now look around the room. Almost nobody here has used more than three of those — so stop worrying about picking the right one, because the thing that transfers between all nine is the loop, not the logo.',
+      kk: 'Қазір тоғыз құралды атаймын, әрқайсысын ашып көрген болсаң, қолыңды көтер. Claude.ai artifact-тары. Google AI Studio Build. Claude Code. Codex CLI. Cursor. Antigravity. VS Code ішіндегі Copilot. Lovable. Bolt. Енді айналаңа қара. Мұнда ешкім дерлік олардың үшеуінен көбін қолданбаған — сондықтан «дұрысын таңдау» деп уайымдауды қой, себебі тоғызының арасында тасымалданатын нәрсе логотип емес, цикл.',
+    },
+    why: {
+      en: 'Tool anxiety is the most common reason a beginner never starts, and the fastest cure is showing them that the experienced people in the room have not tried most of these either. The count does the arguing for you.',
+      kk: 'Құрал таңдаудан қорқу — бастаушының ешқашан бастамауының ең жиі себебі, ал оны емдеудің ең жылдам жолы — залдағы тәжірибелі адамдардың да олардың көбін қолданып көрмегенін көрсету. Дәлелді сен емес, санақ айтады.',
+    },
+  },
+  {
+    at: '0:56',
+    kind: { en: 'The room answers the agent', kk: 'Залдың agent-ке жауабы' },
+    prompt: {
+      en: 'It asked us three questions, so we answer them. Question one is on the screen — shout your answer, loudest opinion wins, I am typing whatever I hear. For the second one I am going to type our answer in Kazakh on purpose, and I will tell you now what I expect: it will work, and it will be a bit weaker than the same sentence in English. Watch and judge for yourself.',
+      kk: 'Ол бізге үш сұрақ қойды, ендеше жауап берейік. Бірінші сұрақ экранда — жауабыңды дауыстап айт, қайсысы қатты естілсе, соны жазамын. Екіншісіне жауапты әдейі қазақша жазамын және не күтетінімді қазірден айтайын: жұмыс істейді, бірақ ағылшынша жазылған сол сөйлемнен сәл әлсіздеу болады. Қарап отыр да, өзің бағала.',
+    },
+    why: {
+      en: 'It shows that the agent can interview you instead of guessing, which is the single habit that most improves a beginner output. Typing one answer in Kazakh in public, and naming the limitation before it appears, buys you honesty credit you will spend later on the METR slide.',
+      kk: 'Бұл agent-тің болжаудың орнына сенен сұрай алатынын көрсетеді, ал бастаушының нәтижесін ең көп жақсартатын әдет — осы. Бір жауапты жұрт алдында қазақша жазып, шектеуін ол көрінбей тұрып айтқаның саған шыншылдық беделін береді, ал оны кейін METR слайдында жұмсайсың.',
+    },
+  },
+  {
+    at: '1:05',
+    kind: { en: 'Approve or deny, thumbs', kk: 'Мақұлдау не бас тарту, бас бармақпен' },
+    prompt: {
+      en: 'It is asking for permission and I am not clicking until you vote. Thumbs up to allow, thumbs down to deny. Read what it actually wants to do first — not what you assume it wants to do. You in the blue jacket, you voted no: why? Tell the room. That instinct is the only safety layer this whole system has, and it is you, not the software.',
+      kk: 'Ол рұқсат сұрап тұр, сендер дауыс бермейінше мен баспаймын. Рұқсат берсең — бас бармақ жоғары, бермесең — төмен. Алдымен оның шынымен не істегісі келетінін оқы, өзің ойлаған нәрсені емес. Көк күртеше кигені: сен «жоқ» дедің, неге? Залға айт. Осы түйсік — бүкіл жүйенің жалғыз қауіпсіздік қабаты, әрі ол бағдарлама емес, сенсің.',
+    },
+    why: {
+      en: 'Reading a permission prompt before clicking is a habit, and habits are built by doing it together and out loud. Asking why for a deny is the important half: it puts a beginner reasoning in front of the room and usually it is better reasoning than the confident yes.',
+      kk: 'Баспас бұрын рұқсат сұрауын оқу — әдет, ал әдет бірге және дауыстап істегенде қалыптасады. Бас тартудың себебін сұрау — бұның маңызды жартысы: ол бастаушының пайымын зал алдына шығарады, әрі ол көбіне сенімді «иә» дегеннен дұрысырақ болып шығады.',
+    },
+  },
+  {
+    at: '1:20',
+    kind: { en: 'Two volunteers duel', kk: 'Екі еріктінің жекпе-жегі' },
+    prompt: {
+      en: 'I need two volunteers who will dictate a prompt to me out loud. First one: give me a vague styling request, the kind you would actually type at midnight. Something like make it look better. Thank you — look at that result in silence for a second. Now I press Esc twice and everything we just did is gone, for free. Second volunteer: same goal, but be specific — exact colours, exact size, and tell it to report which rules it changed.',
+      kk: 'Маған prompt-ты дауыстап айтатын екі ерікті керек. Біріншісі: маған бұлдыр безендіру сұрауын айт, түн ортасында өзің жазатындай. Мысалы, «make it look better». Рақмет — енді бір секунд үнсіз осы нәтижеге қарап тұр. Ал мен Esc-ті екі рет басамын да, жаңа істегеніміздің бәрі тегін жойылады. Екінші ерікті: мақсат сол, бірақ нақты айт — дәл түстер, дәл өлшем және «қай ережелерді өзгерткеніңді айт» деп қос.',
+    },
+    why: {
+      en: 'Nothing you can say about prompt quality beats watching two prompts hit the same file back to back. The rewind in the middle is the real lesson though: it is the moment the room learns that experimenting costs nothing here.',
+      kk: 'Prompt сапасы туралы айтқан кез келген сөзің бір файлға қатарынан түскен екі prompt-ты көрумен теңесе алмайды. Ал ортадағы кері қайтару — нағыз сабақ: зал дәл сол сәтте мұнда тәжірибе жасау тегін екенін түсінеді.',
+    },
+  },
+  {
+    at: '1:27',
+    kind: { en: 'Vote, argue, vote again', kk: 'Дауыс бер, таласып ал, қайта дауыс бер' },
+    prompt: {
+      en: 'Twelve lines on the screen. Which one hurts you most in production: A, B, C, or D, none of them, ship it. Vote now, on your own, no talking. Here is the split — I am not telling you who is right. Two minutes: turn to the person next to you and argue. Now vote again. Look how that moved.',
+      kk: 'Экранда он екі жол. Жұмыс ортасында саған қайсысы қатты соққы береді: A, B, C әлде D — ешқайсысы емес, шығара беруге болады? Қазір, жеке, сөйлеспей дауыс бер. Міне, дауыстардың бөлінуі — кімнің дұрыс екенін айтпаймын. Екі минут: қасыңдағы адамға бұрылып, таласып ал. Енді қайта дауыс бер. Қалай өзгергенін көр.',
+    },
+    why: {
+      en: 'The second vote is the lesson; the first was only the hook. People are persuaded by a peer sitting next to them in a way they are not persuaded by a presenter, and the visible movement between the two votes is the proof they persuaded each other.',
+      kk: 'Сабақ — екінші дауыс беруде, біріншісі тек қызықтыру үшін болды. Адам жанындағы құрдасының дәлеліне жүргізушінің дәлеліне сенбейтіндей сенеді, ал екі дауыс беру арасындағы көзге көрінетін өзгеріс — олардың бір-бірін сендіргенінің дәлелі.',
+    },
+  },
+  {
+    at: '1:36',
+    kind: { en: 'Call and response', kk: 'Сұрақ — бірге жауап' },
+    prompt: {
+      en: 'There is the symptom in the browser and there is the red line in the console. Before I type anything: what three things do we give the agent? Shout them. Symptom. Expected result. Exact error text. Say it with me once more, because this is the sentence you will use every single day next week.',
+      kk: 'Міне, браузердегі белгі, ал мынау — консольдегі қызыл жол. Мен бірдеңе термес бұрын: agent-ке қай үш нәрсені береміз? Дауыстап айт. Белгі. Күтілген нәтиже. Қатенің дәл мәтіні. Менімен бірге тағы бір рет айт, себебі келесі аптада күн сайын қолданатын сөйлемің — осы.',
+    },
+    why: {
+      en: 'Three items said out loud twice by a hundred people is a better memory device than any slide. It also fills the wait while the agent works, which is exactly the dead air where a room goes quiet and starts checking phones.',
+      kk: 'Жүз адамның екі рет дауыстап айтқан үш тармағы кез келген слайдтан жақсы есте қалады. Сонымен бірге бұл agent жұмыс істеп тұрған уақытты толтырады, ал дәл сол бос уақытта зал тынышталып, телефонға үңіле бастайды.',
+    },
+  },
+  {
+    at: '1:57',
+    kind: { en: 'Minute cards on the door', kk: 'Есіктегі минут қағаздары' },
+    prompt: {
+      en: 'Take your two cards. On the green one write one thing you learned tonight. On the red one write one thing that is still unclear — and please write the real one, not a polite one, because the red cards are what I answer after the break. Stick them on the door on your way out. Ten minutes, real ten minutes, go.',
+      kk: 'Екі қағазыңды ал. Жасылына бүгін үйренген бір нәрсеңді жаз. Қызылына әлі түсініксіз бір нәрсені жаз — сыпайысын емес, шынын жаз, себебі үзілістен кейін мен дәл қызыл қағаздарға жауап беремін. Шығып бара жатып есікке жабыстыр. Он минут, толық он минут, кеттік.',
+    },
+    why: {
+      en: 'It gives you a real question list instead of the three loud people who would otherwise own the Q&A, and it gives quiet attendees a way to ask. It is also your only honest feedback on whether the first two hours landed.',
+      kk: 'Бұл саған сұрақ-жауапты иемденіп алатын үш дауыстының орнына нақты сұрақтар тізімін береді, ал үндемейтіндерге сұрау мүмкіндігін береді. Сонымен қатар бұл — алғашқы екі сағаттың жеткен-жетпегені туралы жалғыз шыншыл кері байланыс.',
+    },
+  },
+  {
+    at: '2:30',
+    kind: { en: 'Swap the driver', kk: 'Кезекті ауыстыру' },
+    prompt: {
+      en: 'Swap driver. Right now, both of you, hands off the keyboard and change seats. I am not asking, I am telling you, because if I ask, the confident one keeps the keyboard until midnight. Whoever has typed less in the last ten minutes is typing for the next ten.',
+      kk: 'Кезекті ауыстыр. Дәл қазір, екеуің де пернетақтадан қолыңды ал да, орын алмас. Мен сұрап тұрған жоқпын, айтып тұрмын, себебі сұрасам, батылырағы пернетақтаны түн ортасына дейін жібермейді. Соңғы он минутта кім азырақ терген болса, келесі он минутта сол тереді.',
+    },
+    why: {
+      en: 'The person who does not touch the keyboard learns almost nothing and leaves believing they could not do it. One sentence, said as an instruction and not a suggestion, is the difference between a pair session and a demonstration with an audience of one.',
+      kk: 'Пернетақтаға тимеген адам түк үйренбейді және «менің қолымнан келмейді екен» деген оймен кетеді. Ұсыныс емес, бұйрық ретінде айтылған бір сөйлем — жұптық жұмыс пен бір көрерменге арналған көрсетілімнің арасындағы айырма.',
+    },
+  },
+  {
+    at: '2:56',
+    kind: { en: 'Demo gallery', kk: 'Демо галереясы' },
+    prompt: {
+      en: 'Four pairs, ninety seconds each, and you open it from your own link on this screen, not from my laptop. Three questions only: what did you ask for, what broke, how did you fix it. And I am telling you now — the applause at the end is for the best bug story, not the prettiest app, because the bug story is the part that proves you understood something.',
+      kk: 'Төрт жұп, әрқайсысына 90 секунд, әрі оны менің ноутбугымнан емес, осы экранда өз сілтемеңнен ашасың. Тек үш сұрақ: нені сұрадың, не бұзылды, оны қалай түзеттің. Және қазірден айтайын — соңындағы қошемет ең әдемі қолданбаға емес, қате туралы ең жақсы әңгімеге беріледі, себебі бірдеңені түсінгеніңді дәл сол әңгіме дәлелдейді.',
+    },
+    why: {
+      en: 'People believe someone exactly like them far more than they believe you. Making them open their own link also proves the thing actually shipped, and rewarding the bug story sets what they will practise for the next seven days.',
+      kk: 'Адам саған емес, дәл өзіндей біреуге әлдеқайда көп сенеді. Өз сілтемесінен аштыру оның шынымен жарияланғанын дәлелдейді, ал қате туралы әңгімені мадақтау олардың келесі жеті күнде нені жаттықтыратынын белгілейді.',
+    },
+  },
+];
+
+// ------------------------------------------------------------------ live demos
+// `prompt` is the exact text, in English, already sitting in the clipboard file.
+// Never retyped on stage. `ifItFails` is written so that the last rung of every
+// ladder works with the wifi switched off entirely.
+
+export const demos: { title: L; setup: L; prompt: string; expect: L; ifItFails: L }[] = [
+  {
+    title: {
+      en: 'Demo 1: one paragraph, one link you can send',
+      kk: 'Demo 1: бір абзац — жібере алатын бір сілтеме',
+    },
+    setup: {
+      en: 'claude.ai in the browser, a fresh chat, with Code execution and file creation already switched on in Settings, Capabilities. A second tab on Google AI Studio Build with the same prompt ready. The pre-published version of the app bookmarked, and its QR already on a slide. Read the prompt line by line on screen before you talk about the result: goal, must-haves, constraints, language, and the last paragraph, which is the line almost nobody writes.',
+      kk: 'Браузерде claude.ai, жаңа чат, «Параметрлер», «Capabilities» бөлімінде «Code execution and file creation» қосулы тұр. Екінші қойындыда дәл сол prompt дайын тұрған Google AI Studio Build. Қолданбаның алдын ала жарияланған нұсқасы бетбелгіде, ал оның QR-коды слайдта дайын. Нәтиже туралы сөйлемес бұрын prompt-ты экранда жолма-жол оқы: мақсат, міндетті талаптар, шектеулер, тіл және соңғы абзац — ешкім дерлік жазбайтын жол.',
+    },
+    prompt: `Build a single-page web app called "Dastarkhan Split". It splits a cafe bill between friends in Kazakhstani tenge.
+
+Must have:
+- add people by name
+- add items with a price, and tick which people shared each item
+- a service charge field, default 10%
+- show what each person owes, rounded to the nearest 10 tenge, and make sure the rounded amounts still add up exactly to the bill total
+- a "Copy summary" button that produces plain text I can paste into Telegram or WhatsApp
+- English interface with a toggle to Kazakh
+- mobile-first, one file, no external libraries
+
+Before you build: list 3 test cases with exact expected numbers. Then build. Then check your own test cases and tell me which pass.`,
+    expect: {
+      en: 'Three named test cases with numbers appear first, then a working one-file app inside about two minutes. The rounding clause is the interesting part: it frequently gets the three test cases right and still leaves one tenge unaccounted for somewhere. Open the result, run its own three tests in front of the room, and read the numbers out loud. At least one Kazakh label will be awkward — that is the planned mistake, so ask a native speaker in the room to correct one string and paste their wording back in.',
+      kk: 'Алдымен сандары бар, аталған үш тест жағдайы шығады, сосын екі минуттай уақытта бір файлдан тұратын жұмыс істейтін қолданба пайда болады. Ең қызығы — дөңгелектеу туралы талап: ол үш тестті жиі дұрыс өткізеді, бірақ бір жерде бір теңге есепсіз қалып қояды. Нәтижені аш, өзі жазған үш тестті залдың көзінше орында және сандарды дауыстап оқы. Қазақша жазулардың кемінде біреуі сөлекет шығады — бұл әдейі жасалған қате, сондықтан залдағы біреуден бір жолды түзетуді сұрап, сөзін орнына қой.',
+    },
+    ifItFails: {
+      en: 'Decide in 30 seconds and never debug on stage. First the phone hotspot. Then the second tab in AI Studio Build with the same prompt. Then the pre-published link and its QR from the slide, said honestly out loud — this one is from yesterday, the live one is still thinking — which keeps the phone interaction working. Then the 90-second recording, narrated live with the same prediction question. With no internet at all: open dastarkhan-split.html from the disk and let one volunteer try to break it on your laptop while the room shouts suggestions.',
+      kk: '30 секундта шеш, сахнада ешқашан жөндеме. Алдымен телефон интернеті. Сосын дәл сол prompt тұрған AI Studio Build қойындысы. Сосын слайдтағы алдын ала жарияланған сілтеме мен QR-код — шыныңды дауыстап айт: «бұл кешегісі, тірісі әлі ойланып жатыр» — сонда телефонмен тексеру бәрібір жүреді. Сосын 90 секундтық жазба, дәл сол болжам сұрағымен, тірі дауыспен түсіндіріледі. Мүлде интернетсіз: дискідегі `dastarkhan-split.html` файлын аш та, зал ұсыныс айтып отырғанда бір еріктіге өз ноутбугыңда бұздырып көр.',
+    },
+  },
+  {
+    title: {
+      en: 'Demo 2: an agent in your folder, in plan mode',
+      kk: 'Demo 2: қалтаңдағы agent, plan mode-та',
+    },
+    setup: {
+      en: 'A folder called qazaq-cards containing exactly one file, words.csv, with 50 rows checked by a native speaker, and git init already run. Terminal open in that folder, the session switched to Manual mode before you start — on Pro, Max and Team the starting mode is Auto and a classifier approves most actions silently, so in Auto the room sees no permission prompts at all. Press Shift+Tab until the status line says plan mode, and point at it so everyone sees where it says that.',
+      kk: 'Ішінде тек бір файл — ана тілінде сөйлейтін адам тексерген 50 жолдан тұратын `words.csv` бар `qazaq-cards` қалтасы, әрі `git init` орындалып қойған. Терминал сол қалтада ашық, ал сеанс бастамас бұрын Manual режимге ауыстырылған: Pro, Max және Team жоспарларында бастапқы режим — Auto, онда әрекеттердің көбін жіктеуіш үнсіз мақұлдайды, сондықтан Auto режимінде зал бірде-бір рұқсат сұрауын көрмейді. Күй жолында «plan mode» жазылғанша Shift+Tab бас та, сол жазуды саусағыңмен көрсет.',
+    },
+    prompt: `Read @words.csv. I want a flashcard web app for learning Kazakh words:
+- show the Kazakh word, tap to flip to English and Russian
+- buttons "Knew it" / "Didn't know"; cards I miss come back sooner
+- progress saved in the browser
+- a toggle between Cyrillic and Latin script
+Plain HTML/CSS/JS, no build step, must work offline by opening index.html.
+Ask me up to 3 questions if anything is unclear. Then propose a plan: files, data flow, and how you will verify it works. Do not write code yet.`,
+    expect: {
+      en: 'Within a minute it reads the file, then asks up to three real questions — usually about how much sooner a missed card should return and what the default script is. The room answers by vote. Then a written plan appears and nothing on disk has changed. Read the plan aloud and change one thing in it before you approve: a plan you approve without reading is not a plan. Only then let it build, and run the permission vote on the real prompts as they appear.',
+      kk: 'Бір минут ішінде ол файлды оқиды, сосын үшке дейін нақты сұрақ қояды — әдетте қате айтылған карта қанша ертерек оралуы керегі және әдепкі жазу қайсысы екені туралы. Зал дауыс беру арқылы жауап береді. Сосын жазбаша жоспар шығады, ал дискіде ештеңе өзгермеген. Жоспарды дауыстап оқы да, мақұлдамас бұрын бір нәрсесін өзгерт: оқымай мақұлдаған жоспар — жоспар емес. Содан кейін ғана құрастыруға рұқсат бер және нақты рұқсат сұраулары шыққан сайын дауыс беруді өткіз.',
+    },
+    ifItFails: {
+      en: 'The command `git checkout step-1-plan` gives you the saved PLAN.md — read that instead and say plainly that it is a checkpoint from rehearsal. A login failure or a usage limit means the second laptop, which is already sitting at the same tag. If the service itself is down, run the identical prompt in Codex CLI or Antigravity and make that the lesson out loud: the loop is tool-agnostic, which is exactly why we teach the loop. Fully offline: the step-1-plan and step-3-tested files are on disk, so read the plan and the recorded test output from the editor with no network at all.',
+      kk: '`git checkout step-1-plan` пәрмені сақталған `PLAN.md` файлын береді — соны оқы да, бұл дайындық кезіндегі сақтау нүктесі екенін ашық айт. Кіру мәселесі немесе шектеу шықса — сол тегте тұрған екінші ноутбук. Қызметтің өзі істемей тұрса, дәл сол prompt-ты Codex CLI немесе Antigravity ішінде орында да, соны дауыстап сабаққа айналдыр: цикл құралға тәуелді емес, біз циклды дәл сондықтан үйретеміз. Мүлде интернетсіз: `step-1-plan` мен `step-3-tested` файлдары дискіде тұр, сондықтан жоспарды да, жазылып қойған тест нәтижесін де желісіз редактордан оқы.',
+    },
+  },
+  {
+    title: {
+      en: 'Demo 3: break it, debug it, ship it',
+      kk: 'Demo 3: бұз, жөнде, шығар',
+    },
+    setup: {
+      en: 'The bug-demo branch of the flashcard app, where saved progress is read without a guard: a fresh browser throws a parse error and the streak shows 11 instead of 2, because a string was added to a number. Browser and console side by side on screen, the error already visible, the console font large. The Netlify Drop page open in another tab and the folder ready to drag. Ask the room for the three things before you type anything.',
+      kk: 'Флешкарта қолданбасының `bug-demo` тармағы: сақталған үлгерім қорғаныссыз оқылады, сондықтан жаңа браузерде талдау қатесі шығады, ал серия 2-нің орнына 11 болып көрінеді, себебі санға мәтін қосылып кеткен. Экранда браузер мен консоль қатар тұр, қате көрініп тұр, консоль шрифті үлкен. Басқа қойындыда Netlify Drop беті ашық, қалта сүйреуге дайын. Бірдеңе термес бұрын залдан үш нәрсені сұра.',
+    },
+    prompt: `After I reload the page following my first session, I see this console error: [paste the exact error text here]. Expected: my progress is restored and the streak shows 2, but it shows 11.
+Find the root cause and explain it to me in two sentences as if I were a first-year student. Write a failing test that reproduces it, then fix it and run the test. Do not suppress the error.`,
+    expect: {
+      en: 'Two sentences of root cause, a test that fails first, then the fix, then the test passing — in that order, which is the whole point. Read the failing line out loud when it appears: a demo where nothing ever fails teaches nothing at all. Then ship it: drag the folder onto Netlify Drop, put the URL in a QR, and let the room open it on their phones while you are still talking. Say the fine print out loud — an unclaimed Netlify Drop URL is password-protected until you claim it, and anything that needs a build step needs a login.',
+      kk: 'Екі сөйлеммен түбірлі себеп, алдымен құлайтын тест, сосын түзету, сосын өтіп кеткен тест — дәл осы ретпен, ал бүкіл мән осында. Құлаған жол шыққанда соны дауыстап оқы: ешнәрсе құламайтын демо ештеңе үйретпейді. Сосын шығар: қалтаны Netlify Drop бетіне сүйреп апар, URL-ді QR-кодқа сал да, сен әлі сөйлеп тұрғанда зал оны телефонынан ашсын. Ұсақ жазуын дауыстап айт: иеленбеген Netlify Drop сілтемесі сен оны өзіңе бекітпейінше құпиясөзбен қорғалады, ал құрастыру қадамы керек жобаға аккаунтқа кіру қажет.',
+    },
+    ifItFails: {
+      en: 'The console error is already a screenshot on a backup slide, so the whole debugging story works with no browser at all: show the screenshot, make the room shout the three things, then jump to the fixed tag on disk and read the diff. For shipping, the pre-deployed URL and its QR are on the slide — the room still opens a real link, it is just yesterday version, and you say so. Fully offline: play the recording, pause it on the red line, ask for the three things, then play the fix and the test output.',
+      kk: 'Консольдегі қате қосалқы слайдта скриншот күйінде тұр, сондықтан бүкіл жөндеу әңгімесі браузерсіз де жүреді: скриншотты көрсет, зал үш нәрсені дауыстап айтсын, сосын дискідегі түзетілген тегке өт те, өзгерісті оқы. Жариялау үшін алдын ала жарияланған сілтеме мен оның QR-коды слайдта тұр — зал бәрібір нақты сілтемені ашады, жай ғана кешегі нұсқасы, ал сен соны айтасың. Мүлде интернетсіз: жазбаны қос, қызыл жолда тоқтат, үш нәрсені сұра, сосын түзетуді және тест нәтижесін көрсет.',
+    },
+  },
+];
+
+// ------------------------------------------------------- build-together projects
+// Shared constraints so every card fits 40 minutes in any track: one static page
+// or one script, no login, no paid API, no secrets, data in the browser or in a
+// bundled file, mobile-first, deployable by drag-and-drop. Nobody starts from a
+// blank page, so every card ships with a prompt you paste as it is.
+// Every starterPrompt ends with the same verification tail on purpose.
+
+export const projects: {
+  title: L;
+  brief: L;
+  stack: L;
+  starterPrompt: string;
+  done: L;
+  level: 1 | 2 | 3;
+}[] = [
+  {
+    level: 1,
+    title: { en: 'Dastarkhan Split', kk: 'Dastarkhan Split' },
+    brief: {
+      en: 'Split a cafe bill in tenge between friends, where not everybody ate everything. The arithmetic is the whole project: rounding each share to the nearest 10 tenge is easy, making the rounded shares still add up exactly to the bill is not. This is the card for a pair that has never built anything, and it is the one the presenter builds on the big screen.',
+      kk: 'Кафедегі есепшотты достар арасында теңгемен бөлу, әрі бәрі бәрін жеген жоқ. Бүкіл жоба — арифметикада: әркімнің үлесін ең жақын 10 теңгеге дейін дөңгелектеу оңай, ал дөңгелектелген үлестердің жалпы сомаға дәл келуі оңай емес. Бұл карта — ешқашан ештеңе жасап көрмеген жұпқа арналған, әрі жүргізуші үлкен экранда дәл осыны жасайды.',
+    },
+    stack: {
+      en: 'One HTML file, plain JavaScript, no libraries, nothing saved anywhere. Works in every track, including on a phone.',
+      kk: 'Бір HTML файл, қарапайым JavaScript, кітапханасыз, ештеңе еш жерде сақталмайды. Барлық жолда жүреді, телефонда да.',
+    },
+    starterPrompt: `Build a one-file mobile web app that splits a cafe bill in tenge between friends: people by name, items with a price and a tick for who shared each item, a service charge field defaulting to 10%, amounts rounded to the nearest 10 tenge that still sum exactly to the bill total, and a "Copy summary" button that produces plain text for Telegram. English interface with a toggle to Kazakh. One file, no external libraries, mobile-first.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'A 3-people, 4-item example matches a calculation you did by hand on paper; the rounded shares sum exactly to the total; a negative price and an empty name are both rejected with a readable message; the link opens on somebody else phone.',
+      kk: '3 адам, 4 тағамнан тұратын мысал қағазда қолмен есептегеніңмен дәл келеді; дөңгелектелген үлестер жалпы сомаға дәл қосылады; теріс баға да, бос ат та оқуға болатын хабармен қабылданбайды; сілтеме басқа біреудің телефонында ашылады.',
+    },
+  },
+  {
+    level: 2,
+    title: { en: 'Qazaq Cards', kk: 'Qazaq Cards' },
+    brief: {
+      en: 'Flashcards for learning Kazakh words, where the cards you get wrong come back sooner. The scheduling logic is the interesting half and it is also where the agent will quietly write something that looks right and is not, which makes this a good card for a pair that wants to practise verifying.',
+      kk: 'Қазақ сөздерін үйренуге арналған флешкарталар, әрі қате айтқан карталарың ертерек қайта оралады. Ең қызық жартысы — кезекті есептеу логикасы, әрі agent дәл сол жерде дұрыс көрінетін, бірақ дұрыс емес нәрсені үнсіз жазып кетеді, сондықтан бұл карта тексеруді жаттыққысы келетін жұпқа қолайлы.',
+    },
+    stack: {
+      en: 'One HTML file plus a small word list, progress in the browser only. No build step: it has to work by opening index.html straight from disk, with the wifi off.',
+      kk: 'Бір HTML файл және шағын сөз тізімі, үлгерім тек браузерде сақталады. Құрастыру қадамы жоқ: `index.html` файлын дискіден тікелей ашқанда, wi-fi өшірулі күйінде жұмыс істеуі керек.',
+    },
+    starterPrompt: `Build an offline flashcard app for learning Kazakh words from this list [paste 20 rows: Kazakh, English, Russian]. Show the Kazakh word, tap to flip to the translations, buttons "Knew it" and "Didn't know", cards I miss come back sooner than cards I knew, progress saved in the browser, and a toggle between Cyrillic and Latin script. Plain HTML, CSS and JavaScript, no build step, must work offline by opening index.html.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'A card you marked as missed comes back within the next 5 cards, and you checked that by counting, not by trusting; a page reload keeps your progress; the script toggle changes every card and not just the visible one; the whole thing still works with the wifi switched off.',
+      kk: '«Білмедім» деп белгілеген картаң келесі 5 картаның ішінде қайта оралады, әрі мұны сеніп емес, санап тексердің; бетті қайта жүктегенде үлгерім сақталады; жазу ауыстырғышы тек көрініп тұрғанын емес, әр картаны өзгертеді; бәрі wi-fi өшірулі күйінде де жұмыс істейді.',
+    },
+  },
+  {
+    level: 1,
+    title: { en: 'My page', kk: 'Менің бетім' },
+    brief: {
+      en: 'A one-page bilingual personal site with your real name, your real projects and your real contacts. It is the least technical card on the list and by far the most useful one after tonight: by day 7 it is the thing you send to a recruiter or a scholarship committee. The hard part is not the code, it is writing three honest sentences about yourself.',
+      kk: 'Нақты атың, нақты жобаларың және нақты байланыс деректерің бар, бір беттен тұратын екітілді жеке сайт. Тізімдегі ең техникалық емес карта, бірақ бүгіннен кейінгі ең пайдалысы: 7-күні дәл осыны жұмыс берушіге немесе грант комиссиясына жібересің. Қиыны — код емес, өзің туралы үш шыншыл сөйлем жазу.',
+    },
+    stack: {
+      en: 'One HTML file, no frameworks, no images heavier than the text. Should load on mobile data in a lecture hall basement.',
+      kk: 'Бір HTML файл, фреймворксіз, мәтіннен ауыр сурет жоқ. Дәрісхананың жертөлесінде мобильді интернетпен жүктелуі керек.',
+    },
+    starterPrompt: `Build a one-page personal site for me. Here is what goes on it: [your name, 3 facts about you, 3 projects with one line each, your contacts]. Sections: a short hero, about, projects, contact. A toggle between English and Kazakh, a dark and light mode, no frameworks, and it must load fast on mobile data.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'Every word on the page is yours and there is no placeholder text left anywhere; both languages are complete, not one language plus a half-translated menu; it looks right at 360 pixels wide and on a desktop; the live URL is in the Telegram group.',
+      kk: 'Беттегі әр сөз — сенікі, еш жерде толтырғыш мәтін қалмаған; екі тіл де толық, бір тіл мен жартылай аударылған мәзір емес; ені 360 пиксель экранда да, компьютерде де дұрыс көрінеді; тірі сілтеме Telegram тобында тұр.',
+    },
+  },
+  {
+    level: 2,
+    title: { en: 'Exam sprint timer', kk: 'Емтихан таймері' },
+    brief: {
+      en: 'A study timer for ENT or IELTS preparation that asks what you actually studied after every session and draws you a weekly chart of minutes per subject. The honest reason this card works: you will use it next week, and a tool you use is a tool you keep fixing, which is how you actually learn this.',
+      kk: 'ҰБТ-ға немесе IELTS-ке дайындалуға арналған оқу таймері: әр сеанстан кейін нені оқығаныңды сұрайды да, пән бойынша апталық минут диаграммасын салып береді. Бұл картаның шын мәні: сен оны келесі аптада қолданасың, ал қолданатын құралыңды үнемі түзетіп отырасың, нақты үйрену дегеніміз — осы.',
+    },
+    stack: {
+      en: 'One page, browser storage, a chart you draw yourself rather than pull from a library. CSV export so the data is never trapped.',
+      kk: 'Бір бет, браузердегі сақтау, кітапханадан алмай, өзің салатын диаграмма. Деректер қамалып қалмауы үшін CSV-ге шығару.',
+    },
+    starterPrompt: `Build a Pomodoro study timer: 25 minutes of work and 5 of break by default, both adjustable. After each finished session it asks which subject I studied and saves it. It shows a weekly bar chart of minutes per subject. All data stays in the browser, with a button to export everything to CSV. One page, mobile-first, no login.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'The timer keeps correct time when you switch to another browser tab and come back; a session you finish appears in the chart immediately; the exported CSV opens in Excel or Sheets with the columns in the right places; the reset button asks before it deletes anything.',
+      kk: 'Басқа қойындыға ауысып қайта оралғанда таймер уақытты дұрыс санайды; аяқталған сеанс диаграммада бірден көрінеді; шығарылған CSV Excel немесе Sheets ішінде бағандары дұрыс күйде ашылады; тазалау түймесі бірдеңені жоймас бұрын сұрайды.',
+    },
+  },
+  {
+    level: 2,
+    title: { en: 'Toi planner', kk: 'Той жоспарлаушы' },
+    brief: {
+      en: 'Guest list and budget for a family celebration: who is coming, from which side, how many seats, and what it costs planned against actual. Somebody in your family is doing this in a notebook right now, which makes this the card most likely to find a real user before the week is out.',
+      kk: 'Отбасылық той үшін қонақтар тізімі мен бюджет: кім келеді, қай жағынан, қанша орын керек және жоспарланған мен нақты шығын қандай. Дәл қазір отбасыңда біреу мұны дәптерге жазып отыр, сондықтан бұл карта апта бітпей жатып нақты пайдаланушы табуға ең жақын.',
+    },
+    stack: {
+      en: 'One page, browser storage, and a print stylesheet — because the person who will actually use it will want it on paper.',
+      kk: 'Бір бет, браузердегі сақтау және басып шығаруға арналған стиль — себебі оны шын қолданатын адам қағаз күйінде қалайды.',
+    },
+    starterPrompt: `Build a planner for a family celebration. Guests: name, which side of the family, RSVP yes or no or maybe, and number of seats. Budget lines: description, planned amount in tenge, actual amount in tenge. Show the totals, the number of confirmed seats, and the cost per guest. Add a printable view that fits on one page. Everything stays in the browser, no login.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'Totals are correct for a 5-guest sample you checked by hand; filtering by RSVP changes both the list and the totals, not just the list; the print view fits on one page with nothing cut off at the right edge; the data is still there after you reload.',
+      kk: '5 қонақтан тұратын мысалдың жалпы сомасы қолмен тексергеніңмен дәл келеді; RSVP бойынша сүзгі тек тізімді емес, жалпы соманы да өзгертеді; басып шығару көрінісі бір бетке сыяды, оң жақ шеті кесілмейді; бетті қайта жүктегенде деректер орнында тұр.',
+    },
+  },
+];
+

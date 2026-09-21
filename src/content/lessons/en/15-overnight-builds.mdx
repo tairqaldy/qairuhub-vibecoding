@@ -158,11 +158,33 @@ Commit after every unit of progress, with a message naming the unit. That is the
 
 Checkpoints are not a substitute. Claude Code [snapshots files](https://code.claude.com/docs/en/checkpointing) before each edit, but keeps only the 100 most recent per session and does **not** track changes made by Bash commands (`rm`, `mv`, `cp`) or most subagent edits. Checkpoints are local undo; git is permanent undo. Work on a branch, and take Simon Willison's [anti-pattern](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/) seriously: never open a pull request you have not read.
 
+<Post
+  author="Simon Willison"
+  handle="simonwillison.net"
+  date="6 May 2026"
+  href="https://simonwillison.net/2026/May/6/vibe-coding-and-agentic-engineering/"
+  platform="blog"
+  stat="HN: 787 points · 885 comments"
+>
+The author of that anti-pattern list, admitting in public what agents did to his own discipline: "I'm not reviewing every line of code that they write anymore" — including, he says, for production work. He names the risk himself: normalization of deviance. Each unreviewed change that turns out fine makes trusting the next one easier, until the one you wave through is the one that mattered. Read it as a warning from further up the road, not as permission.
+</Post>
+
 ## What the night costs, and how to cap it
 
 Long sessions are expensive structurally: the whole conversation is re-sent on every request, and cache reads are still billed.
 
 The multipliers: an agent uses roughly 4x the tokens of a chat, multi-agent setups generally 3–10x a single agent, and Anthropic's harness experiment cost $200 against $9 for the same app built solo. [Enterprise averages](https://code.claude.com/docs/en/costs) land near $13 per developer per active day.
+
+<Post
+  author="Simon Willison"
+  handle="simonwillison.net"
+  date="8 Jul 2026"
+  href="https://simonwillison.net/2026/Jul/8/rewriting-bun-in-rust/"
+  platform="blog"
+  stat="11 days · 690M output tokens"
+>
+The top end of this, reported openly: Jarred Sumner's parallel agents ported Bun from Zig to Rust in eleven days, in a pull request with more than a million lines added, for "around $165,000 at API pricing". The budget is not the part to copy. Bun already had a test suite that did not care which language the thing was written in, so the agents had a referee that could not be talked out of a failure. Without that suite, the same money buys a million lines nobody can check.
+</Post>
 
 Levers by impact: `/clear` between tasks (free — `/compact` is itself a large request); expensive model to plan, cheaper for the parallel legwork; lower `/effort` on simple work, since thinking tokens bill as output. Then set hard stops before bed — an iteration cap, `--max-budget-usd`, and a turn limit inside the prompt.
 
@@ -248,6 +270,16 @@ Run the pre-flight list out loud against a real repo on the projector and let th
 ## From vibe coder to agentic engineer
 
 Act I gave this work its professional name: agentic engineering — a term used by Karpathy and Willison, among others. Willison's [definition](https://simonwillison.net/guides/agentic-engineering-patterns/what-is-agentic-engineering/) is the plain one: building software with coding agents that can write and run code, as opposed to the unreviewed prototype output he reserves the words "vibe coding" for. The job moved. You are not typing the code, and you are not ignoring it either. You write the spec, choose the fence, build the gate, read the diff, and decide what a machine may do while you sleep. Those decisions do not get automated away, because each is about consequences in the world — the part the agent cannot see.
+
+<Post
+  author="Mitchell Hashimoto"
+  handle="mitchellh.com"
+  date="5 Feb 2026"
+  href="https://mitchellh.com/writing/my-ai-adoption-journey"
+  platform="blog"
+>
+His own route from the chat window to agents: reproduce work you have already done yourself, hand over the slam dunks, then engineer the harness — every mistake an agent makes becomes a tool, a document or a check, so it cannot make that mistake twice. He keeps one running almost all the time, and turns their notifications off, because a ping you cannot act on is only a context switch. Excited and unsentimental at the same time. That is the register to aim for.
+</Post>
 
 What to build next:
 
