@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { href } from '@/i18n/ui';
+---
+
+<BaseLayout lang="en" title="Page not found" noindex>
+  <section class="wrap nf">
+    <p class="code">404</p>
+    <h1>This page hallucinated</h1>
+    <p class="lead">
+      The link you followed points at something that does not exist. Fitting, for a site about AI — and a useful reminder
+      that confident and correct are different things.
+    </p>
+    <div class="cta">
+      <a class="btn btn-signal" href={href('en')}>English</a>
+      <a class="btn" href={href('kk')}>Қазақша</a>
+      <a class="btn" href={href('en', 'learn')}>The path</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf { padding: clamp(80px, 16vw, 180px) 0 120px; }
+  .code { margin: 0; font: 500 13px/1 var(--font-mono); letter-spacing: 0.2em; color: var(--color-signal-soft); }
+  h1 { margin-top: 18px; font-size: clamp(42px, 9vw, 86px); font-weight: 300; letter-spacing: -0.045em; }
+  .lead { max-width: 52ch; margin: 24px 0 0; font-size: 18px; line-height: 1.6; color: var(--color-muted); }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+</style>

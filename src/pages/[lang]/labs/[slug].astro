@@ -1,0 +1,73 @@
+---
+import type { GetStaticPaths } from 'astro';
+import LessonLayout from '@/layouts/LessonLayout.astro';
+import * as MDX from '@/components/mdx';
+import type { Lang } from '@/data/curriculum';
+import { labFile, labs } from '@/data/curriculum';
+import { getLocalised, labRoutes } from '@/lib/content';
+import { href, useT } from '@/i18n/ui';
+
+export const getStaticPaths = (async () => {
+  const available = await labRoutes();
+  return (['en', 'kk'] as Lang[]).flatMap((lang) =>
+    available.map((l) => ({ params: { lang, slug: l.slug }, props: { lab: l } })),
+  );
+}) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+const { lab } = Astro.props;
+const t = useT(lang);
+const { entry, isFallback } = await getLocalised('labs', lang, labFile(lab));
+const { Content, headings } = await (await import('astro:content')).render(entry);
+
+const prevLab = labs.find((l) => l.order === lab.order - 1);
+const nextLab = labs.find((l) => l.order === lab.order + 1);
+const data = entry.data as typeof entry.data & { prerequisites: string[]; doneWhen: string };
+---
+
+<LessonLayout
+  lang={lang}
+  kind="lab"
+  slug={lab.slug}
+  order={lab.order}
+  title={data.title}
+  subtitle={data.subtitle}
+  objective={data.objective}
+  description={data.description}
+  minutes={lab.minutes}
+  xp={lab.xp}
+  level={lab.level}
+  headings={headings}
+  isFallback={isFallback}
+  prev={prevLab ? { href: href(lang, `labs/${prevLab.slug}`), title: prevLab.title[lang] } : undefined}
+  next={nextLab ? { href: href(lang, `labs/${nextLab.slug}`), title: nextLab.title[lang] } : undefined}
+>
+  {
+    data.prerequisites.length > 0 && (
+      <div class="prereq">
+        <span class="k">{lang === 'kk' ? 'Қажет' : 'You need'}</span>
+        <ul>
+          {data.prerequisites.map((p: string) => (
+            <li>{p}</li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  <Content components={MDX} />
+
+  <div class="done-when">
+    <span class="k">{lang === 'kk' ? 'Аяқталды деп есепте, егер' : 'You are done when'}</span>
+    <p>{data.doneWhen}</p>
+  </div>
+</LessonLayout>
+
+<style is:global>
+  .prereq { margin: 0 0 40px; padding: 18px 20px; border-radius: 16px; border: 1px solid var(--color-line-strong); background: rgb(255 255 255 / 0.03); }
+  .prereq .k { font: 500 11px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-muted); }
+  .prereq ul { margin: 10px 0 0; padding-left: 18px; font-size: 15.5px; }
+  .done-when { margin: 56px 0 0; padding: 22px 24px; border-radius: 18px; border: 1px solid color-mix(in oklab, var(--color-signal) 40%, transparent); background: rgb(43 127 255 / 0.06); }
+  .done-when .k { font: 600 11px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-signal); }
+  .done-when p { margin: 10px 0 0; font-size: 18px; color: #fff; }
+</style>

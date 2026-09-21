@@ -1,0 +1,42 @@
+---
+// A social post rendered as a card (a paraphrase, or one short quote), linking to the original.
+interface Props {
+  author: string;
+  handle?: string;
+  date?: string;
+  href: string;
+  platform?: 'x' | 'reddit' | 'hn' | 'blog' | 'youtube' | 'linkedin';
+  stat?: string;
+}
+const { author, handle, date, href, platform = 'x', stat } = Astro.props;
+const label = { x: 'X', reddit: 'Reddit', hn: 'Hacker News', blog: 'Blog', youtube: 'YouTube', linkedin: 'LinkedIn' }[platform];
+const initials = author
+  .split(/\s+/)
+  .map((w) => w[0])
+  .slice(0, 2)
+  .join('')
+  .toUpperCase();
+---
+
+<a class="post" href={href} target="_blank" rel="noopener noreferrer" data-reveal>
+  <span class="head">
+    <span class="avatar" aria-hidden="true">{initials}</span>
+    <span class="who"><b>{author}</b>{handle && <span>{handle}</span>}</span>
+    <span class="plat">{label} ↗</span>
+  </span>
+  <span class="text"><slot /></span>
+  <span class="meta">{date}{stat && <span> · {stat}</span>}</span>
+</a>
+
+<style>
+  .post { display: grid; gap: 12px; margin: 28px 0; padding: 20px 22px; border-radius: 18px; border: 1px solid var(--color-line-strong); background: rgb(255 255 255 / 0.035); text-decoration: none !important; color: inherit !important; transition: border-color 0.3s, transform 0.5s var(--ease-out-expo), background 0.3s; }
+  .post:hover { border-color: var(--act); transform: translateY(-3px); background: rgb(255 255 255 / 0.055); }
+  .head { display: flex; align-items: center; gap: 12px; }
+  .avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--color-surface-2), #232a55); border: 1px solid var(--color-line-strong); font: 600 13px/1 var(--font-mono); color: #fff; flex: none; }
+  .who { display: grid; line-height: 1.25; min-width: 0; }
+  .who b { font-weight: 600; color: #fff; font-size: 15px; }
+  .who span { font-size: 13px; color: var(--color-faint); }
+  .plat { margin-left: auto; font: 500 11px/1 var(--font-mono); letter-spacing: 0.08em; color: var(--color-faint); white-space: nowrap; }
+  .text { font-size: 17px; line-height: 1.55; color: #eef0fb; }
+  .meta { font: 400 12px/1 var(--font-mono); color: var(--color-faint); }
+</style>

@@ -1,0 +1,6 @@
+<p class="lead"><slot /></p>
+
+<style>
+  .lead { font-family: var(--font-display); font-weight: 300; font-size: clamp(21px, 2.6vw, 27px); line-height: 1.45; color: #fff; letter-spacing: -0.01em; }
+  .lead :global(em) { font-family: var(--font-script); font-style: normal; font-weight: 600; color: var(--act); font-size: 1.15em; }
+</style>

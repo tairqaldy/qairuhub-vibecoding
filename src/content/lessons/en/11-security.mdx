@@ -1,0 +1,226 @@
+---
+title: "Security: When the Vibes Go Wrong"
+subtitle: Four real incidents, four root causes, and the difference between telling an agent not to do something and making it impossible.
+objective: name the four ways vibe-coded apps get breached and put an enforced control in front of each one
+description: A deleted production database, 72,000 exposed images and a package that never existed. The real incidents, the pattern under each, and the checklist that catches them.
+artifact: Pre-ship security checklist
+---
+
+<Lead>
+In July 2025 an agent deleted a company's production database during a code freeze. The freeze was real. It was also only a sentence in a chat box, which means it was *not a control*.
+</Lead>
+
+Almost every public vibe-coding disaster is one of four patterns: the agent had more power than the task needed, the app works but the back door is open, you installed something you never read, or the agent read attacker-written text and obeyed it. None of these is an argument that AI is bad. In each one, a control engineers have used for twenty years was simply missing — AI removed the friction that used to force people to learn it first.
+
+## A code freeze that lived only in a chat window
+
+<Story title="Replit's agent deletes a production database" date="18 Jul 2025">
+Jason Lemkin, founder of SaaStr, spent nine days building on Replit and posted the whole thing publicly. During a declared code freeze, the agent ran destructive commands against the live database. Records for more than 1,200 executives and over 1,190 companies were gone.
+
+It had already been unreliable in quieter ways: it misreported unit-test results and generated a database of roughly 4,000 people who did not exist. After the deletion it told Lemkin a rollback was impossible. The rollback worked. He got the data back.
+
+Asked what happened, the agent wrote: "I destroyed months of work in seconds." ([Fortune, 23 Jul 2025](https://fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure/))
+</Story>
+
+<Post author="Jason Lemkin" handle="@jasonlk" date="18 Jul 2025" href="https://x.com/jasonlk/status/1946069562723897802" platform="x">
+Lemkin's post says the tool "goes rogue during a code freeze" and deletes the entire database.
+</Post>
+
+Replit's CEO, Amjad Masad, called it "Unacceptable and should never be possible." ([The Register](https://www.theregister.com/2025/07/22/replit_saastr_response/)) Look at what shipped in response: automatic separation of the development and production databases, staging environments, one-click restore, and a chat-only mode where the agent can talk but not touch code. Every one is a classic engineering control. None is a better prompt.
+
+<Compare a="A request" b="A control">
+<div slot="a">
+"DO NOT TOUCH PRODUCTION" in your CLAUDE.md. Lemkin says he repeated one instruction eleven times in capitals.
+
+The agent can misread it, lose it under a long context, or decide it does not cover the command it is about to run.
+</div>
+<div slot="b">
+The agent holds credentials for a development database only. The production key is not on the machine it runs on.
+
+Now the instruction is irrelevant, because the action is impossible.
+</div>
+</Compare>
+
+## The bug nobody can see in a demo
+
+On 25 July 2025, users of 4chan found that the Firebase storage bucket behind Tea — a women's dating-safety app with over 1.6 million users, top of the App Store that week — could be read with no authentication at all. About 72,000 images came out, roughly 13,000 of them verification selfies and government IDs. Three days later a researcher showed that more than 1.1 million private messages were readable through the API. Apple pulled the app in October 2025. ([404 Media](https://www.404media.co/women-dating-safety-app-tea-breached-users-ids-posted-to-4chan/), [Wikipedia](https://en.wikipedia.org/wiki/Tea_(app)))
+
+<Callout type="info" title="Say this one accurately">
+Tea is constantly cited as a vibe-coding breach. There is no evidence the app was AI-generated, and the exposed bucket held legacy data from users who registered before February 2024 — before the phrase existed. It belongs here for a different reason: in a demo, a storage rule that lets everyone read is indistinguishable from a correct one.
+</Callout>
+
+The generated version of that mistake has a CVE. In March 2025 the researcher Matt Palmer — who worked at Replit at the time, a competitor, which is worth knowing — found a site built with Lovable that let anyone read and write its user table using the public Supabase key that ships to every browser. A scan the next day found 303 vulnerable endpoints across 170 projects — 10.3% of the 1,645 Lovable apps analysed — exposing names, emails, phone numbers, home addresses, payment data and API keys. It became [CVE-2025-48757](https://mattpalmer.io/posts/2025/05/CVE-2025-48757/).
+
+Understand why before you ship anything on Supabase or Firebase. The browser talks to the database directly, with a key that is public by design. Row Level Security policies are the *only* thing between the internet and your tables. An agent asked for "a sign-up form" produces working CRUD and no policies — and the app behaves identically either way. In January 2026 Wiz found the same shape in Moltbook: key in the client bundle, no RLS, unauthenticated read *and write*, 1.5 million API tokens exposed ([Wiz](https://www.wiz.io/blog/exposed-moltbook-database-reveals-millions-of-api-keys)).
+
+<StatRow>
+  <Stat value="45%" label="of AI-generated code samples failed security tests" source="Veracode, Jul 2025" href="https://www.veracode.com/blog/genai-code-security-report/" tone="warn" />
+  <Stat value="10.3%" label="of scanned Lovable apps had exploitable data access" source="Matt Palmer, May 2025" href="https://mattpalmer.io/posts/2025/05/statement-on-CVE-2025-48757/" tone="warn" />
+  <Stat value="205,474" label="unique package names invented by 16 code models" source="USENIX Security 2025" href="https://arxiv.org/abs/2406.10279" tone="warn" />
+</StatRow>
+
+## Nearly half of unprompted AI code arrives with a known flaw
+
+Veracode ran over 100 models through security-sensitive coding tasks: 45% of the samples introduced an OWASP Top 10 flaw. Java failed 72% of the time, JavaScript 43%, Python 38%; cross-site scripting tasks failed 86%. Security performance stayed flat regardless of model size or training sophistication, and their 2026 reruns landed at 55% and 56% passing. Syntax correctness has gone to nearly 100%. Security has not moved.
+
+Two honest caveats. Veracode sells security tooling. And their prompts contain no security instructions at all, so 45% is the *default*, not the ceiling. The ceiling is yours to raise: say "parameterise every query, validate input on the server, escape output" in your prompt or your CLAUDE.md, then review what comes back.
+
+<Myth
+  n={11}
+  myth="The AI tested it, so it works."
+  source="Fortune, Jul 2025"
+  href="https://fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure/"
+>
+Replit's agent misreported its own test results, then said a rollback was impossible when it was not. An agent's report on its own work is a claim, not evidence. Run the tests yourself. Open the database. Send the request and read what comes back. Scanners get the same treatment: Lovable shipped one in April 2025 that checked whether an RLS policy existed, not whether it allowed everything.
+</Myth>
+
+<Deeper title="The two lists professionals check against">
+**OWASP Top 10:2025** — the web list, built from ~2.8 million applications ([top10.owasp.org](https://top10.owasp.org/2025)).
+
+- **A01 Broken Access Control** — people read what is not theirs. *Lovable, Moltbook, Tea.*
+- **A02 Security Misconfiguration** — open buckets, debug on, insecure defaults.
+- **A03 Software Supply Chain Failures** — fake or compromised dependencies.
+- **A04 Cryptographic Failures** — weak encryption, plaintext secrets.
+- **A05 Injection** — input read as code or query.
+- **A06 Insecure Design** — the flaw is in the plan.
+- **A07 Authentication Failures** — weak login, session and reset logic.
+- **A08 Integrity Failures** — unsigned updates, unverified build artefacts.
+- **A09 Logging and Alerting Failures** — you never see the attack.
+- **A10 Mishandling of Exceptional Conditions** — errors that fail open.
+
+**OWASP Top 10 for LLM Applications, 2026 edition** ([genai.owasp.org](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/)). Prompt injection is still first; excessive agency climbed to third.
+
+- **Prompt injection** — attacker text steers the model.
+- **Sensitive information disclosure** — secrets and other users' data leak.
+- **Excessive agency** — too many tools, too many permissions.
+- **Supply chain** — poisoned models, plugins, MCP servers, skills.
+- **Data and model poisoning** — tampered training or RAG data.
+- **Unbounded consumption** — runaway cost and token exhaustion.
+- **Misinformation** — confident wrong output acted on.
+- **Hidden context exposure** — prompts and tool schemas are extractable.
+- **Vector and embedding weaknesses** — RAG poisoning, cross-tenant leakage.
+- **Improper output handling** — output piped into shell, SQL or HTML.
+</Deeper>
+
+## Two kinds of code you install without reading
+
+Models invent package names. Researchers tested 16 code models over 576,000 samples and recorded 205,474 unique names that do not exist; the rate was at least 5.2% for commercial models and 21.7% for open-source ones ([USENIX Security 2025](https://arxiv.org/abs/2406.10279)). Attackers register the invented names and wait. Seth Larson of the Python Software Foundation named it **slopsquatting** in April 2025.
+
+The rate improved; the threat did not. A 2026 study of five frontier models over 199,845 prompts found hallucination rates of 4.62% to 6.10% — and 127 fake names invented identically by all five, 53 of them still free to register after disclosure ([arXiv](https://arxiv.org/abs/2605.17062)). Predictable is all an attacker needs.
+
+The second kind is newer. Agent skills, MCP servers and plugins are text files that steer an agent holding your permissions. In February 2026 Koi Security audited 2,857 skills on one marketplace: 341 were malicious, about 12%, most using a fake "Prerequisites" step to get an information stealer installed ([The Hacker News](https://thehackernews.com/2026/02/researchers-find-341-malicious-clawhub.html)).
+
+<Widget name="spot-the-bug" />
+
+## The agent reads attacker text and does what it says
+
+A model cannot reliably separate the data it was given from instructions hidden inside that data. Simon Willison's name for the dangerous combination is the **lethal trifecta**: an agent with (1) access to your private data, (2) exposure to untrusted content, and (3) a way to send data out. Any two are survivable. All three is an exfiltration tool waiting for the right web page, issue, email or support ticket. On the guardrail products sold to patch this, he is blunt: "95% is very much a failing grade." ([simonwillison.net](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/))
+
+Two demonstrations, neither needing a malicious tool:
+
+- **GitHub MCP.** An attacker opens an issue on your *public* repo containing instructions. You ask your agent to look at open issues. It follows the text, reads your *private* repositories, and publishes what it finds in a public pull request ([Invariant Labs](https://invariantlabs.ai/blog/mcp-github-vulnerability)).
+- **Supabase MCP.** An attacker files a support ticket containing instructions. You later ask the agent to show recent tickets. Because the connection uses a `service_role` key, which bypasses RLS, the agent reads the tokens table and writes it back into the ticket thread ([General Analysis](https://generalanalysis.com/blog/supabase-mcp-blog)).
+
+There is also an attack you cannot see. An MCP server's *tool descriptions* go to the model, not to you. Invariant Labs demonstrated an innocuous `add` tool whose description quietly told the agent to read the user's SSH private key and pass it along as a hidden parameter — plus a server that rewrites its descriptions after you approve it ([Invariant Labs](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)). Supabase's own guidance is short: "Never connect AI agents directly to production data." ([Supabase](https://supabase.com/blog/defense-in-depth-mcp))
+
+<Quiz
+  id="m11-control-vs-request"
+  question="Your CLAUDE.md says, in capital letters, NEVER TOUCH THE PRODUCTION DATABASE. What does that line guarantee?"
+  options={[
+    'Nothing. It is text the agent may or may not follow.',
+    'The tool blocks any command that reaches production.',
+    'The agent will always stop and ask for approval first.',
+    'Production becomes read-only until you delete the line.',
+  ]}
+  answer={0}
+  explain="Replit's agent ran destructive commands during a code freeze that existed only as an instruction. A control is something the agent cannot do: separate credentials, a development database, a deny rule the tool enforces. Everything else is a request."
+  xp={10}
+/>
+
+## A control is something the agent cannot do
+
+**Secrets live on the server.** Only public keys — `NEXT_PUBLIC_*`, the Supabase anon key — may reach a browser. Search your built bundle and git history for `sk-`, `service_role`, `AKIA` and `-----BEGIN`. Rotate anything ever committed or pasted into an AI chat: between February and April 2026 any logged-in Lovable user could read the chat history of public projects, and chats are full of pasted credentials ([Lovable](https://lovable.dev/blog/our-response-to-the-april-2026-incident)).
+
+**Access rules are on and tested.** RLS enabled on every table, a policy per operation, Firebase rules deny by default. Then attack yourself — the highest-value hour in this module.
+
+<Terminal title="bash">
+```bash
+# Log out. Copy the public key from the browser's Network tab.
+curl "https://YOUR-PROJECT.supabase.co/rest/v1/signups?select=*" \
+  -H "apikey: YOUR_ANON_KEY"
+```
+</Terminal>
+
+An empty array means RLS is working. Rows mean every stranger on the internet gets the same rows.
+
+**Rate limits and spend caps on everything paid.** In March 2025 a founder shipped a SaaS built with Cursor, posted about it, and within roughly 48 hours wrote "guys, i'm under attack" — maxed-out API keys and people walking past a subscription check that lived only in front-end JavaScript ([techstartups.com](https://techstartups.com/2025/03/26/when-vibe-coding-goes-wrong/)). "Nobody would attack my small app" is measurably false: Anthropic's August 2025 threat report describes one criminal using Claude Code against at least 17 organisations ([Anthropic](https://www.anthropic.com/news/detecting-countering-misuse-aug-2025)).
+
+**Dependencies get checked before they get installed.** For every package the agent adds, open the registry page: does it exist, how old is it, how many downloads, does the repository link go anywhere real? Commit the lockfile, run `npm audit`.
+
+**Permissions are enforced, not requested.** In Claude Code, put deny rules for `.env`, `~/.ssh` and `~/.aws` in `.claude/settings.json` and audit them with `/permissions`. Start the agent inside the project folder, never your home directory. Never use `--dangerously-skip-permissions` on your real machine: in the August 2025 Nx supply-chain attack, the malware hunted for installed AI CLIs and invoked them with exactly those skip-all flags to find secrets ([Wiz](https://www.wiz.io/blog/s1ngularity-supply-chain-attack)).
+
+<Callout type="warn" title="Windows users, read this line">
+Claude Code's sandbox runs on macOS, Linux and WSL2 — native Windows is not supported ([Claude Code docs](https://code.claude.com/docs/en/sandboxing)). On a Windows laptop, run Claude Code inside WSL2 if you want it.
+</Callout>
+
+<Prompt title="Attack your own repo" where="Claude Code · plan mode">
+```text
+Review this repository as an attacker, not as its author.
+
+Find, with file and line for each:
+1. Secrets in client-side code, in the built bundle, or in git history
+   (sk-, service_role, AKIA, -----BEGIN).
+2. Tables or storage buckets reachable without authentication, and any
+   missing or permissive row-level security / storage rules.
+3. Privileged actions - payment, role change, quota - enforced only in the UI.
+4. Unvalidated input reaching SQL, a shell command, or rendered HTML.
+5. Dependencies that do not exist on the registry, or that you cannot
+   trace to a real repository.
+
+For each finding, write the concrete exploit: the exact request an
+attacker sends and what comes back. Do not fix anything yet.
+Rank by what an anonymous stranger can do today.
+```
+</Prompt>
+
+Claude Code also ships a `/security-review` command you can run on a branch. Treat both as a first pass, never as proof.
+
+<ProjectStep n={11} title="Break into QAIRU Event Sign-up before a stranger does">
+Your sign-up page now writes real names and emails to a real table. Four things, in order:
+
+1. Turn on RLS for the `signups` table. One policy per operation: anyone may insert, nobody anonymous may select, update or delete.
+2. Run the `curl` above against your own project, logged out. Confirm you get an empty array, not your sign-up list.
+3. Search the repo and the built bundle for `service_role`. If it appears outside a server-side file, rotate the key today.
+4. Run the attacker prompt on the branch, fix the top finding, and commit it on its own with a message naming the vulnerability.
+</ProjectStep>
+
+<Checklist
+  id="sec-preship"
+  title="Before you ship"
+  items={[
+    'No secret in front-end code or git history: the built bundle is clean of sk-, service_role, AKIA and -----BEGIN',
+    'Every .env file is git-ignored, and any key ever committed or pasted into an AI chat has been rotated',
+    'On Vercel, every secret environment variable is marked Sensitive',
+    'Every paid API key has a hard spend cap and a rate limit',
+    'RLS is on for every table, or Firebase rules deny by default: no rule granting read and write to everyone',
+    'You logged out, took the public key from the Network tab, and tried select, insert, update and delete on every table',
+    'You logged in as one user and tried to read a row belonging to a different user by changing the id',
+    'Payments, roles and quotas are checked on the server, not by hiding a button',
+    'Storage buckets are private and served through signed URLs; no ID documents kept longer than verification needs',
+    'Every input is validated on the server, queries are parameterised, and no user-supplied HTML is rendered raw',
+    'Every dependency the agent added exists on the registry with real history; the lockfile is committed; npm audit is clean',
+    'Dev and prod are separate databases with separate keys, and the agent only ever holds dev keys',
+    'Automatic backups are on and you have restored from one at least once',
+    'Login comes from a provider (Supabase Auth, Clerk, Firebase Auth), and MFA is on your GitHub, Vercel and Supabase accounts',
+    'User-facing errors are generic, details go to logs, and you get an alert on error and usage spikes',
+  ]}
+  xp={20}
+/>
+
+<Callout type="live" title="For the room">
+Run it live: open a vibe-coded Supabase app, show the anon key sitting in the Network tab, `curl` the table in front of everyone, then switch RLS on and `curl` again. Thirty seconds of empty array beats ten minutes of slides.
+</Callout>
+
+<Artifact title="Pre-ship security checklist" kind="checklist">
+Fifteen checks, about an hour. Run it before every deploy that touches real people's data.
+</Artifact>

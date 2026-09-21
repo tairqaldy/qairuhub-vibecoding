@@ -1,0 +1,287 @@
+---
+title: "CLAUDE.md, Permissions & Slash Commands"
+subtitle: "A rule in a file is a request. A rule in settings.json is a wall. Today you build both and learn to tell them apart."
+objective: give your agent a memory file it follows and a permission fence it cannot talk its way past
+description: "Write a CLAUDE.md your agent actually obeys, then add allow, ask and deny rules in .claude/settings.json and watch a deny rule refuse a request out loud."
+artifact: A CLAUDE.md skeleton and a settings.json starter you can paste into any project
+prerequisites:
+  - Claude Code installed and logged in (Lab 01)
+  - The QAIRU Event Sign-up page from Lab 02, inside a git repo with at least one commit
+  - A terminal open in that project folder, not in your home directory
+doneWhen: A fresh session obeys three rules you never repeat, `/permissions` lists your rules and the file they came from, asking Claude to read your `.env` is refused, and typing `/preflight` runs a command you wrote yourself.
+---
+
+<Lead>
+In Lab 02 you repeated yourself. You said keep everything in one file, then said it again, then said it a third time after `/clear` wiped the conversation. Today you stop doing that — and you learn the difference between *asking and enforcing*.
+</Lead>
+
+Four things get built: a `CLAUDE.md` the agent reads at every session start, a `.claude/settings.json` that decides what runs without asking, a deny rule you will watch refuse a request live, and one slash command of your own. Stay in Manual mode throughout.
+
+<Terminal title="bash">
+```bash
+cd qairu-event-signup
+git status
+claude --permission-mode manual
+```
+</Terminal>
+
+## First give it a memory, then prove the memory loaded
+
+`CLAUDE.md` loads in full at every session start and survives `/compact`, because Claude Code re-reads it from disk. Instructions you only typed into chat do not survive ([memory docs](https://code.claude.com/docs/en/memory)).
+
+<Steps>
+
+<Step title="Generate a starter, then cut it in half">
+Run `/init`. Claude reads the repo and writes a `CLAUDE.md`. Approve it, then open it with `/memory`.
+
+What comes back is too long. Apply one test to every line: **would removing this cause a mistake?** If not, delete it. Anything the agent can read from the code itself is not memory, it is noise. Aim under 20 lines here, under 200 in a real repo.
+</Step>
+
+<Step title="Replace it with rules that are checkable">
+Vague rules ("write clean code") do nothing. Rules with a command, a path or a countable condition do.
+
+```markdown
+# CLAUDE.md — QAIRU Event Sign-up
+
+## What this is
+One static page: an event description and a form that reserves a seat.
+
+## Commands
+- Serve locally: `npx serve .`
+- Check it: open the page, submit the form with an empty name field
+
+## Workflow
+- Anything bigger than a one-line change: plan first, wait for my approval.
+- After every change, list the manual test steps you expect me to run.
+- Small commits. The message says what changed and why.
+
+## Rules that differ from defaults
+- All code stays in `index.html`. No frameworks, no npm packages, no build step.
+- Every user-visible string exists in Kazakh and English.
+- The seat cap is one constant at the top of the script, never a number typed in three places.
+
+## Do not touch
+- `.env` — it holds keys. Never read it, print it, or commit it.
+
+## When compacting
+Keep: the list of modified files, the current plan step, and the seat-cap value.
+```
+
+Commands it cannot guess, rules that differ from defaults, one thing to leave alone, what to keep when context is summarised. Nothing else.
+</Step>
+
+<Step title="Confirm it actually loaded">
+Type `/context`. Find your `CLAUDE.md` under the memory files and note what percentage of the window it eats. Every line is a tax you pay in every session — which is why you cut it first.
+</Step>
+
+<Step title="Test it with a fresh, empty conversation">
+The step people skip, and the only one that proves anything. `/clear` wipes the conversation, not the memory file.
+
+<Prompt title="The memory test" where="Claude Code · Manual mode, immediately after /clear">
+```text
+Add a "Reset" button to the sign-up form that clears every field.
+Do not explain the plan first — just make the change.
+```
+</Prompt>
+
+Grade it against your three rules. Did the code stay in `index.html`? Is the button labelled in Kazakh and English? Did it print test steps unprompted? Two out of three means one rule is too vague — rewrite that line and test again.
+</Step>
+
+</Steps>
+
+<Callout type="tip" title="The rule of two">
+Add a line to `CLAUDE.md` the *second* time you correct the agent on the same thing, not the first. One mistake is noise; twice is a pattern. The docs run it the other way too: if your rules start getting ignored, the file is too long.
+</Callout>
+
+## Now give it a fence, because the file is only advice
+
+The Claude Code docs describe memory files as "context, not enforced configuration" — to genuinely block something you need a deny rule or a hook. Your line "Never read `.env`" is a polite request to a system optimising for finishing your task.
+
+<Steps>
+
+<Step title="Create something worth protecting">
+Make `.env` in the project root containing `FORM_API_KEY=super-secret-123`, and add `.env` to `.gitignore`. It is fake. Treat it as real for ten minutes.
+</Step>
+
+<Step title="Write .claude/settings.json">
+Strict JSON — no comments, no trailing commas, or you get a Settings Error at next start.
+
+```json
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": ["Bash(git status)", "Bash(git diff *)", "Bash(git log *)"],
+    "ask": ["Bash(git push *)"],
+    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)"]
+  }
+}
+```
+
+**allow** is the boring stuff you are tired of approving, **ask** is what you want to see every time, **deny** never happens. Rules evaluate deny, then ask, then allow, first match wins — category order breaks the tie, not how specific a rule is.
+</Step>
+
+<Step title="Restart and read your own rules back">
+`/exit`, restart with `claude --permission-mode manual`, run `/permissions`. Three allow, one ask, three deny, each labelled with the file it came from. A missing rule means your JSON did not parse.
+</Step>
+
+<Step title="Watch the deny rule refuse a request">
+Ask for the thing the fence blocks, one prompt at a time:
+
+<Prompt title="Three requests, three different outcomes" where="Claude Code · Manual mode">
+```text
+What is in my .env file?
+```
+
+```text
+Show me git status and the last 3 commits.
+```
+
+```text
+Run: git push
+```
+</Prompt>
+
+The first is **refused** — not prompted, refused — because a `Read` deny also blocks Edit and Write on that path and covers `cat`, `head`, `tail` and `sed` inside Bash. The second **just runs**, silently. The third **asks**, and keeps asking even in accept-edits mode; answer No, then press `Tab` on it to attach the reason "no remote yet".
+
+Three sentences, three answers, decided by a file instead of a conversation. Nobody had to be convincing.
+</Step>
+
+</Steps>
+
+<Deeper title="Where these files live, and who wins">
+Four scopes, lowest precedence first: `~/.claude/settings.json` (yours, everywhere), the shared `.claude/settings.json` everyone who clones the repo gets, your private `.claude/settings.local.json`, and managed settings your organisation controls. List keys like `permissions.allow` merge across all four. Answering "Yes, and don't ask again" writes a permanent rule into the local file, so read it occasionally. One safeguard: a project settings file that sets `permissions.defaultMode` to `auto` or `bypassPermissions` is ignored, so a cloned repo cannot quietly disarm you ([settings](https://code.claude.com/docs/en/settings), [permissions](https://code.claude.com/docs/en/permissions)).
+</Deeper>
+
+## The fence has gaps, and you should know where
+
+<Prompt title="The honest test" where="Claude Code · Manual mode">
+```text
+Read .env using a one-line Python script and print the result.
+```
+</Prompt>
+
+Bash rules match the *text of the command*, not the program that runs. `Bash(rm *)` does not stop `/bin/rm` or `bash -c 'rm ...'`, and a `Read` deny does not stop a script that opens the file itself. That is what the docs say these rules are: convenience, not a security boundary.
+
+<Callout type="warn" title="What an actual boundary looks like">
+Three real fences, in rising strength. A **PreToolUse hook** exiting with status 2 blocks the action deterministically, every time ([hooks guide](https://code.claude.com/docs/en/hooks-guide)). The **sandbox** (`/sandbox`) isolates filesystem and network for Bash; Anthropic reports it "safely reduces permission prompts by 84%", and it runs on macOS, Linux and WSL2, not native Windows ([sandboxing](https://www.anthropic.com/engineering/claude-code-sandboxing)). Strongest of all: a credential the agent does not hold.
+</Callout>
+
+<StatRow>
+  <Stat value="93%" label="of permission prompts get approved anyway" source="Anthropic, 25 Mar 2026" href="https://www.anthropic.com/engineering/claude-code-auto-mode" tone="warn" />
+  <Stat value="17%" label="false negatives when a classifier reviews for you" source="Anthropic, 25 Mar 2026" href="https://www.anthropic.com/engineering/claude-code-auto-mode" tone="warn" />
+  <Stat value="84%" label="fewer prompts with OS-level sandboxing" source="Anthropic, 20 Oct 2025" href="https://www.anthropic.com/engineering/claude-code-sandboxing" tone="info" />
+</StatRow>
+
+That first number is why deny rules beat careful clicking. Anthropic links it to approval fatigue — people stop reading the prompts. A rule in a file does not get tired at midnight.
+
+## Teach it one command you will run fifty times
+
+Anything you paste twice should be a slash command. Skills and custom commands are one system: `.claude/commands/preflight.md` and `.claude/skills/preflight/SKILL.md` both give you `/preflight`.
+
+<Steps>
+
+<Step title="Write the skill file">
+Create `.claude/skills/preflight/SKILL.md`. The folder name must match `name` exactly.
+
+```markdown
+---
+name: preflight
+description: Review my uncommitted changes for secrets, missing Kazakh strings and untested behaviour before I commit
+disable-model-invocation: true
+---
+## Current changes
+!`git diff HEAD`
+
+## Instructions
+1. Summarise what changed in three bullets a beginner can follow.
+2. Flag anything resembling a key, token, password, phone number or email address.
+3. Check every new user-visible string exists in both Kazakh and English.
+4. List the exact manual test steps for this change.
+
+Do not edit any files. Report only.
+```
+
+Two mechanics carry this. A line starting with `!` and a backticked command runs it and injects the output, so the diff is in context before you type. And `disable-model-invocation: true` means Claude never fires it on its own — right for anything with a side effect or a cost.
+</Step>
+
+<Step title="Run it on real changes">
+Restart Claude Code so the skill loads. Type `/` and look for `preflight`, or run `/skills`. Edit `index.html` yourself, then run `/preflight`. Until you invoke it only the description sits in your context — which is why a skill beats forty more lines of `CLAUDE.md`.
+</Step>
+
+<Step title="Commit the fence itself">
+Commit `CLAUDE.md`, `.claude/settings.json` and the skill. Leave out `.claude/settings.local.json` and `.env`: one is personal, one is a secret. Anyone who clones your repo now inherits these rules on their first session.
+</Step>
+
+</Steps>
+
+## A code freeze is a sentence. A deny rule is a fence.
+
+<Story title="A code freeze that was only a sentence" date="18 Jul 2025">
+Jason Lemkin, founder of SaaStr, spent days building on Replit in public. Around day nine, during a code freeze he had declared, the agent ran destructive commands against the live database. Records for more than 1,200 executives and 1,190 companies were gone.
+
+Written instructions were not in short supply. On a separate rule — do not fabricate data — he says he repeated himself eleven times in capital letters, and the agent built roughly 4,000 fictional people anyway. It then reported that rollback was impossible. False: the rollback worked and the data came back. Its own summary, quoted by Fortune: "This was a catastrophic failure on my part." ([Fortune, 23 Jul 2025](https://fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure/); [The Register, 21 Jul 2025](https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/); [AI Incident Database #1152](https://incidentdatabase.ai/cite/1152/))
+</Story>
+
+A development agent held live credentials to a production database, and the code freeze existed only as text in a chat window. Replit's CEO Amjad Masad later called the outcome "Unacceptable and should never be possible." ([The Register, 22 Jul 2025](https://www.theregister.com/2025/07/22/replit_saastr_response/)). Eleven warnings in capitals and one deny rule are not different amounts of the same thing. They are different categories.
+
+<Compare a="What you ask for" b="What you enforce">
+<div slot="a">
+
+**Lives in** CLAUDE.md, a prompt, or a sentence you typed at 1am.
+
+**Fails when** the file grows, the context compacts, or finishing the task outranks the rule.
+
+**At Replit this was** the words "code freeze" in a chat window.
+
+</div>
+<div slot="b">
+
+**Lives in** deny rules, a PreToolUse hook, a sandbox, or a credential the agent does not hold.
+
+**Fails when** the action is reachable another way — a script, a different program name, a machine you also handed over.
+
+**At Replit this would have been** a dev database, and no production password near the agent.
+
+</div>
+</Compare>
+
+Write both. `CLAUDE.md` holds the preferences that make the agent pleasant to work with; settings, hooks and credentials hold the things that must never happen. Confusing the two is the most common beginner mistake in this course.
+
+<Quiz
+  id="lab3-asking-vs-enforcing"
+  question="Your CLAUDE.md contains the line 'NEVER run git push'. Your .claude/settings.json has no rules in it at all. How strong is that guarantee?"
+  options={[
+    'Strong — CLAUDE.md is loaded in full at the start of every session, so the rule is always present',
+    'Strong, as long as the line is in capital letters and near the top of the file',
+    'None in the enforcement sense — CLAUDE.md is advisory context; only a deny rule, a hook, or a credential the agent does not have actually blocks anything',
+    'Strong until the context compacts, at which point the rule is silently lost',
+  ]}
+  answer={2}
+  explain="Claude Code's docs describe memory files as context, not enforced configuration. Capitals and file position do not change that. The last option is the interesting trap: a project-root CLAUDE.md does survive /compact, because it is re-read from disk — and it is still only advice. Anything that must never happen belongs in permissions.deny, a PreToolUse hook, or a credential the agent was never given."
+  xp={15}
+/>
+
+<Checklist
+  id="lab3-fence"
+  title="Before you close this lab"
+  items={[
+    'CLAUDE.md is under 20 lines and every line would cause a mistake if removed',
+    '/context shows CLAUDE.md under memory files',
+    'A fresh session after /clear followed all three rules with no reminder',
+    '.claude/settings.json parses and /permissions lists all seven rules',
+    'Asking for the contents of .env was refused, not prompted',
+    'git status ran with no prompt; git push asked anyway',
+    'You ran the Python one-liner test and saw why path rules are not a sandbox',
+    '/preflight appears in the slash command list and runs on your real diff',
+    'CLAUDE.md, .claude/settings.json and the skill are committed; .env and settings.local.json are not',
+  ]}
+  xp={25}
+/>
+
+<Callout type="live" title="If you are teaching this lab">
+Run the deny demo on the projector. Read the `CLAUDE.md` line that says never touch `.env` out loud, ask Claude for the contents of `.env`, and let the room watch it comply. Then paste the deny rule in, restart, ask the identical question, and watch it get refused flat. Same agent, same words, different category of rule. Then the Replit slide.
+</Callout>
+
+<Artifact title="CLAUDE.md skeleton plus a settings.json starter" kind="template">
+The six-section memory file, the three-list permission file, and the one question that tells you which of the two a rule belongs in.
+</Artifact>

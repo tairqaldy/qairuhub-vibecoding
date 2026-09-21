@@ -1,0 +1,91 @@
+---
+// Sticky "you are here" rail: acts, modules, completion dots.
+import type { Lang } from '@/data/curriculum';
+import { acts, modules } from '@/data/curriculum';
+import { href, useT } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+  current?: string;
+}
+const { lang, current } = Astro.props;
+const t = useT(lang);
+---
+
+<nav class="rail" aria-label={t('nav.learn')}>
+  <p class="rail-title">{t('progress.yourProgress')}</p>
+  <div class="bar"><span class="bar-fill" data-rail-bar style="width:0%"></span></div>
+  <p class="rail-count"><b data-rail-count>0</b>/{modules.length} {t('progress.done')}</p>
+
+  {
+    acts.map((act) => (
+      <section class="act" data-act={act.id}>
+        <p class="act-h">
+          <span class="act-n">{act.n}</span>
+          {act.title[lang]}
+        </p>
+        <ul>
+          {modules
+            .filter((m) => m.act === act.id)
+            .map((m) => (
+              <li>
+                <a
+                  href={href(lang, `learn/${m.slug}`)}
+                  aria-current={m.slug === current ? 'page' : undefined}
+                  data-rail-item={m.slug}
+                >
+                  <span class="dot" aria-hidden="true" />
+                  <span class="n">{String(m.order).padStart(2, '0')}</span>
+                  <span class="t">{m.title[lang]}</span>
+                </a>
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))
+  }
+</nav>
+
+<style>
+  .rail { position: sticky; top: calc(var(--header-h) + 24px); align-self: start; max-height: calc(100dvh - var(--header-h) - 48px); overflow-y: auto; overscroll-behavior: contain; padding-right: 8px; scrollbar-width: thin; }
+  .rail-title { margin: 0 0 10px; font: 500 11px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-faint); }
+  .bar { height: 3px; border-radius: 3px; background: rgb(255 255 255 / 0.1); overflow: hidden; }
+  .bar-fill { display: block; height: 100%; background: var(--color-signal); transition: width 0.7s var(--ease-out-expo); }
+  .rail-count { margin: 8px 0 22px; font: 400 12px/1 var(--font-mono); color: var(--color-faint); }
+  .rail-count b { color: #fff; font-weight: 500; }
+  .act + .act { margin-top: 22px; }
+  .act-h { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font: 500 11px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--act); }
+  .act-n { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 4px; background: color-mix(in oklab, var(--act) 18%, transparent); font-size: 10px; }
+  ul { list-style: none; margin: 0; padding: 0 0 0 8px; border-left: 1px solid var(--color-line); }
+  li a { display: flex; align-items: baseline; gap: 8px; padding: 7px 8px; margin-left: -9px; border-radius: 8px; text-decoration: none; color: var(--color-muted); font-size: 14px; line-height: 1.35; transition: color 0.2s, background 0.2s; }
+  li a:hover { color: #fff; background: rgb(255 255 255 / 0.04); }
+  li a[aria-current='page'] { color: #fff; background: rgb(255 255 255 / 0.07); }
+  .dot { flex: none; width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--color-line-strong); transform: translateY(-1px); transition: background 0.3s, border-color 0.3s; }
+  a.is-done .dot { background: var(--color-signal); border-color: var(--color-signal); }
+  a[aria-current='page'] .dot { border-color: var(--act); box-shadow: 0 0 8px var(--act); }
+  .n { font: 500 10px/1.4 var(--font-mono); color: var(--color-faint); }
+  .t { min-width: 0; }
+</style>
+
+<script>
+  const KEY = 'vc:progress:v1';
+  function paint() {
+    let earned: Record<string, number> = {};
+    try {
+      earned = JSON.parse(localStorage.getItem(KEY) || '{}').earned ?? {};
+    } catch {}
+    let done = 0;
+    const items = document.querySelectorAll<HTMLAnchorElement>('[data-rail-item]');
+    items.forEach((a) => {
+      const ok = `module:${a.dataset.railItem}` in earned;
+      a.classList.toggle('is-done', ok);
+      if (ok) done++;
+    });
+    const count = document.querySelector<HTMLElement>('[data-rail-count]');
+    const bar = document.querySelector<HTMLElement>('[data-rail-bar]');
+    if (count) count.textContent = String(done);
+    if (bar && items.length) bar.style.width = `${(done / items.length) * 100}%`;
+  }
+  paint();
+  window.addEventListener('vc:progress', paint);
+</script>

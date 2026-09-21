@@ -1,0 +1,158 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import { acts, modules, totalXp } from '@/data/curriculum';
+import { href, useT } from '@/i18n/ui';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+const t = useT(lang);
+
+const c = {
+  en: {
+    title: 'The path',
+    desc: 'Sixteen modules from what vibe coding actually means to running several agents at once.',
+    kicker: 'The path · 16 modules',
+    h1: 'The path',
+    lead: 'Read it in order the first time. Each module is eight to twelve minutes, ends with something you do, and leaves you with one thing you can reuse. Your progress is saved in this browser — no account, nothing sent anywhere.',
+    resume: 'Continue where you left off',
+    startFirst: 'Start with module 00',
+    totalTime: 'about 2 hours 30 minutes end to end',
+    yourXp: 'your XP',
+    step: 'Cycle step',
+  },
+  kk: {
+    title: 'Жол',
+    desc: 'Vibe coding деген не екенінен бастап бірнеше agent-ті қатар басқаруға дейінгі он алты модуль.',
+    kicker: 'Жол · 16 модуль',
+    h1: 'Жол',
+    lead: 'Бірінші рет ретімен оқы. Әр модуль сегіз-он екі минут, соңында өзің істейтін тапсырма бар әрі қайта қолдана алатын бір нәрсемен аяқталады. Прогресің осы браузерде сақталады — аккаунт керек емес, ешқайда ештеңе жіберілмейді.',
+    resume: 'Тоқтаған жеріңнен жалғастыру',
+    startFirst: '00-модульден бастау',
+    totalTime: 'басынан аяғына дейін шамамен 2 сағат 30 минут',
+    yourXp: 'сенің XP',
+    step: 'Цикл қадамы',
+  },
+}[lang];
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc}>
+  <section class="hero wrap">
+    <p class="kicker">{c.kicker}</p>
+    <h1>{c.h1}</h1>
+    <p class="lead">{c.lead}</p>
+    <div class="bar-wrap">
+      <div class="bar"><span data-bar style="width:0%"></span></div>
+      <p class="meta">
+        <b data-done>0</b>/{modules.length} · <b data-xp>0</b>/{totalXp} {c.yourXp} · {c.totalTime}
+      </p>
+    </div>
+    <div class="cta">
+      <a class="btn btn-signal" href={href(lang, 'learn/the-tweet')} data-resume>{c.startFirst} →</a>
+    </div>
+  </section>
+
+  {
+    acts.map((act) => (
+      <section class="wrap band" data-act={act.id} data-reveal>
+        <header class="act-head">
+          <span class="act-n">{act.n}</span>
+          <div>
+            <h2>{act.title[lang]}</h2>
+            <p>{act.tagline[lang]}</p>
+          </div>
+        </header>
+        <ol class="mods">
+          {modules
+            .filter((m) => m.act === act.id)
+            .map((m, i) => (
+              <li data-reveal style={`--i:${i}`}>
+                <a href={href(lang, `learn/${m.slug}`)} data-mod={m.slug}>
+                  <span class="n">{String(m.order).padStart(2, '0')}</span>
+                  <span class="body">
+                    <span class="t">{m.title[lang]}</span>
+                    <span class="b">{m.blurb[lang]}</span>
+                    <span class="tags">
+                      <span class="tag">{m.minutes} {t('lesson.minutes')}</span>
+                      <span class="tag">+{m.xp} XP</span>
+                      {m.cycleStep && <span class="tag">{c.step} {m.cycleStep}/9</span>}
+                    </span>
+                  </span>
+                  <span class="check" aria-hidden="true">✓</span>
+                </a>
+              </li>
+            ))}
+        </ol>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .hero { padding: clamp(48px, 8vw, 88px) 0 0; }
+  .kicker { margin: 0 0 18px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
+  h1 { font-size: clamp(44px, 9vw, 92px); font-weight: 300; letter-spacing: -0.045em; }
+  .lead { max-width: 62ch; margin: 24px 0 0; font-size: clamp(16.5px, 2vw, 19px); line-height: 1.65; color: var(--color-muted); }
+  .bar-wrap { margin-top: 32px; max-width: 520px; }
+  .bar { height: 4px; border-radius: 4px; background: rgb(255 255 255 / 0.12); overflow: hidden; }
+  .bar span { display: block; height: 100%; background: var(--color-signal); transition: width 0.7s var(--ease-out-expo); }
+  .meta { margin: 10px 0 0; font: 400 12.5px/1.4 var(--font-mono); color: var(--color-faint); }
+  .meta b { color: #fff; font-weight: 500; }
+  .cta { margin-top: 26px; }
+
+  .band { padding: clamp(44px, 6vw, 72px) 0 0; }
+  .act-head { display: flex; align-items: flex-start; gap: 16px; }
+  .act-n { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 10px; background: color-mix(in oklab, var(--act) 20%, transparent); color: var(--act); font: 500 15px/1 var(--font-mono); }
+  .act-head h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 350; }
+  .act-head p { margin: 6px 0 0; font-size: 16px; color: var(--color-muted); }
+
+  .mods { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 8px; }
+  .mods a { display: flex; align-items: flex-start; gap: 16px; padding: 20px 22px; border-radius: 18px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); text-decoration: none; color: inherit; transition: border-color 0.3s, background 0.3s, transform 0.4s var(--ease-out-expo); }
+  .mods a:hover { border-color: color-mix(in oklab, var(--act) 55%, transparent); background: var(--color-fill-hover); transform: translateX(4px); }
+  .n { font: 500 13px/1.5 var(--font-mono); color: var(--act); flex: none; }
+  .body { display: grid; gap: 5px; min-width: 0; }
+  .t { font: 400 20px/1.25 var(--font-display); letter-spacing: -0.02em; color: #fff; }
+  .b { font-size: 15px; line-height: 1.5; color: var(--color-muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .tag { padding: 3px 9px; border-radius: 999px; border: 1px solid var(--color-line); font: 400 11px/1.4 var(--font-mono); color: var(--color-faint); }
+  .check { margin-left: auto; display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 50%; border: 1px solid var(--color-line-strong); font-size: 12px; color: transparent; transition: all 0.3s; }
+  .mods a.is-done .check { background: var(--act); border-color: var(--act); color: #fff; }
+  .mods a.is-done .t { color: var(--color-muted); }
+</style>
+
+<script>
+  const KEY = 'vc:progress:v1';
+  function paint() {
+    let earned: Record<string, number> = {};
+    try {
+      earned = JSON.parse(localStorage.getItem(KEY) || '{}').earned ?? {};
+    } catch {}
+    const xp = Object.values(earned).reduce((a: number, b) => a + (b as number), 0);
+    const links = document.querySelectorAll<HTMLAnchorElement>('[data-mod]');
+    let done = 0;
+    let firstUndone: HTMLAnchorElement | null = null;
+    links.forEach((a) => {
+      const ok = `module:${a.dataset.mod}` in earned;
+      a.classList.toggle('is-done', ok);
+      if (ok) done++;
+      else if (!firstUndone) firstUndone = a;
+    });
+    const bar = document.querySelector<HTMLElement>('[data-bar]');
+    const d = document.querySelector<HTMLElement>('[data-done]');
+    const x = document.querySelector<HTMLElement>('[data-xp]');
+    if (bar && links.length) bar.style.width = `${(done / links.length) * 100}%`;
+    if (d) d.textContent = String(done);
+    if (x) x.textContent = String(xp);
+
+    // point the main button at the first module the reader has not finished
+    const resume = document.querySelector<HTMLAnchorElement>('[data-resume]');
+    if (resume && done > 0 && firstUndone) {
+      resume.href = (firstUndone as HTMLAnchorElement).href;
+      resume.textContent = resume.dataset.resumeLabel || resume.textContent;
+    }
+  }
+  paint();
+  window.addEventListener('vc:progress', paint);
+</script>

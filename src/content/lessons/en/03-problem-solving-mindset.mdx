@@ -1,0 +1,189 @@
+---
+title: The Problem-Solving Mindset
+subtitle: Typing got cheap. Deciding did not. This is the half of the job no agent takes off your hands.
+objective: turn a vague idea into a specification an agent can build from, and recognise when its answer is wrong
+description: Understand, plan, do, look back — four steps applied to building with an agent, with a worked before-and-after spec you can copy.
+artifact: The problem-solving loop — five checks before you prompt
+---
+
+<Lead>
+An agent can write a thousand lines while you finish your coffee. It will build *the wrong thing* just as fast, and it will not stop to tell you. Everything hard about building software now lives in that gap.
+</Lead>
+
+This is the last module of Act I, and the only one with no tools in it. Nothing here expires when a model ships. Learn it once and it keeps working in Claude Code, in Cursor, in whatever replaces both of them in two years.
+
+## The bottleneck moved, and most people did not notice
+
+Not long ago, the slow part of building something was producing the code. You knew what you wanted; getting it typed, compiled and debugged took the week. Simon Willison's guide for people working with coding agents has a chapter titled "writing code is cheap now" ([Agentic Engineering Patterns](https://simonwillison.net/guides/agentic-engineering-patterns/)).
+
+When production gets cheap, the cost moves somewhere else. It moved to two places: knowing exactly what to ask for, and noticing when what comes back is wrong.
+
+<StatRow>
+  <Stat value="66%" label="complain about AI output that is almost right, but not quite" source="Stack Overflow Developer Survey 2025" href="https://survey.stackoverflow.co/2025/ai" tone="warn" />
+  <Stat value="33%" label="say they trust the accuracy of what it produces" source="Stack Overflow Developer Survey 2025" href="https://survey.stackoverflow.co/2025/ai" tone="info" />
+</StatRow>
+
+"Almost right" is the signature failure of this era. Code that does not run is easy — the machine tells you. Code that runs, looks correct, and quietly adds the tip to the wrong person is a problem only a thinking human catches. Which is why the scarce skill is no longer typing speed. It is specification and judgement.
+
+## Four steps, and only one of them is typing
+
+The mathematician George Pólya described solving a problem in four steps: understand the problem, devise a plan, carry out the plan, look back. He was writing about mathematics, not software. It survives the translation anyway, because the agent only ever does step three.
+
+| Pólya | With an agent | Who does it |
+|---|---|---|
+| Understand the problem | Say who it is for, the one job it does, and what is out of scope | You |
+| Devise a plan | Plan mode: it proposes files and steps, you read and edit them | Both |
+| Carry out the plan | It writes the code, runs the commands, shows the diff | It |
+| Look back | Run the check, read the evidence, decide if this is what you meant | You |
+
+Anthropic's own guide for Claude Code arranges the work the same way — explore, plan, code, commit — and puts giving the agent a way to verify its work at the very top of the page ([Claude Code best practices](https://code.claude.com/docs/en/best-practices)). Three of the four steps are thinking. Step three is the one that got automated.
+
+<Callout type="live" title="On stage">
+Ask the room for a one-sentence app idea from someone who has never written code. Write it on the board exactly as spoken. Then ask three different people what they pictured. You get three different apps out of one sentence — the whole module in ninety seconds.
+</Callout>
+
+## A vague idea is not a specification
+
+The gap between the two is not length. It is decisions. A vague idea leaves every decision to someone else, and "someone else" is now a model that will happily pick for you, confidently, in a way you will discover three hours later.
+
+Here is the same idea on both sides of that gap.
+
+<Compare a="The idea, as you say it out loud" b="The same idea, as a specification">
+<div slot="a">
+
+**"An app to split the bill at a cafe."**
+
+Split evenly, or by what each person ate? In which currency? Does it round? If it rounds, do the rounded amounts still add up to the bill, or is the waiter short 30 ₸? Is there a service charge? Who types it in — one person or everyone? Does it need an account? Does it work offline?
+
+Eight decisions, none of them made. The agent will make all eight. It will not mention that it did.
+
+</div>
+<div slot="b">
+
+**Dastarkhan Split** — splits a cafe bill between friends in tenge.
+
+**User and job.** Four friends, one phone, one minute before the waiter comes back.
+
+**Must have.** Add people by name. Add items with a price and tick who shared each one. A service charge field, default 10%. Each person's share rounded to the nearest 10 ₸ — and the rounded shares still add up to the exact total. A "Copy summary" button that produces plain text for Telegram.
+
+**Out of scope.** Accounts, payments, saved history, anything that needs the internet.
+
+**Constraints.** One HTML file, no libraries, usable on a 360px phone, English with a Kazakh toggle.
+
+**Done when.** A 3-person, 4-item bill matches a hand calculation. The rounded shares sum exactly to the total. Negative and empty prices are refused. The link opens on a phone.
+
+</div>
+</Compare>
+
+Notice what the right-hand column is not. It is not more technical — there is no framework, no function and no file name anywhere in it. It is longer because every sentence is a decision that was yours to make, and you made it. And the last block, "Done when", is written so a person or a script can run it and come back with a yes or a no. That is what separates a specification from a wish.
+
+A spec this size still builds in one go. A bigger one does not, and the fix is the same move applied again: cut the must-have list into pieces that can each be finished and checked on their own. "Add people and items" is a piece. "Rounding that still sums to the exact total" is a piece. Order them so the first piece tests your riskiest assumption, not your easiest. And if you cannot name the check for a piece, it is not one piece yet — it is two.
+
+<Callout type="warn" title="Specs have a cost, so size them">
+Do not write this for a typo. [Anthropic's guide](https://code.claude.com/docs/en/best-practices) draws the line at one sentence: if you could describe the change in a sentence, just make it. Birgitta Böckeler tested the heavyweight spec toolkits and found one far too heavy for a small bug, and another's generated markdown more tedious to review than code would have been ([martinfowler.com, 15 Oct 2025](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html)). One-line change: no spec. Feature across several files: spec. Multi-week product: spec plus a plan on disk.
+</Callout>
+
+## Explaining the problem is how you solve the problem
+
+Programmers have an old habit: when you are stuck, describe the bug out loud to a rubber duck on your desk. Halfway through the sentence you hear the answer. The duck does nothing. The act of forming the sentence does everything.
+
+An agent is a rubber duck that asks follow-up questions. Use it that way before you use it as a typist. Tell it your idea and forbid it from writing code until it has interviewed you. Often the interview ends with you realising the feature you wanted is not the feature you needed, and that realisation cost you four minutes instead of four hours.
+
+The Claude Code docs recommend exactly this shape for anything bigger than a small change: start from one line, let the agent interview you, write the spec to a file, then open a fresh session to build from it ([Claude Code best practices](https://code.claude.com/docs/en/best-practices)).
+
+<Prompt title="Idea → spec, with an interview" where="Claude Code · plan mode · or any chat window">
+
+```text
+Here is my idea: [one or two sentences].
+
+Do not write any code yet. First, interview me. Ask one question at a time,
+and skip anything you can already work out for yourself. Dig into the parts
+I have probably not thought through:
+- who this is for, and the single job they need done
+- the smallest version that is still useful, and what is explicitly out of scope
+- the unhappy paths: empty, wrong, too large, duplicated, offline
+- constraints you must respect: [stack / device / language / budget / deadline]
+- how we will both know it works — checks a person or a script can run
+
+When you have enough, stop asking and write SPEC.md with these sections:
+problem and user; must-have list; out of scope; constraints; three example
+inputs with the exact output I should see; and a "done when" list of checks.
+
+Then tell me the three assumptions in that spec most likely to be wrong,
+and what you would have to know to settle each one.
+```
+
+</Prompt>
+
+That last paragraph is the easiest one to cut. Keep it. An agent asked to attack its own spec is far more useful than an agent asked to praise it.
+
+<Deeper title="Why an hour spent on the question is never wasted">
+Dex Horthy of HumanLayer describes how a mistake multiplies: one bad line of research becomes many bad lines of plan, and one bad line of plan becomes hundreds of bad lines of code ([Advanced Context Engineering for Coding Agents](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents/blob/main/ace-fca.md)).
+
+The consequence is worth internalising: the cheapest thing you can review is the research, then the plan, then — last and worst — the diff. It is easy to do it in exactly the reverse order, approving everything up front and then reading two thousand lines of code you do not understand. Review the 200-line plan instead. It is the same information, before it multiplied.
+</Deeper>
+
+## "Done" has to mean something a machine can check
+
+"Make it work" is not a definition of done. "Make it look nice" is worse. The agent stops when the work *looks* finished, because without a runnable check, looking finished is the only signal it has — and then you become the test suite.
+
+So write the check into the request. Three tests that must pass. A command that must exit cleanly. A number you calculated by hand that the screen must match. Claude Code's `/goal` command makes this literal: it re-checks a condition after every turn, and the docs tell you to phrase conditions the agent's own output can prove, like `npm test` exiting 0 or `git status` coming back clean ([/goal docs](https://code.claude.com/docs/en/goal)).
+
+And ask for the evidence, not the verdict. "Tests pass" is a claim. The command plus its output pasted back at you is a fact. Anthropic's harness research is blunt about the reason: agents grade their own work too generously, which is why their long-running setups give the evaluator a separate role from the generator ([Harness design for long-running apps, 24 Mar 2026](https://www.anthropic.com/engineering/harness-design-long-running-apps)).
+
+## How to disagree with an agent without making it worse
+
+It will be wrong, confidently, in front of you. Three signals Kent Beck lists as the point where you take the wheel back: it starts looping, it adds functionality nobody asked for, and it cheats — disabling or deleting tests to get a green result ([Augmented Coding, 25 Jun 2025](https://newsletter.kentbeck.com/p/augmented-coding-beyond-the-vibes)).
+
+Disagreeing productively is a technique, not a mood:
+
+- **Bring evidence, not adjectives.** "This is wrong" gives it nothing to work with. "I ran `npm test`, here is the output, line 14 expected 2 and got 11" gives it the whole problem.
+- **Say what you expected and what you saw.** Two sentences. Most bad agent output is a correct answer to a question you did not ask.
+- **Ask it to explain before it edits.** "Explain in three sentences why this happens, then wait." If the explanation is nonsense, the fix would have been nonsense too — and you just saved a diff.
+- **Do not argue twice.** This is the rule that saves the most time, and it comes next.
+
+<Quiz
+  id="m3-stuck"
+  question="The agent has failed the same bug three times. Each time you replied 'still broken, try again'. What is the move with the best odds?"
+  options={[
+    'Explain the bug once more, in more detail, in the same session',
+    'Clear the session and write one new prompt with the symptom, what you expected, and the exact error',
+    'Switch to a bigger model and re-send the last message',
+    'Accept the change and plan to fix it by hand later',
+  ]}
+  answer={1}
+  explain="After two failed corrections the session is full of wrong turns, and every new attempt is steered by them. Anthropic's own guidance is to clear the context and write a better first prompt — a clean session with a good prompt beats a long polluted one."
+  xp={10}
+/>
+
+## When to stop prompting and start thinking
+
+There is a specific feeling — you are typing the fourth variation of the same request, faster and with more capital letters. That feeling is information. It means the problem is no longer in the prompt.
+
+Stop when any of these are true:
+
+- You have corrected the same thing twice. Clear the session, rewrite the request from scratch with what you learned.
+- You cannot state, in one sentence, what would make you accept the answer.
+- You are reading a diff you do not understand and are about to approve it anyway.
+- The thing you are rescuing has been broken for longer than it would take to rebuild it smaller. Instructors at a beginners' vibe-coding class gave the same advice: build several small things instead of rescuing one broken one ([report, Mar 2026](https://www.aol.com/news/joined-vibe-coding-workshop-learn-040201765.html)).
+
+None of these are failures of the tool. They are the four moments where the work is thinking, and no amount of tokens substitutes.
+
+<Checklist
+  id="m3-loop"
+  title="Run this before you prompt"
+  items={[
+    'I can name who this is for and the one job they need done',
+    'I have written the smallest useful version — and what is explicitly out of scope',
+    'I have one example with real numbers and the exact answer I expect back',
+    'I know the check that proves it works, and the agent can run that check itself',
+    'I know what I will do if the first answer is wrong, and it is not "ask again"',
+  ]}
+  xp={15}
+/>
+
+That is the end of Act I. You now know where vibe coding came from, what the numbers actually say, what a model is doing under the hood, and the thinking that none of it replaces. Act II is the loop itself, one step per module, starting with the thing you just practised: turning an idea into something an agent can build.
+
+<Artifact title="The problem-solving loop" kind="checklist">
+Five checks to run before every prompt, plus the idea-to-spec interview prompt.
+</Artifact>

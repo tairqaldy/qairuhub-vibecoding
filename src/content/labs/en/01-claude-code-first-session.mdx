@@ -1,0 +1,313 @@
+---
+title: "Claude Code: Your First Session"
+subtitle: Install it, point it at a real folder, and make it prove it understood your code before it is allowed to touch a line of it.
+objective: install Claude Code, run a first session in Manual mode, make it explore a project and explain it back, and leave the session cleanly
+description: "Install Claude Code, log in, and run a real first session: /help, explore before edit, /clear versus /compact, and how to exit. Honest pricing, plus a free alternative."
+prerequisites:
+  - A terminal you can open and 20 uninterrupted minutes (Lab 00)
+  - Git installed — on Windows that is Git for Windows
+  - A paid Claude plan, a Console API key, or a guest pass — read the first section if you have none
+doneWhen: A fresh session has read your project and explained it back to you correctly without editing anything, and `claude -c` reopens that same conversation.
+artifact: The explore-before-edit prompt and the four-point rubric for judging what comes back
+---
+
+<Lead>
+Most first sessions with an agent go badly for one reason: people ask it to build something. You are going to do the opposite. Install it, point it at a folder, and spend the whole first session making it *read* — then check whether it actually understood.
+</Lead>
+
+By the end you will have a working install, a session you can leave and resume, and one prompt worth keeping forever.
+
+## What this costs, and what to do if you cannot pay
+
+Claude Code is not included in the free claude.ai plan. You need Pro, Max, Team, Enterprise or a Console API account ([setup docs](https://code.claude.com/docs/en/setup)). The cheapest door is Pro at $20 a month, or $17 a month billed annually — the [pricing page](https://claude.com/pricing) prints that as "$200 billed up front". Pro sessions default to Sonnet 5; Max, listed as "From $100 Per month", defaults to Opus 5 ([model config](https://code.claude.com/docs/en/model-config)).
+
+An API key is pay-per-token: cheap for one evening, expensive as a habit. Anthropic's own [cost docs](https://code.claude.com/docs/en/costs) put real usage at about $13 per developer per active day, $150–250 a month. A subscription is not unlimited either — your allowance resets on a rolling five-hour window plus a weekly one, shared with Claude chat and Cowork.
+
+Kazakhstan is on Anthropic's [supported countries list](https://www.anthropic.com/supported-countries), for claude.ai and the API. If you ever see `App unavailable in region`, that is a country or VPN problem, not an account problem ([troubleshooting](https://code.claude.com/docs/en/troubleshoot-install)).
+
+<StatRow>
+  <Stat value="$20" label="Pro per month, or $17 billed annually" source="claude.com/pricing, 21 Sep 2026" href="https://claude.com/pricing" tone="info" />
+  <Stat value="$13" label="typical API cost per developer per active day" source="Claude Code docs, costs" href="https://code.claude.com/docs/en/costs" tone="warn" />
+  <Stat value="$0" label="Antigravity CLI Individual plan, weekly limits" source="antigravity.google/pricing" href="https://antigravity.google/pricing" tone="good" />
+</StatRow>
+
+<Callout type="info" title="If you have no money this month">
+Install **Antigravity CLI** instead. Its Individual plan is $0 with weekly rate limits, and the [pricing page](https://antigravity.google/pricing) lists Gemini 3.8 Flash, Gemini 3.1 Pro and Claude Sonnet and Opus 4.6 under that free plan. Kazakhstan is supported; it needs a personal Google account and you must be 18 or over ([FAQ](https://antigravity.google/docs/faq/)).
+
+```powershell
+irm https://antigravity.google/cli/install.ps1 | iex
+```
+```bash
+curl -fsSL https://antigravity.google/cli/install.sh | bash
+```
+
+Then `cd` into your project and run `agy`. One warning so nobody wastes an evening: Gemini CLI stopped serving free and Google AI Pro/Ultra users on 18 June 2026 ([the announcement](https://github.com/google-gemini/gemini-cli/discussions/27274)), so every tutorial calling it the free option is out of date. GitHub Copilot also has a Free plan and a student plan with 200 AI credits a month, auto model selection only ([plans](https://github.com/features/copilot/plans)).
+
+Every lab after this one works on those tools. The commands differ — `agy` reads `AGENTS.md` where Claude Code reads `CLAUDE.md` — but the thinking is identical, and the thinking is what you are here for.
+</Callout>
+
+One more route: ask your mentor about `/passes`, described in the [commands docs](https://code.claude.com/docs/en/commands) as sharing "a free week of Claude Code with friends" from an eligible account. Which accounts qualify is not documented, so ask rather than assume.
+
+<Steps>
+
+<Step title="Install it with one command">
+Pick the line for your shell. On Windows, a prompt showing `PS C:\` is PowerShell; `C:\` without `PS` is CMD. Pasting the wrong one is the single most common failure in this lab.
+
+<Terminal title="macOS, Linux, WSL">
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+</Terminal>
+
+<Terminal title="Windows PowerShell — no admin needed">
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+</Terminal>
+
+<Terminal title="Windows CMD">
+```batch
+curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+```
+</Terminal>
+
+That is the native installer; it updates itself in the background. You need neither Node nor WSL — native Windows works. Git for Windows is optional, but install it from [git-scm.com](https://git-scm.com/downloads/win) anyway: with it, Claude runs its Bash tool through Git Bash instead of falling back to PowerShell ([setup docs](https://code.claude.com/docs/en/setup)).
+</Step>
+
+<Step title="Open a NEW terminal and check the install">
+The old terminal does not know about the new binary. Open a fresh one.
+
+<Terminal title="check">
+```bash
+claude --version
+claude doctor
+```
+</Terminal>
+
+`claude --version` prints something like `2.1.269 (Claude Code)`. `claude doctor` is a read-only diagnostic of your install and settings — nothing it does can break anything.
+
+<Callout type="warn" title="command not found: claude">
+The binary installed fine; your shell just cannot see it. It lives at `%USERPROFILE%\.local\bin\claude.exe` on Windows and `~/.local/bin/claude` on macOS and Linux. Add that folder to PATH, then open a new terminal again ([troubleshooting](https://code.claude.com/docs/en/troubleshoot-install)).
+
+```powershell
+$currentPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
+[Environment]::SetEnvironmentVariable('PATH', "$currentPath;$env:USERPROFILE\.local\bin", 'User')
+```
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc    # macOS zsh
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc   # Linux bash
+```
+
+Two more errors with one-line causes: `The token '&&' is not a valid statement separator` means you pasted the CMD command into PowerShell, and `'irm' is not recognized` means you pasted the PowerShell command into CMD.
+</Callout>
+</Step>
+
+<Step title="Give it something real to read">
+Never run `claude` in your home folder or on your Desktop — from there it can see and index everything you own. Always `cd` into a project first. Have a small project already? Use it. Otherwise build this one; it takes three minutes and every later lab reuses it.
+
+<Terminal title="PowerShell">
+```powershell
+mkdir qairu-cards; cd qairu-cards; git init
+```
+</Terminal>
+
+<Terminal title="macOS, Linux, WSL">
+```bash
+mkdir qairu-cards && cd qairu-cards && git init
+```
+</Terminal>
+
+Now create three files in your editor. `words.js`:
+
+```js
+const PAIRS = [
+  { kk: 'кітап',  en: 'book' },
+  { kk: 'терезе', en: 'window' },
+  { kk: 'қала',   en: 'city' },
+  { kk: 'су',     en: 'water' },
+  { kk: 'дос',    en: 'friend' },
+];
+```
+
+`index.html`:
+
+```html
+<!doctype html>
+<html lang="kk">
+  <head>
+    <meta charset="utf-8" />
+    <title>QAIRU Cards</title>
+  </head>
+  <body>
+    <div id="card">...</div>
+    <script src="words.js"></script>
+    <script>
+      let i = 0;
+      let flipped = false;
+      const card = document.getElementById('card');
+      const render = () => { card.textContent = flipped ? PAIRS[i].en : PAIRS[i].kk; };
+      card.onclick = () => { flipped = !flipped; render(); };
+      document.onkeydown = (e) => {
+        if (e.key === 'ArrowRight') { i = (i + 1) % PAIRS.length; flipped = false; render(); }
+      };
+      render();
+    </script>
+  </body>
+</html>
+```
+
+`README.md`:
+
+```md
+# QAIRU Cards
+
+A tiny Kazakh-English flashcard page. Open index.html in a browser.
+Click a card to flip it. Use the Next button to move to the next word.
+```
+
+Read that README once more, then open `index.html` in a browser and click around. Keep what you notice to yourself for now.
+</Step>
+
+<Step title="Start the session in Manual mode">
+<Terminal title="inside qairu-cards">
+```bash
+claude --permission-mode manual
+```
+</Terminal>
+
+On Pro, Max and Team plans, a normal `claude` now starts in **auto** mode, where a second classifier model reviews actions instead of asking you ([permission modes](https://code.claude.com/docs/en/permission-modes)). That is convenient and you will use it later. For your first four labs, force Manual: it reads only, and it asks before anything else, so you actually see what the agent wanted to do.
+
+On first launch a browser opens for login. Credentials are stored, so this happens once; `/login` switches accounts and `/logout` signs out. The first time you run Claude in any folder you also get a workspace-trust dialog.
+
+The header shows three things worth reading: the version, the current model, and the working directory. Check the directory. If it is not `qairu-cards`, press `Ctrl+C` twice and `cd` properly. The status bar underneath should read `manual mode on`.
+
+<Callout type="danger" title="One environment variable can start billing you">
+If `ANTHROPIC_API_KEY` is set in your environment, Claude Code skips the browser login and asks you to approve that key instead — which silently moves you from your subscription to per-token billing ([quickstart](https://code.claude.com/docs/en/quickstart)). If you did not deliberately set it, unset it before you start.
+</Callout>
+</Step>
+
+<Step title="Learn the controls before you ask for anything">
+Do these in order, inside the session, before you ask it anything real.
+
+- `/help` — every command. There are around ninety; you need about fifteen.
+- `?` on an empty line — the keyboard shortcut panel.
+- `! git status` — shell mode. You run the command yourself and the output drops into the conversation.
+- `Shift+Tab` — cycles permission modes. Press it a few times and read the status bar each time: `manual mode on`, `accept edits on`, `plan mode on`. Land back on Manual.
+
+Two keys to memorise rather than try: **`Esc`** interrupts Claude mid-action and keeps the work so far, and **`Ctrl+O`** opens the transcript viewer, which shows every tool call in detail. Everything in this list is from the [interactive mode docs](https://code.claude.com/docs/en/interactive-mode).
+
+Finally run `/usage`. It shows your plan bars. For a subscriber the dollar figure is not a bill — it is an estimate of what the same work would have cost on the API.
+</Step>
+
+<Step title="Make it explore before it edits">
+Here is the prompt. Type or paste it exactly. Notice what it does: it forbids edits, it scopes the reading to one small project, it asks for a claim you can check, and it ends by making the agent ask you something.
+
+<Prompt title="Explore before edit" where="Claude Code · Manual mode">
+```text
+Do not change any files yet.
+
+Read this project and answer in plain text:
+1. What does it do, in two sentences?
+2. List every file and say what each one is for.
+3. Where does the data live, and where is it rendered?
+4. Name one thing the README claims that the code does not actually do.
+5. What would break first if I added 200 more word pairs?
+
+Then stop and ask me one question about what I want to build next.
+```
+</Prompt>
+
+You will see it search and read files. It gathers context on demand — you never paste code in yourself.
+</Step>
+
+<Step title="Judge the answer with a rubric, not a feeling">
+A good answer does four things. Check them off:
+
+1. **Names all three files**, and says `words.js` is data while `index.html` is markup, style and behaviour in one file.
+2. **Finds the README mismatch.** The README promises a Next button. There is no button in the code — only the Right Arrow key. If it missed this, it skimmed.
+3. **Answers question 5 with a mechanism**, not a vibe: all pairs load at once, there is no shuffle, no progress is stored, nothing is paginated.
+4. **Ends with a question**, because you asked it to.
+
+The tell of a bad answer is fluent, confident prose that never quotes a file. So test it:
+
+<Prompt title="Make it show its work" where="Claude Code · Manual mode">
+```text
+Which of your five answers are you least confident about, and exactly what did
+you read to decide it? Give me the file name and the lines you relied on.
+```
+</Prompt>
+
+This is the habit the [best practices docs](https://code.claude.com/docs/en/best-practices) call closing the trust-then-verify gap: plausible output that misses the real case is the normal failure mode, not a rare one. If you cannot verify something, do not ship it.
+</Step>
+
+<Step title="/clear versus /compact — the difference that saves your session">
+Run `/context`. It shows what is filling the window right now: the conversation, every file read, command output, memory files. Sonnet 5 and Opus 5 hold a million tokens and auto-compact at about 967K by default ([model config](https://code.claude.com/docs/en/model-config)), but quality still degrades as the window fills. A big window buys you time, not quality.
+
+The rule, one line each:
+
+- **`/compact`** summarises the conversation and frees space, keeping the thread. Steer it: `/compact keep the file list and the README mismatch`. Use it on the same task, gone long.
+- **`/clear`** starts a new conversation with empty context. It costs nothing. Use it when the next thing you do has nothing to do with the last thing you did.
+
+Do it in that order now. Compact with an instruction, run `/context` again and watch the number drop. Then `/rename first-session` so `/resume` can find this conversation tomorrow, and `/clear`. In the empty session, try `/compact` once more: it answers `Not enough messages to compact.` — proof that compacting is about a conversation, not about the tool.
+
+One rule of thumb from the docs is worth copying down: if you have corrected Claude twice on the same thing, do not correct it a third time. `/clear` and write a better prompt.
+</Step>
+
+<Step title="Leave, and prove you can come back">
+Type `/exit`, or press `Ctrl+D` twice. Then, from the same folder:
+
+<Terminal title="back in the shell">
+```bash
+claude -c
+```
+</Terminal>
+
+`-c` continues the most recent conversation in this directory. Your session is there, with the file list it built. Exit again. You are done.
+</Step>
+
+</Steps>
+
+## Why a read-only first session is not a warm-up
+
+It is the actual skill. Three of the five failure patterns the [Claude Code docs](https://code.claude.com/docs/en/best-practices) name are failures of context, not of code: unrelated tasks piled into one conversation, correcting the same mistake until the window is full of failed attempts, and unscoped exploration that reads hundreds of files to answer a question you could have scoped in one sentence.
+
+An agent that has read your project answers differently from one that is guessing, and the difference is invisible in the prose. That is the whole reason step 7 exists. Asking "what did you read to decide that" costs eight seconds and catches the most expensive class of mistake in this course.
+
+One last thing beginners forget: the tool documents itself. Typing `how do I do X in Claude Code?` inside the session works, and it beats searching.
+
+<Quiz
+  id="lab1-clear-compact"
+  question="You have spent forty minutes with the agent on the flashcard page. It now understands the files well. You want to start a completely different task — writing a deploy script. What do you do first?"
+  options={[
+    'Run /compact so it keeps what it learned about the project',
+    'Run /clear, because the new task shares nothing with the old conversation',
+    'Nothing — the context window is a million tokens, so it does not matter',
+    'Exit the session and reinstall Claude Code to be safe',
+  ]}
+  answer={1}
+  explain="/clear starts a fresh conversation and costs nothing; carrying forty minutes of flashcard debugging into a deploy script only fills the window with noise that degrades answers. /compact is the right tool for the opposite case: same task, session gone long. A big window changes how long you can go, not whether stale context hurts."
+  xp={15}
+/>
+
+<Checklist
+  id="lab1-done"
+  title="Before you close the terminal"
+  items={[
+    'claude --version prints a version number in a newly opened terminal',
+    'claude doctor runs without reporting a problem',
+    'The session header showed qairu-cards as the working directory, and the status bar said manual mode on',
+    'The agent listed all three files and caught the README promising a Next button that does not exist',
+    'You asked it what it read to decide, and it gave file names',
+    'You can say out loud when to use /clear and when to use /compact',
+    'claude -c reopened the conversation after you exited',
+  ]}
+  xp={20}
+/>
+
+<Callout type="live" title="If you are teaching this page">
+Do step 6 on the projector before anyone types. Read the answer aloud, then stop at the README question and ask the room to raise a hand if they spotted the missing Next button before the agent did. Most will not have. That is the moment to say the quiet part: the agent read more carefully than you did this time, and next time it will not, and you have no way of knowing which time you are in — except by asking it what it read.
+</Callout>
+
+<Artifact title="The explore-before-edit prompt" kind="prompt-pack">
+The five-question reading prompt, the follow-up that makes the agent cite its sources, and the four-point rubric for deciding whether it actually understood your project.
+</Artifact>

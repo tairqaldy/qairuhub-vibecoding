@@ -1,0 +1,21 @@
+// Components available inside every lesson/lab MDX file without importing them.
+export { default as Lead } from './Lead.astro';
+export { default as Story } from './Story.astro';
+export { default as Evidence } from './Evidence.astro';
+export { default as Post } from './Post.astro';
+export { default as Stat } from './Stat.astro';
+export { default as StatRow } from './StatRow.astro';
+export { default as Deeper } from './Deeper.astro';
+export { default as Callout } from './Callout.astro';
+export { default as Myth } from './Myth.astro';
+export { default as Steps } from './Steps.astro';
+export { default as Step } from './Step.astro';
+export { default as Prompt } from './Prompt.astro';
+export { default as Terminal } from './Terminal.astro';
+export { default as ProjectStep } from './ProjectStep.astro';
+export { default as Artifact } from './Artifact.astro';
+export { default as Quiz } from './Quiz.astro';
+export { default as Checklist } from './Checklist.astro';
+export { default as Compare } from './Compare.astro';
+export { default as Figure } from './Figure.astro';
+export { default as Widget } from './Widget.astro';

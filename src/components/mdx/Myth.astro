@@ -1,0 +1,68 @@
+---
+import { langFromUrl, useT } from '@/i18n/ui';
+
+interface Props {
+  n?: number;
+  myth: string;
+  source?: string;
+  href?: string;
+}
+const t = useT(langFromUrl(Astro.url));
+const { n, myth, source, href } = Astro.props;
+---
+
+<div class="myth" data-reveal>
+  <button type="button" class="face front" aria-expanded="false">
+    <span class="tag">{t('myth.myth')}{n ? ` #${n}` : ''}</span>
+    <span class="claim">“{myth}”</span>
+    <span class="hint">{t('myth.flip')} →</span>
+  </button>
+  <div class="face back" hidden>
+    <span class="tag ok">{t('myth.reality')}</span>
+    <div class="real"><slot /></div>
+    {
+      source &&
+        (href ? (
+          <a class="src" href={href} target="_blank" rel="noopener noreferrer">
+            {source} ↗
+          </a>
+        ) : (
+          <span class="src">{source}</span>
+        ))
+    }
+  </div>
+</div>
+
+<style>
+  .myth { margin: 40px 0; border-radius: 22px; overflow: hidden; border: 1px solid color-mix(in oklab, var(--color-danger) 35%, transparent); transition: border-color 0.5s; }
+  .myth.open { border-color: color-mix(in oklab, var(--color-signal) 40%, transparent); }
+  .face { display: grid; gap: 14px; width: 100%; padding: 26px 24px; text-align: left; font: inherit; color: inherit; border: 0; }
+  .front { cursor: pointer; background: linear-gradient(135deg, rgb(255 93 108 / 0.12), rgb(255 93 108 / 0.02)); transition: background 0.3s; }
+  .front:hover { background: linear-gradient(135deg, rgb(255 93 108 / 0.18), rgb(255 93 108 / 0.04)); }
+  .myth.open .front { cursor: default; opacity: 0.55; }
+  .myth.open .front .claim { text-decoration: line-through; text-decoration-color: var(--color-danger); text-decoration-thickness: 2px; }
+  .myth.open .hint { display: none; }
+  .back { background: linear-gradient(135deg, rgb(43 127 255 / 0.09), transparent 70%); border-top: 1px solid var(--color-line); animation: rise 0.7s var(--ease-out-expo) both; }
+  .back[hidden] { display: none; }
+  .tag { font: 600 12px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-danger); }
+  .tag.ok { color: var(--color-signal); }
+  .claim { font: 300 clamp(22px, 3.2vw, 32px) / 1.25 var(--font-display); letter-spacing: -0.02em; color: #fff; }
+  .hint { font: 500 13px/1 var(--font-mono); color: var(--color-muted); }
+  .real { font-size: 17px; color: #e8ebfa; }
+  .real > :global(* + *) { margin-top: 0.8em; }
+  .real > :global(:first-child) { margin-top: 0; }
+  .src { font: 500 12px/1.4 var(--font-mono); color: var(--color-signal) !important; text-decoration: none !important; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.myth').forEach((card) => {
+    const front = card.querySelector<HTMLButtonElement>('.front');
+    const back = card.querySelector<HTMLElement>('.back');
+    front?.addEventListener('click', () => {
+      if (!back || card.classList.contains('open')) return;
+      card.classList.add('open');
+      back.hidden = false;
+      front.setAttribute('aria-expanded', 'true');
+    });
+  });
+</script>

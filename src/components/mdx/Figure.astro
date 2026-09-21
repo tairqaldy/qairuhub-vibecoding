@@ -1,0 +1,24 @@
+---
+// A generated diagram/meme card: inline SVG or an <img> from /img, with a caption.
+interface Props {
+  caption?: string;
+  wide?: boolean;
+}
+const { caption, wide = false } = Astro.props;
+---
+
+<figure class:list={['fig', { wide }]} data-reveal>
+  <div class="frame"><slot /></div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .fig { margin: 40px 0; }
+  .frame { border-radius: 20px; border: 1px solid var(--color-line); background: linear-gradient(180deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.01)); padding: 18px; overflow: hidden; }
+  .frame :global(svg) { display: block; width: 100%; height: auto; }
+  .frame :global(img) { display: block; width: 100%; height: auto; border-radius: 12px; }
+  figcaption { margin-top: 12px; font-size: 14px; color: var(--color-muted); text-align: center; }
+  @media (min-width: 1100px) {
+    .wide { width: min(1080px, 92vw); margin-left: calc((100% - min(1080px, 92vw)) / 2); }
+  }
+</style>

@@ -1,0 +1,47 @@
+---
+import type { GetStaticPaths } from 'astro';
+import LessonLayout from '@/layouts/LessonLayout.astro';
+import * as MDX from '@/components/mdx';
+import type { Lang } from '@/data/curriculum';
+import { lessonFile, modules } from '@/data/curriculum';
+import { getLocalised, moduleRoutes } from '@/lib/content';
+import { href } from '@/i18n/ui';
+
+export const getStaticPaths = (async () => {
+  const available = await moduleRoutes();
+  return (['en', 'kk'] as Lang[]).flatMap((lang) =>
+    available.map((m) => ({ params: { lang, slug: m.slug }, props: { mod: m } })),
+  );
+}) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+const { mod } = Astro.props;
+const { entry, isFallback } = await getLocalised('lessons', lang, lessonFile(mod));
+const { Content, headings } = await (await import('astro:content')).render(entry);
+
+const prevMod = modules.find((m) => m.order === mod.order - 1);
+const nextMod = modules.find((m) => m.order === mod.order + 1);
+---
+
+<LessonLayout
+  lang={lang}
+  kind="module"
+  slug={mod.slug}
+  act={mod.act}
+  order={mod.order}
+  title={entry.data.title}
+  subtitle={entry.data.subtitle}
+  objective={entry.data.objective}
+  description={entry.data.description}
+  minutes={mod.minutes}
+  xp={mod.xp}
+  cycleStep={mod.cycleStep}
+  headings={headings}
+  isFallback={isFallback}
+  prev={prevMod ? { href: href(lang, `learn/${prevMod.slug}`), title: prevMod.title[lang] } : undefined}
+  next={nextMod
+    ? { href: href(lang, `learn/${nextMod.slug}`), title: nextMod.title[lang] }
+    : { href: href(lang, 'labs'), title: lang === 'kk' ? 'Практикаға өту' : 'Go to the labs' }}
+>
+  <Content components={MDX} />
+</LessonLayout>

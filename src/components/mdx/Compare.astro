@@ -1,0 +1,33 @@
+---
+// Two-column "this, not that" block. Children: <Col slot="a"> / <Col slot="b"> content.
+interface Props {
+  a: string;
+  b: string;
+  aTone?: 'bad' | 'good' | 'neutral';
+  bTone?: 'bad' | 'good' | 'neutral';
+}
+const { a, b, aTone = 'bad', bTone = 'good' } = Astro.props;
+---
+
+<div class="compare" data-reveal>
+  <section class:list={['col', aTone]}>
+    <h4>{a}</h4>
+    <div class="in"><slot name="a" /></div>
+  </section>
+  <section class:list={['col', bTone]}>
+    <h4>{b}</h4>
+    <div class="in"><slot name="b" /></div>
+  </section>
+</div>
+
+<style>
+  .compare { display: grid; gap: 14px; margin: 36px 0; }
+  .col { --c: var(--color-muted); padding: 20px 22px; border-radius: 18px; border: 1px solid color-mix(in oklab, var(--c) 32%, transparent); background: color-mix(in oklab, var(--c) 6%, transparent); }
+  .bad { --c: var(--color-danger); }
+  .good { --c: var(--color-signal); }
+  h4 { margin: 0 0 12px !important; font: 500 12px/1.2 var(--font-mono) !important; letter-spacing: 0.1em !important; text-transform: uppercase; color: var(--c) !important; }
+  .in { font-size: 16px; }
+  .in > :global(* + *) { margin-top: 0.8em; }
+  .in :global(pre) { font-size: 12.5px !important; }
+  @media (min-width: 720px) { .compare { grid-template-columns: 1fr 1fr; } }
+</style>

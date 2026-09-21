@@ -1,0 +1,9 @@
+---
+import ChecklistIsland, { type ChecklistProps } from '@/components/widgets/Checklist';
+import { langFromUrl } from '@/i18n/ui';
+
+type Props = Omit<ChecklistProps, 'lang'>;
+const lang = langFromUrl(Astro.url);
+---
+
+<ChecklistIsland client:visible lang={lang} {...Astro.props} />

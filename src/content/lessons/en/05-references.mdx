@@ -1,0 +1,179 @@
+---
+title: Show It, Don't Describe It
+subtitle: The references you gather before the agent writes a line — and the one kind of reference that quietly ruins a session.
+objective: gather screenshots, example code, docs pages and data samples that tell an agent what good looks like, without flooding its context window
+description: Step 2 of the cycle. Screenshots, your own repo, API samples and design references — what to hand an agent, and what you must never paste.
+artifact: Reference pack checklist
+---
+
+<Lead>
+One screenshot outruns three paragraphs of description. Step 2 of the cycle is unglamorous collecting work — you gather the things that show the agent what *good* looks like, before it writes a single line.
+</Lead>
+
+Your PRD says what to build and for whom. It does not say what the result should look like, which existing file the new code should resemble, or what the API returns when the last seat is already taken. References answer those. Whatever you leave out, the agent fills in — plausibly, which is worse than badly, because plausible is what you will not catch in the diff.
+
+## A screenshot answers questions you did not know to ask
+
+Describing a screen in words means naming every decision: where the title sits, how much air surrounds the form, whether the button is full width, what order the fields go in, what happens at phone width. You will forget four of them. A picture carries all of them at once.
+
+The second reason is better than the first. Anthropic's Claude Code guide lists what counts as a check the agent can read by itself — a test suite, a build exit code, a linter, a script that diffs output against a fixture, and [a browser screenshot compared with a design](https://code.claude.com/docs/en/best-practices). The image that starts the work can also end it. You are not only describing the target; you are handing over the ruler.
+
+- **Put it in the repo, then name the path.** `refs/signup-desktop.png` beats an image dropped into a chat window: the file is still there after you clear the session, and still there for the next person.
+- **Annotate it.** Three arrows and three words — "this spacing", "keep", "delete this" — kill more ambiguity than a page of prose.
+- **Include the states nobody screenshots.** Empty list, error message, form mid-submit. Those are the screens your users hit and the ones an agent invents.
+- **Say what to copy and what to ignore.** An agent cannot tell which parts of a picture are the point. "Match the layout and field order, ignore the colours — ours are in `src/styles/tokens.css`" is one sentence that saves you a session of undoing.
+
+<Callout type="live">
+Worth running live: same feature, two sessions. One gets three paragraphs of description, the other gets a screenshot and one line. Show both results before explaining anything.
+</Callout>
+
+## The best reference is already in your repo
+
+The strongest reference you own is a file in your own project that already does something similar. "Follow the pattern in `src/components/EventCard.tsx`" outperforms any style guide you could write, because that file is real, it compiles, it passes your tests, and it carries every convention you never wrote down.
+
+This is also the official advice on project memory: [Anthropic's Claude Code guide](https://code.claude.com/docs/en/best-practices) says to keep anything readable from the code out of your instruction file, and to link long API docs instead of pasting them. Point, do not transcribe. Simon Willison's pattern catalogue for agentic engineering lists a chapter called ["hoard things you know how to do"](https://simonwillison.net/guides/agentic-engineering-patterns/); the title alone is the lesson.
+
+Name the file, and name what about it to copy: the structure, the naming, the way it handles a loading state. Then accept the cost of the trick — point at your worst file and you get more files like your worst file. The agent has no taste. It has your repo.
+
+<Deeper title="The strongest reference is one the agent can run">
+When Anthropic had [16 parallel Claude instances build a C compiler](https://www.anthropic.com/engineering/building-c-compiler) in February 2026 — roughly 2,000 sessions and 100,000 lines of Rust in two weeks — one of Nicholas Carlini's lessons was about work too big for sixteen agents to share: use an oracle. Theirs was GCC, an existing correct compiler the agents could check their own output against.
+
+Generalise it. If something like your feature already exists and runs, that beats any description of it, because the agent can ask it questions instead of guessing. An old version of your own app counts. So does a spreadsheet that already computes the number.
+</Deeper>
+
+## For an API, link the page and paste the response
+
+Two different jobs. The docs page tells the agent the contract. A real response tells it the truth.
+
+Paste one success response and one error response, trimmed to a dozen lines each, with secrets and personal data replaced. A sample settles what prose argues about for several turns: the exact field spelling (`userId` or `user_id`), the date format, whether a missing value arrives as `null` or does not arrive at all, how errors are shaped, whether the list is paginated. Then add the sentence that saves the session: if the sample and the docs disagree, trust the sample.
+
+Data samples work the same way. Twenty rows of the real shape, not a thousand — and put the ugly ones in on purpose. Kazakh names and words run long, and a fixed-width layout truncates them; nobody notices until a real person signs up. One very long name, one empty phone field, one address outside the Latin alphabet. The agent handles what it can see.
+
+<Callout type="danger" title="Never paste a real secret or a real person">
+Sample responses are where tokens leak. Replace every key, cookie, phone number and email before the text goes near a prompt. What you paste now lives in a transcript, a log, and possibly a repo.
+</Callout>
+
+## Do not paste the documentation site
+
+Here is the trap, and it catches helpful people. You copy the whole API reference, all four guides and the migration notes into the prompt so that nothing is missing. You have just made the agent worse at the job.
+
+Go back to the [context window](/en/learn/ai-in-plain-language/): attention is a finite budget and every token spends some of it. That is [Anthropic's own framing](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents), and their fix is exactly this module — keep lightweight pointers like paths, URLs and queries, and load the detail at runtime instead of stuffing it in up front. Chroma's [Context Rot](https://www.trychroma.com/research/context-rot) study, across 18 models in July 2025, adds the sharp edge: one plausible distractor already degrades the answer, and more distractors degrade it further. Docs for endpoints you will never call are a pile of plausible distractors. There is a bill, too — [the whole conversation is re-sent on every request](https://code.claude.com/docs/en/costs), so pasted docs are not paid for once, they are paid for on every turn after.
+
+<Compare a="What people paste" b="What actually helps">
+<div slot="a">
+The full API reference, every guide, and the migration notes — mostly about endpoints this feature will never touch. The agent now hunts for your four relevant lines inside all of it, on every turn.
+</div>
+<div slot="b">
+One URL for the one endpoint. One trimmed success response. One trimmed error response. One sentence naming what not to read. Under a page, every line load-bearing.
+</div>
+</Compare>
+
+Reference the page, not the site. If you cannot name the specific page, you do not yet know what you are asking for — and that is useful information about your plan. When a session starts feeling forgetful, run `/context` and look at what is filling the window.
+
+<StatRow>
+  <Stat value="53%" label="pass rate with no docs index" source="Vercel eval, Jan 2026" href="https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals" tone="warn" />
+  <Stat value="100%" label="with an 8 KB curated index" source="Vercel eval, Jan 2026" href="https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals" tone="good" />
+  <Stat value=">20%" label="extra inference cost from context files" source="ETH Zurich / LogicStar, Feb 2026" href="https://arxiv.org/abs/2602.11988" tone="warn" />
+</StatRow>
+
+<Deeper title="Two studies that look contradictory, and the rule that resolves them">
+In January 2026 Vercel ran [an eval on their own Next.js tasks](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals): an 8 KB compressed docs index, placed in `AGENTS.md`, took the agent from a 53% baseline to 100%. Skills with explicit instructions reached 79%.
+
+Weeks later, ETH Zurich and LogicStar.ai published [Evaluating AGENTS.md](https://arxiv.org/abs/2602.11988) with the opposite-sounding result: "providing context files does not generally improve task success rates", while adding over 20% to inference cost. Repository overviews did not help; concrete instructions were followed well.
+
+They do not conflict. Specific, non-guessable facts help. Generic description costs tokens and buys nothing. Every reference you add should be something the agent could not work out by reading your code, and you should be able to say in one sentence what question it answers.
+</Deeper>
+
+<Callout type="warn" title="A page you point at is data, not orders">
+In July 2026 Pillar Security demonstrated sandbox escapes across Cursor, Codex, Gemini CLI and Antigravity, [reported by BleepingComputer](https://www.bleepingcomputer.com/news/security/cursor-codex-gemini-cli-antigravity-hit-by-sandbox-escapes/); the trigger was prompt injection hidden in README files and dependencies. Treat README files and linked pages as untrusted input, keep approval mode on for code you did not write, and read the diff when an agent touches config or dotfiles.
+</Callout>
+
+## Describe a visual style in words an agent can check
+
+With no design reference you get the default look, the one every model reaches for. Anthropic ran into this while designing a harness for long-running app builds: the evaluator grades generated apps on design quality, originality, craft and functionality, and [weights the first two higher on purpose](https://www.anthropic.com/engineering/harness-design-long-running-apps) to fight generic output. If the people building these systems have to push against it deliberately, your one-line prompt will not win by accident.
+
+Words that do nothing: modern, clean, beautiful, professional, sleek. They are compliments, not instructions. Words that work are the ones an agent can check itself against:
+
+- one accent colour, everything else greyscale
+- 8px spacing unit, nothing in between
+- two text sizes for body copy, one for headings
+- no gradients, no drop shadows, no corner radius above 4px
+- a dense table, not a grid of cards
+- Kazakh and English strings both fit without truncation
+
+Then name one real thing you are imitating, give its URL, and say which part you mean: the typography rhythm, not the colours. Finish with the exclusions — in practice the list of what not to do carries more weight than the list of what to do.
+
+<Prompt title="Reference-loaded build prompt" where="Claude Code · plan mode">
+```text
+Build the seat-reservation form for the QAIRU Event Sign-up page.
+
+REFERENCES — read these first, in this order:
+
+1. Layout target: refs/signup-desktop.png and refs/signup-mobile.png.
+   Match the field order and the spacing rhythm. Ignore the colours —
+   ours are in src/styles/tokens.css.
+2. Pattern to follow: src/components/EventCard.tsx. Same file structure,
+   same prop naming, same handling of the loading and error states.
+3. API: [one docs URL — the single page for the endpoint we call].
+   Real responses are in refs/seats-200.json and refs/seats-409.json.
+   If the docs and the sample files disagree, trust the sample files.
+4. Data: refs/signups-sample.csv — 20 rows, including a very long Kazakh
+   name and one empty phone field. The UI must survive all 20 rows.
+
+DO NOT read the rest of the docs site. If you need one more page, tell me
+which page and why, and I will paste the part that matters.
+
+Plan first, no code yet. In the plan, state which reference answers each
+decision, and list every question the references do NOT answer.
+```
+</Prompt>
+
+Steal that last instruction. When the agent tells you which questions your references fail to answer, it has written the shopping list for your next round of gathering.
+
+<Quiz
+  id="m5-references"
+  question="You need the agent to call a payments API you have never used before. What goes into the prompt?"
+  options={[
+    'The entire API documentation site, pasted in, so that nothing is missing',
+    'A description of the response schema, written carefully in your own words',
+    'The URL of the one endpoint page, plus a real success response and a real error response with secrets removed',
+    'Nothing — the model has seen this API in training and already knows it',
+  ]}
+  answer={2}
+  explain="A real response settles what prose argues about: exact field names, date format, whether a missing value is null or simply absent. The single URL covers the rest without spending context on endpoints you will never call. An agent that 'already knows' an API is an agent that will confidently invent one."
+  xp={10}
+/>
+
+Before any build prompt, you should be able to answer four questions: what should it look like, what should the code look like, what does the data really contain, and what must the agent not read. If an answer starts with "I will explain it in the prompt", go find the file instead.
+
+<Checklist
+  id="m5-reference-pack"
+  title="Before you write the build prompt"
+  items={[
+    'A screenshot or sketch of the target screen, saved in the repo, not only pasted into chat',
+    'The states nobody screenshots: empty, error, loading',
+    'One existing file in this repo that the new code should resemble, named by path',
+    'One sentence per reference saying what to copy and what to ignore',
+    'The exact docs page URL for each external service — the page, not the site',
+    'One real success response and one real error response, secrets and personal data removed',
+    'A data sample with the ugly rows: long Kazakh names, an empty field, non-Latin characters',
+    'Style named in checkable words: spacing unit, colour count, what is forbidden',
+    'One line telling the agent what NOT to read',
+  ]}
+  xp={15}
+/>
+
+<ProjectStep n={5} title="Build the refs folder for QAIRU Event Sign-up">
+Create a `refs/` folder in your project and put four things in it before the next module.
+
+1. **A screenshot** of an event page whose layout you want, with three annotations: one "copy this", one "ignore this", one "this spacing".
+2. **A data sample**: a CSV of 20 sign-ups you invent by hand. Make three names long enough to break a narrow column, leave one phone number empty, write one address in Cyrillic.
+3. **A sample response**: the JSON you expect when a seat is reserved, and the JSON you expect when the event is full. Deciding the error shape now is cheaper than discovering it later.
+4. **`refs/REFERENCES.md`**: ten lines, one per file, each saying what that file is the authority on.
+
+Commit it. The reference pack is part of the project, not a note in your head.
+</ProjectStep>
+
+<Artifact title="The reference pack" kind="checklist">
+The nine-item list above on one page — what to gather before every build prompt, and what to leave out.
+</Artifact>

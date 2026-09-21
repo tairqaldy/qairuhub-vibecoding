@@ -1,0 +1,220 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import { acts, cycle, modules } from '@/data/curriculum';
+import { href } from '@/i18n/ui';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+
+const c = {
+  en: {
+    title: 'Slides',
+    desc: 'Presentation mode for teaching this masterclass live. Arrow keys to move, F for fullscreen.',
+    help: 'Arrows or space to move · F for fullscreen · Esc to leave',
+    open: 'Open slides',
+    intro: 'A stripped-down deck for teaching from. It pulls the same structure as the site, so nothing can drift out of sync.',
+    slide: 'Slide',
+  },
+  kk: {
+    title: 'Слайдтар',
+    desc: 'Осы мастер-классты тірі өткізуге арналған презентация режимі. Жылжу үшін көрсеткілер, толық экран үшін F.',
+    help: 'Жылжу — көрсеткілер немесе бос орын · Толық экран — F · Шығу — Esc',
+    open: 'Слайдтарды ашу',
+    intro: 'Сабақ өткізуге арналған жеңілдетілген дек. Ол сайттың құрылымын қолданады, сондықтан ешқашан ескірмейді.',
+    slide: 'Слайд',
+  },
+}[lang];
+
+type Slide =
+  | { kind: 'title'; k: string; t: string; s?: string }
+  | { kind: 'big'; k: string; t: string; s?: string }
+  | { kind: 'stat'; k: string; v: string; t: string; s: string }
+  | { kind: 'list'; k: string; t: string; items: string[] }
+  | { kind: 'quote'; t: string; s: string };
+
+const slides: Record<Lang, Slide[]> = {
+  en: [
+    { kind: 'title', k: 'QairuHub', t: 'Vibecoding', s: 'From your first prompt to a team of agents' },
+    { kind: 'quote', t: 'There is a new kind of coding I call vibe coding', s: 'Andrej Karpathy · 2 February 2025' },
+    { kind: 'big', k: 'What he meant', t: 'You stop reading the code.', s: 'Not "using AI to code". Specifically: not looking at what it produced.' },
+    { kind: 'stat', k: 'The hype', v: '95%', t: 'of the code in a quarter of YC W25 startups was written by AI', s: 'Jared Friedman, YC · March 2025' },
+    { kind: 'stat', k: 'The reality', v: '19%', t: 'slower — while believing they were 20% faster', s: 'METR randomised trial · July 2025' },
+    { kind: 'big', k: 'The gap', t: 'Feeling fast and being fast are different things.', s: 'That gap is what this masterclass is about.' },
+    { kind: 'list', k: 'The three modes', t: 'Where are you on this?', items: ['Vibe coding — you do not read it. Fine for throwaway work.', 'AI-assisted — you review every diff.', 'Agentic engineering — you design specs, supervise plans, verify results.'] },
+    { kind: 'big', k: 'Act II', t: 'The loop', s: 'Nine steps. Every project you will ever build runs it.' },
+    { kind: 'list', k: 'The loop', t: 'Nine steps', items: cycle.map((x) => `${x.n}. ${x.title.en} — ${x.hint.en}`) },
+    { kind: 'big', k: 'Live', t: 'Let us build something', s: 'Idea → PRD → CLAUDE.md → plan mode → commit → deploy' },
+    { kind: 'stat', k: 'Security', v: '45%', t: 'of AI-generated code introduced an OWASP Top 10 flaw', s: 'Veracode · 2025' },
+    { kind: 'big', k: 'July 2025', t: 'An agent deleted a production database during a code freeze.', s: 'The freeze existed only as a sentence in a prompt.' },
+    { kind: 'big', k: 'The lesson', t: 'A rule the agent can talk its way past is not a rule.', s: 'Enforce it in the permission layer, not in English.' },
+    { kind: 'list', k: 'Act III', t: 'When one agent becomes several', items: ['Start with one. Most work never needs more.', 'Parallelise only what is independent and verifiable.', 'Every finding gets a second agent that tries to disprove it.'] },
+    { kind: 'big', k: 'This site', t: 'Built overnight by a team of agents.', s: 'Research, writing, Kazakh, fact-checking, deploy. One person directing.' },
+    { kind: 'title', k: 'Your turn', t: 'Ten minutes', s: 'vibecoding.qairuhub.com/en/try' },
+  ],
+  kk: [
+    { kind: 'title', k: 'QairuHub', t: 'Vibecoding', s: 'Алғашқы prompt-тан agent-тер командасына дейін' },
+    { kind: 'quote', t: 'There is a new kind of coding I call vibe coding', s: 'Andrej Karpathy · 2025 ж. 2 ақпан' },
+    { kind: 'big', k: 'Ол не айтқысы келді', t: 'Сен кодты оқуды қоясың.', s: '«ЖИ-мен кодтау» емес. Дәл айтқанда: не шыққанын қарамау.' },
+    { kind: 'stat', k: 'Дабыра', v: '95%', t: 'YC W25 стартаптарының төрттен бірінде кодты ЖИ жазған', s: 'Jared Friedman, YC · 2025 ж. наурыз' },
+    { kind: 'stat', k: 'Шындық', v: '19%', t: 'баяу — өздерін 20%-ға жылдам сезіне тұра', s: 'METR рандомизацияланған зерттеуі · 2025 ж. шілде' },
+    { kind: 'big', k: 'Алшақтық', t: 'Жылдам сезіну мен жылдам болу — екі бөлек нәрсе.', s: 'Осы мастер-класс сол алшақтық туралы.' },
+    { kind: 'list', k: 'Үш режим', t: 'Сен қай жердесің?', items: ['Vibe coding — оқымайсың. Уақытша жұмысқа жарайды.', 'ЖИ-көмекші — әр diff-ті тексересің.', 'Agentic engineering — спецификация жазасың, жоспарды қадағалайсың, нәтижені тексересің.'] },
+    { kind: 'big', k: 'II бөлім', t: 'Цикл', s: 'Тоғыз қадам. Құрастыратын кез келген жобаң осымен жүреді.' },
+    { kind: 'list', k: 'Цикл', t: 'Тоғыз қадам', items: cycle.map((x) => `${x.n}. ${x.title.kk} — ${x.hint.kk}`) },
+    { kind: 'big', k: 'Тікелей', t: 'Бірдеңе құрастырайық', s: 'Идея → PRD → CLAUDE.md → plan mode → commit → deploy' },
+    { kind: 'stat', k: 'Қауіпсіздік', v: '45%', t: 'ЖИ жазған кодта OWASP Top 10 осалдығы болды', s: 'Veracode · 2025' },
+    { kind: 'big', k: '2025 ж. шілде', t: 'Agent «код мұздатылған» кезде production дерекқорын жойды.', s: 'Ал «мұздату» тек prompt ішіндегі сөйлем болатын.' },
+    { kind: 'big', k: 'Сабақ', t: 'Agent сөзбен айналып өте алатын ереже — ереже емес.', s: 'Оны ағылшын тілінде емес, рұқсат деңгейінде бекіт.' },
+    { kind: 'list', k: 'III бөлім', t: 'Бір agent бірнешеуге айналғанда', items: ['Біреуден баста. Көп жұмысқа артығы керек емес.', 'Тек тәуелсіз әрі тексеруге келетінін ғана қатарластыр.', 'Әр табылған мәселеге оны теріске шығаратын екінші agent қой.'] },
+    { kind: 'big', k: 'Бұл сайт', t: 'Бір түнде agent-тер командасы құрастырған.', s: 'Зерттеу, мәтін, қазақша, тексеру, deploy. Басқарған — бір адам.' },
+    { kind: 'title', k: 'Сенің кезегің', t: 'Он минут', s: 'vibecoding.qairuhub.com/kk/try' },
+  ],
+};
+
+const deck = slides[lang];
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc} bare noindex>
+  <div class="deck" data-deck>
+    <div class="rail" aria-hidden="true"><span data-progress style="width:0%"></span></div>
+
+    {
+      deck.map((s, i) => (
+        <section class="slide" data-slide={i} hidden={i !== 0}>
+          <div class="inner">
+            {s.kind === 'title' && (
+              <>
+                <p class="k">{s.k}</p>
+                <h1 class="brand">{s.t}</h1>
+                {s.s && <p class="sub">{s.s}</p>}
+              </>
+            )}
+            {s.kind === 'big' && (
+              <>
+                <p class="k">{s.k}</p>
+                <h2>{s.t}</h2>
+                {s.s && <p class="sub">{s.s}</p>}
+              </>
+            )}
+            {s.kind === 'stat' && (
+              <>
+                <p class="k">{s.k}</p>
+                <p class="v">{s.v}</p>
+                <h2 class="small">{s.t}</h2>
+                <p class="src">{s.s}</p>
+              </>
+            )}
+            {s.kind === 'list' && (
+              <>
+                <p class="k">{s.k}</p>
+                <h2 class="small">{s.t}</h2>
+                <ul>
+                  {s.items.map((it) => (
+                    <li>{it}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {s.kind === 'quote' && (
+              <>
+                <blockquote>{s.t}</blockquote>
+                <p class="src">{s.s}</p>
+              </>
+            )}
+          </div>
+          <p class="num">
+            {c.slide} {i + 1} / {deck.length}
+          </p>
+        </section>
+      ))
+    }
+
+    <div class="controls no-print">
+      <button type="button" data-prev aria-label="Previous">←</button>
+      <button type="button" data-next aria-label="Next">→</button>
+      <button type="button" data-full aria-label="Fullscreen">⛶</button>
+      <a href={href(lang)} aria-label="Exit">✕</a>
+    </div>
+    <p class="help no-print">{c.help}</p>
+  </div>
+</BaseLayout>
+
+<style>
+  .deck { min-height: 100dvh; display: grid; place-items: center; position: relative; }
+  .rail { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: rgb(255 255 255 / 0.1); z-index: 5; }
+  .rail span { display: block; height: 100%; background: var(--color-signal); transition: width 0.4s var(--ease-out-expo); }
+  .slide { width: min(1100px, 100% - 48px); min-height: 100dvh; display: grid; align-content: center; padding: 80px 0; }
+  .slide[hidden] { display: none; }
+  .inner > * { animation: rise 0.6s var(--ease-out-expo) both; }
+  .inner > :nth-child(2) { animation-delay: 80ms; }
+  .inner > :nth-child(3) { animation-delay: 160ms; }
+  .inner > :nth-child(4) { animation-delay: 240ms; }
+  .k { margin: 0 0 24px; font: 500 13px/1 var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-signal-soft); }
+  .brand { font-family: var(--font-brand); font-weight: 400; font-size: clamp(56px, 13vw, 150px); line-height: 1.05; color: #fff; }
+  h1, h2 { font-size: clamp(38px, 7.5vw, 86px); font-weight: 300; letter-spacing: -0.04em; line-height: 1.02; }
+  h2.small { font-size: clamp(28px, 4.6vw, 52px); }
+  .sub { margin: 28px 0 0; max-width: 46ch; font-size: clamp(18px, 2.4vw, 26px); line-height: 1.45; color: var(--color-muted); }
+  .v { margin: 0 0 14px; font: 200 clamp(90px, 19vw, 230px)/0.85 var(--font-display); letter-spacing: -0.05em; color: var(--color-signal-soft); }
+  .src { margin: 22px 0 0; font: 400 14px/1.4 var(--font-mono); color: var(--color-faint); }
+  blockquote { margin: 0; padding-left: 28px; border-left: 4px solid var(--color-signal); font-size: clamp(30px, 5.4vw, 64px); font-weight: 300; line-height: 1.18; letter-spacing: -0.03em; color: #fff; }
+  ul { margin: 34px 0 0; padding: 0; list-style: none; display: grid; gap: 18px; max-width: 30ch; }
+  ul li { padding-left: 30px; position: relative; font-size: clamp(18px, 2.3vw, 25px); line-height: 1.4; color: rgb(255 255 255 / 0.9); }
+  ul li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 14px; height: 2px; background: var(--color-signal); }
+  .num { position: absolute; bottom: 26px; left: 0; margin: 0; font: 400 12px/1 var(--font-mono); color: var(--color-faint); }
+  .controls { position: fixed; right: 20px; bottom: 20px; display: flex; gap: 8px; z-index: 6; }
+  .controls button, .controls a { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--color-line-strong); background: rgb(8 12 32 / 0.8); color: #fff; font-size: 15px; cursor: pointer; text-decoration: none; backdrop-filter: blur(8px); }
+  .controls button:hover, .controls a:hover { background: var(--color-signal); border-color: transparent; }
+  .help { position: fixed; left: 20px; bottom: 26px; margin: 0; font: 400 11.5px/1 var(--font-mono); color: var(--color-faint); }
+  @media (max-width: 640px) { .help { display: none; } }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll<HTMLElement>('[data-slide]'));
+  const bar = document.querySelector<HTMLElement>('[data-progress]');
+  let i = Math.max(0, Math.min(slides.length - 1, Number(location.hash.slice(1)) - 1 || 0));
+
+  function show(n: number) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => (s.hidden = k !== i));
+    if (bar) bar.style.width = `${((i + 1) / slides.length) * 100}%`;
+    history.replaceState(null, '', `#${i + 1}`);
+  }
+
+  show(i);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault();
+      show(i + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      show(i - 1);
+    } else if (e.key.toLowerCase() === 'f') {
+      document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+    } else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+  });
+
+  document.querySelector('[data-next]')?.addEventListener('click', () => show(i + 1));
+  document.querySelector('[data-prev]')?.addEventListener('click', () => show(i - 1));
+  document
+    .querySelector('[data-full]')
+    ?.addEventListener('click', () =>
+      document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(),
+    );
+
+  // swipe on touch devices
+  let x0 = 0;
+  document.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true });
+  document.addEventListener(
+    'touchend',
+    (e) => {
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 60) show(i + (dx < 0 ? 1 : -1));
+    },
+    { passive: true },
+  );
+</script>

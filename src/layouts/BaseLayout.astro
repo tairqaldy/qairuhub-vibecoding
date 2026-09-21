@@ -1,0 +1,159 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/caveat';
+import '@fontsource/courgette';
+import '@fontsource/anton';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@/styles/global.css';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import type { Lang, ActId } from '@/data/curriculum';
+import { languages, switchLang, useT } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  act?: ActId;
+  image?: string;
+  /** hide header/footer chrome (presentation mode) */
+  bare?: boolean;
+  noindex?: boolean;
+}
+
+const { lang, title, description, act, image = '/og/default.png', bare = false, noindex = false } = Astro.props;
+const t = useT(lang);
+const fullTitle = title ? `${title} · ${t('site.name')}` : `${t('site.name')} — ${t('site.tagline')}`;
+const desc = description ?? t('site.description');
+const path = Astro.url.pathname;
+const canonical = new URL(path, Astro.site);
+const other: Lang = lang === 'en' ? 'kk' : 'en';
+---
+
+<!doctype html>
+<html lang={languages[lang].htmlLang} data-act={act}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#03040c" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={lang} href={canonical} />
+    <link rel="alternate" hreflang={other} href={new URL(switchLang(path, other), Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(switchLang(path, 'en'), Astro.site)} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Vibecoding · QairuHub" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:locale" content={languages[lang].ogLocale} />
+    <meta property="og:locale:alternate" content={languages[other].ogLocale} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <slot name="head" />
+    <script is:inline>
+      // Arm the scroll-reveal animation only if we can actually drive it.
+      // Runs in <head> so content never flashes in and back out.
+      (function () {
+        try {
+          if (
+            'IntersectionObserver' in window &&
+            !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          ) {
+            document.documentElement.classList.add('reveal-armed');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t('nav.skip')}</a>
+    {!bare && <Header lang={lang} />}
+    <main id="main">
+      <slot />
+    </main>
+    {!bare && <Footer lang={lang} />}
+    <script>
+      // Scroll reveal for anything marked [data-reveal].
+      const targets = document.querySelectorAll('[data-reveal]');
+      const revealAll = () => targets.forEach((el) => el.classList.add('is-in'));
+
+      if (document.documentElement.classList.contains('reveal-armed')) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          // A low threshold matters: sections here are often taller than the
+          // viewport, so a large one can never be satisfied on a short screen.
+          { rootMargin: '0px 0px -5% 0px', threshold: 0.01 },
+        );
+        targets.forEach((el) => io.observe(el));
+
+        // Belt and braces. IntersectionObserver does not run in a hidden or
+        // heavily throttled tab, so anything scrolled into view while the
+        // observer is asleep would stay invisible. This sweep costs nothing
+        // and guarantees the page is never blank.
+        let queued = false;
+        const sweep = () => {
+          queued = false;
+          let left = 0;
+          targets.forEach((el) => {
+            if (el.classList.contains('is-in')) return;
+            const r = el.getBoundingClientRect();
+            if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('is-in');
+            else left++;
+          });
+          if (left === 0) {
+            window.removeEventListener('scroll', onScroll);
+            document.removeEventListener('visibilitychange', sweep);
+          }
+        };
+        const onScroll = () => {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(sweep);
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        document.addEventListener('visibilitychange', sweep);
+        setTimeout(sweep, 1200);
+      } else {
+        revealAll();
+      }
+
+      // copy buttons on prompts and terminal blocks
+      document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const root = btn.closest('[data-copy-root]');
+          const text = root?.querySelector('pre')?.innerText ?? '';
+          try {
+            await navigator.clipboard.writeText(text.trim());
+          } catch {
+            return;
+          }
+          const original = btn.textContent;
+          btn.textContent = btn.dataset.copied || 'Copied';
+          btn.classList.add('done');
+          setTimeout(() => {
+            btn.textContent = original;
+            btn.classList.remove('done');
+          }, 1600);
+        });
+      });
+
+      // remember the chosen language for the root redirect
+      try {
+        localStorage.setItem('vc:lang', document.documentElement.lang);
+      } catch {}
+    </script>
+  </body>
+</html>

@@ -1,0 +1,277 @@
+---
+title: "Ship It: Deploy With Your Agent"
+subtitle: Twenty-five minutes from a folder on your laptop to a link anyone can open — then hand the same job to the agent and check its work.
+objective: take a folder on your laptop to a public HTTPS URL, delegate that deploy to an agent, and verify every claim it makes about it
+description: Create the repo with gh, push, deploy to Cloudflare Pages with wrangler, open your own URL on your phone — then delegate the deploy and audit what the agent actually did.
+prerequisites:
+  - Node 20+ and git installed, and a terminal you can type in (Lab 00)
+  - A GitHub account, with the GitHub CLI installed and ready to log in
+  - A free Cloudflare account — no card is needed for anything in this lab
+  - A project that builds — the QAIRU Event Sign-up page from Lab 02 works
+doneWhen: Your page loads on a phone with wifi turned off, and you can name the exact command that put it there.
+artifact: Ship-it runbook — six commands, the one dashboard step, and the audit prompt
+---
+
+<Lead>
+Right now your project is a folder. In twenty-five minutes it will be a URL. You will do it *by hand first*, because you cannot supervise an agent doing something you have never done yourself — and supervising is the whole job.
+</Lead>
+
+Do the first half alone. Do the second half with Claude Code, and then spend the last five minutes proving that what it told you is true. The order matters: an agent that says "deployed successfully" is making a claim, and by the end of this page you will know four different ways that claim can be wrong.
+
+## Part one: six commands you type yourself
+
+<Callout type="warn" title="Thirty seconds that save you a bad week">
+Before the first push, open `.gitignore` and make sure `.env` is in it. A public repo is public the instant it exists, and a key that has ever been committed is compromised even after you delete it. If you are not certain, run `git status` and read every filename in the list before you commit.
+</Callout>
+
+<Steps>
+
+<Step title="Log in to GitHub from the terminal">
+The GitHub CLI turns account work into commands, which means your agent can do it later too. It is also cheaper on context than a GitHub MCP server — Anthropic's own cost guidance is that CLI tools like `gh` stay cheaper than an MCP server for the same job ([costs docs](https://code.claude.com/docs/en/costs)).
+
+<Terminal title="bash">
+
+```bash
+gh auth login
+gh auth status
+```
+
+</Terminal>
+
+`gh auth login` walks you through a browser login and a one-time code. `gh auth status` prints the account you are actually logged in as — check it, because half the "permission denied" problems in this lab are a second GitHub account you forgot about.
+</Step>
+
+<Step title="Create the repo and push, in one command">
+You do not need to open github.com. From inside your project folder:
+
+<Terminal title="bash">
+
+```bash
+git init
+git add -A
+git commit -m "QAIRU Event Sign-up: first working version"
+gh repo create qairu-event --public --source=. --remote=origin --push
+```
+
+</Terminal>
+
+Read the flags once and you will never have to look them up again. `--source=.` means "this folder is the repo". `--remote=origin` wires the connection up under the usual name. `--push` sends the commits immediately. `--public` matters for money: GitHub's standard Actions runners are free on public repositories, while a free private repo gets 2,000 minutes a month ([GitHub billing docs](https://docs.github.com/en/billing/concepts/product-billing/github-actions)).
+
+On Windows PowerShell, chain with `;` instead of `&&` if you put these on one line. Each command on its own line works everywhere.
+</Step>
+
+<Step title="Build the folder that is the website">
+A static site is not magic. It is a folder. Build it, then open the folder and look at it — that single act removes most of the fear from deploying.
+
+<Terminal title="bash">
+
+```bash
+npm run build
+ls dist
+```
+
+</Terminal>
+
+If `dist/` does not appear, your project builds somewhere else — `build/`, `out/`, `public/`. Find the real folder name now, because you are about to type it into the deploy command, and the most common failed first deploy is a perfectly successful upload of the wrong directory.
+
+No build step at all? The QAIRU Event Sign-up page from Lab 02 is one `index.html` and nothing else, which is already a website. Give it a folder of its own so you upload the page and not your whole repo:
+
+<Terminal title="bash">
+
+```bash
+mkdir site
+mv index.html site/
+```
+
+</Terminal>
+
+Then read `site` everywhere the rest of this lab says `dist`.
+</Step>
+
+<Step title="Deploy to Cloudflare Pages">
+Wrangler is Cloudflare's CLI. `npx` runs it without installing anything permanently.
+
+<Terminal title="bash">
+
+```bash
+npx wrangler pages deploy dist --project-name=qairu-event
+```
+
+</Terminal>
+
+The first run sends you to a browser to authorise Wrangler against your Cloudflare account, and offers to create the project if it does not exist yet. Then it uploads `dist/` and prints a URL ending in `pages.dev`, already on HTTPS, already served from data centres worldwide.
+
+If you want to confirm which account you are uploading into before you type anything else:
+
+<Terminal title="bash">
+
+```bash
+npx wrangler whoami
+```
+
+</Terminal>
+</Step>
+
+<Step title="Open it on your phone, on mobile data">
+Not on your laptop. Your laptop has a cached localhost and a browser that will lie to you cheerfully. Turn off wifi on your phone, type the `pages.dev` URL, and load it.
+
+This is the only step in the lab that counts as proof. Everything before it is a claim; this is a request from a machine that is not yours, over a network that is not yours, reaching a server that is not yours.
+</Step>
+
+<Step title="Attach a custom domain — and this one is not a command">
+There is no `wrangler` flag for this one. Open the Cloudflare dashboard, find your Pages project, open **Custom domains**, and add the name. Cloudflare creates the DNS record and issues the SSL certificate for you. Then DNS has to spread — minutes to hours, depending on who is asking from where.
+
+Write this step down somewhere, because in twenty minutes you are handing this job to an agent that cannot open a browser. It will route around the gap and report the `pages.dev` URL as finished.
+
+Cloudflare's free plan allows 100 custom domains per project, so the limit is never the reason this fails ([Pages limits](https://developers.cloudflare.com/pages/platform/limits/)). The reason it fails is that nobody clicked.
+
+No domain yet? The GitHub Student Developer Pack includes a free one for a year — a `.me` from Namecheap, a `.TECH`, or a `.dev`/`.app` from Name.com ([education.github.com/pack](https://education.github.com/pack)).
+</Step>
+
+</Steps>
+
+<Deeper title="What the free tier actually gives you, in numbers">
+Cloudflare Pages Free: 500 builds per month, 1 concurrent build, a 20-minute build timeout, 20,000 files per site, 25 MiB per file, 100 custom domains per project and 100 projects per account. No bandwidth cap is listed for static assets.
+
+If you add a function later, Workers Free gives 100,000 requests a day and 10 ms of CPU per invocation, with no charge for egress. The paid tier starts at $5 a month.
+
+Sources: [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/), [Pages limits](https://developers.cloudflare.com/pages/platform/limits/). The practical meaning for a student project: serving your page costs nothing and will keep costing nothing. It is functions and databases that spend a budget, not HTML.
+</Deeper>
+
+## Part two: hand the same job to the agent
+
+Now you know what the deploy looks like when it goes right, which means you can recognise it going wrong. Delegate it.
+
+<Prompt title="Deploy this project" where="Claude Code · plan mode">
+
+```text
+Plan a first deploy of this project to Cloudflare Pages. Write no code and
+run no commands until I approve the plan.
+
+Facts about this repo:
+- Static site. The build command is `npm run build`. Confirm the output
+  folder yourself by reading the config — do not assume it is dist/.
+- Not yet on GitHub. I want a public repo named qairu-event.
+- `gh` and `npx` are available. I am on [Windows PowerShell / macOS / Linux].
+
+In the plan, give me:
+1. The exact commands, in order, that you will run.
+2. For each one: what it changes that I cannot undo by editing a file.
+3. Which of them you cannot run at all, and why.
+4. The single command I can run afterwards to prove the site is live.
+
+Then, under the heading "I must do these in a browser myself", list every
+step that has no CLI equivalent. Do not tell me the site is live until
+that list is empty or I have confirmed I did them.
+```
+
+</Prompt>
+
+Three things to watch for while it works.
+
+**It will stop and ask before deploying, and that is correct.** On Pro, Max and Team plans, interactive sessions now start in auto mode, where a second classifier model reviews actions before they run. Production deploys are in the set it blocks by default, alongside force pushes and mass deletions ([permission modes](https://code.claude.com/docs/en/permission-modes)). The same page notes the docs' own warning: it reduces prompts, it does not guarantee safety. Read the command it is asking about, and read the folder name in it.
+
+**You can draw a line in plain language.** If you say "don't push" in the conversation, the classifier treats that as a boundary until you lift it. That is a real fence, not politeness.
+
+**Or make the fence permanent.** In `.claude/settings.json`:
+
+<Terminal title=".claude/settings.json">
+
+```json
+{
+  "permissions": {
+    "ask": ["Bash(git push *)", "Bash(npx wrangler *)"],
+    "deny": ["Read(./.env)", "Read(./.env.*)"]
+  }
+}
+```
+
+</Terminal>
+
+Mind the space before the star: the canonical form is `Bash(git push *)`, with the wildcard after the subcommand, not `Bash(git *)` ([permissions docs](https://code.claude.com/docs/en/permissions)). And keep the honest limit in view — Bash rules match command text, not programs, so they are convenience rather than a security boundary.
+
+## Part three: check what it actually did
+
+Anthropic's own number for why this section exists: Claude Code users approve 93% of permission prompts, which the engineering post describes as leading to approval fatigue, "where people stop paying close attention" ([auto mode, 25 Mar 2026](https://www.anthropic.com/engineering/claude-code-auto-mode)). You are not immune. So verify mechanically instead of by feeling.
+
+Press `Ctrl+O` to open the transcript viewer and read the actual tool calls — not the summary the agent wrote, the commands it ran ([interactive mode](https://code.claude.com/docs/en/interactive-mode)). Then run the checks yourself. Inside a session, `!` at the start of a line runs a command and drops the output into the conversation.
+
+<Terminal title="bash">
+
+```bash
+git log --oneline -3
+git remote -v
+gh repo view --web
+curl -sI https://qairu-event.pages.dev | head -1
+```
+
+</Terminal>
+
+Four commands, four different lies caught. `git log` shows whether the commit exists or whether the agent only staged files. `git remote -v` shows which repository it pushed to. `gh repo view --web` opens the repo so you can see, with your eyes, whether a `.env` is sitting in it. And `curl -sI` asks the live URL for its status line — `HTTP/2 200` means a server answered, which is the only thing that counts.
+
+<Prompt title="Audit the deploy you just did" where="Claude Code · new session, after /clear">
+
+```text
+Audit the deploy that was just done to this project. Assume nothing from
+memory — check the current state with commands.
+
+Report, as a table, one row per claim:
+- claim (e.g. "the repo is public", "dist/ was the folder uploaded",
+  "the live URL serves the newest build")
+- the command you ran to test it
+- the actual output
+- PASS or FAIL
+
+Finish with two lists: what is genuinely live right now, and what is still
+only true on my laptop. If any claim cannot be tested with a command from
+here, say so instead of guessing.
+```
+
+</Prompt>
+
+Run that in a fresh session after `/clear`. A session that just did the work is the worst reviewer of it — it will confirm its own summary. A session with no memory of the deploy has to go and look.
+
+<Callout type="danger" title="Rewind does not reach the internet">
+Claude Code checkpoints cover the edits its own tools made to your files. The docs list what is not tracked, and remote side effects — database writes, pushes, deploys — are on that list ([checkpointing](https://code.claude.com/docs/en/checkpointing)).
+
+So `/rewind` can put your source back to before the mistake while the broken version stays live the entire time, and your terminal will look completely calm. Undoing a deploy is a git operation followed by another deploy: `git revert`, push, rebuild, `npx wrangler pages deploy` again. There is no shortcut, and the first time you need it should not be the first time you have done it.
+</Callout>
+
+<Quiz
+  id="lab6-verify"
+  question="Your agent reports: 'Deployed successfully. The site is live at qairu-event.pages.dev.' What is the fastest check that this is actually true?"
+  options={[
+    'Ask the agent to confirm by reviewing its own output',
+    'Open /rewind — a real deploy shows up in the checkpoint list',
+    'Open the URL on your phone with wifi off, and look at the page',
+    'Check that git log contains a commit mentioning the deploy',
+  ]}
+  answer={2}
+  explain="Checkpoints never record deploys — remote side effects are explicitly not tracked, so an empty rewind list proves nothing either way. A commit message is a sentence someone typed, not evidence. And an agent re-reading its own transcript just repeats itself more confidently. The only proof is a request from a machine that is not yours reaching a server that is not yours."
+  xp={15}
+/>
+
+<Callout type="live" title="If you are teaching this lab">
+Do Part One live on the projector, slowly, and stop at the `pages.dev` URL. Read it out and ask the room to type it into their phones. Twenty phones loading the same page at once is the moment the abstraction becomes real, and it costs you nothing on the free tier.
+
+Then break it on purpose: deploy a folder that is not the build output, show the agent reporting success, and let someone in the room catch it with `curl -sI`.
+</Callout>
+
+<Checklist
+  id="lab6-shipped"
+  title="Before you call it shipped"
+  items={[
+    '.env is in .gitignore and was never committed — you checked the repo in a browser',
+    'gh auth status shows the account you meant to use',
+    'The folder in the wrangler command is the folder npm run build actually writes',
+    'You loaded the pages.dev URL on a phone with wifi turned off',
+    'curl -sI on the live URL returned 200, not 404',
+    'You read the transcript with Ctrl+O, not just the summary the agent wrote',
+    'You know which steps are browser-only, and you have done them or written them down',
+  ]}
+  xp={20}
+/>
+
+<Artifact title="Ship-it runbook" kind="checklist">
+The six commands, the one dashboard step nobody can automate, and the audit prompt you run in a fresh session when an agent tells you it is live.
+</Artifact>

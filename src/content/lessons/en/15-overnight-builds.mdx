@@ -1,0 +1,270 @@
+---
+title: Autonomous Builds & What Comes Next
+subtitle: This site was built overnight by a team of agents taking orders from one person. Here is the harness that made it survivable — and what you do with it next.
+objective: set up an overnight agent run that fences itself, checks its own work, and leaves you something reviewable in the morning
+description: Plan mode, allowlists, self-verifying gates, PROGRESS.md harnesses and cost caps for long autonomous runs — plus the path from vibe coder to agentic engineer.
+artifact: Overnight run kit — master prompt, settings.json fence, pre-flight checklist
+---
+
+<Lead>
+The site you are reading was written in one night. Research agents gathered and cited the sources, a fact-check agent tried to *break* them, content agents wrote the modules. One human directed it and reviewed the result. None of that is magic — it is a harness, and you can build one this week.
+</Lead>
+
+An overnight run is not a longer prompt. The agent hits a wall at 03:00 with nobody awake to answer, so everything depends on what you left behind for it.
+
+## What actually ran that night
+
+<Story title="One person, a team of agents" date="21 Sep 2026" place="Astana">
+Three shifts. **Research agents** wrote long Markdown files where every claim carried a source URL and a `[V]` or `UNVERIFIED` marker. A **fact-check agent** then took the claims most likely to reach a slide — numbers, dates, quotes, prices, commands — opened each primary source, and tried to refute them. It corrected its own team: a famous story about a five-line agent loop turned out to credit a different tool entirely, and a widely repeated `rm -rf ~` anecdote turned out to be a paraphrase of a GitHub issue that says something else. Both corrections are still in the files, labelled. Only then did **content agents** write the lessons, allowed to use nothing but those files.
+</Story>
+
+The point is not that agents can write a website. It is that the run was built to surface its own mistakes at 02:00, instead of on stage.
+
+## Plan mode is the first gate, not a formality
+
+Nothing autonomous starts without a written plan you have read. Enter [plan mode](https://code.claude.com/docs/en/permission-modes) with `Shift+Tab`, or start with `claude --permission-mode plan`. `Ctrl+G` opens the plan in your editor so you can rewrite it before approving — almost nobody presses it, and almost everybody approves plans they only skimmed.
+
+For a repo you will run unattended, make it the default:
+
+```json
+{ "permissions": { "defaultMode": "plan" } }
+```
+
+The loop is Explore → Plan → Code → Commit. [The docs](https://code.claude.com/docs/en/best-practices) say to skip planning when you could describe the diff in one sentence — never true of an overnight run.
+
+## The fence: allow, ask, and deny rules that win
+
+Permissions live in `.claude/settings.json` (shared with everyone who clones the repo) or `.claude/settings.local.json` (just you). [Evaluation order](https://code.claude.com/docs/en/permissions) is **deny → ask → allow, first match wins, specificity does not matter**.
+
+```json
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "plan",
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm run test *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git status *)",
+      "Bash(git diff *)"
+    ],
+    "ask": ["Bash(git push *)"],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)"
+    ]
+  }
+}
+```
+
+Four details that bite people:
+
+- Put the `*` **after** the subcommand: `Bash(git log *)`, never `Bash(git *)`. Mind the space — `Bash(git diff*)` also matches `git diff-index`.
+- Bash rules match the **command text**, not the program. `Bash(rm *)` does not stop `/bin/rm`.
+- Only `Read(path)` and `Edit(path)` rules are consulted for files. A `Write(...)` path rule is accepted by the format and then never checked.
+- A `Read` deny also blocks Edit and Write there, and covers `cat`, `head` and `sed` in Bash — but not a script that opens the file itself.
+
+<Callout type="warn" title="What this fence is and is not">
+Allow and deny lists are convenience, not a security boundary. For an actual boundary you need OS-level sandboxing or a `PreToolUse` hook — and secrets that are not reachable from the folder you started in.
+</Callout>
+
+<Quiz
+  id="m15-deny-wins"
+  question="Your settings allow Bash(npm run *) and deny Read(./.env). Mid-run the agent writes a tiny Node script that opens .env and prints it, then runs it through npm. What happens?"
+  options={[
+    'The deny rule blocks it — Read rules cover every path the agent reaches, however it reaches it',
+    'The script runs and prints the secret: a Read deny does not cover a program that opens the file itself',
+    'Claude Code asks you first, because anything touching secrets always triggers a prompt',
+    'The allow rule wins, because it is the more specific of the two rules',
+  ]}
+  answer={1}
+  explain="A Read deny blocks the Read tool and covers cat, head, tail and sed in Bash — not a program that opens the file on its own. Deny does beat allow, and specificity never matters, but that is rule order, not containment. Keep secrets outside the folder, or sandbox the run."
+  xp={15}
+/>
+
+## Why the skip-permissions flag is the wrong answer
+
+`--dangerously-skip-permissions` turns every prompt off, and the docs limit it to isolated containers and VMs. The sharper reason: in the August 2025 [Nx supply-chain attack](https://www.wiz.io/blog/s1ngularity-supply-chain-attack), a malicious post-install script hunted for AI CLIs already on the machine and **prompted them with `--dangerously-skip-permissions`, `--yolo` and `--trust-all-tools`** to find secrets for it. Over a thousand GitHub tokens and roughly 20,000 files leaked. The flag that removes your friction removes it for whatever else runs as you.
+
+Use these instead, in order:
+
+1. **Auto mode** — a classifier reviews each action rather than you. Anthropic [built it](https://www.anthropic.com/engineering/claude-code-auto-mode) because users approved about 93% of prompts anyway. From that post: 0.4% false positives, **17% false negatives on real over-eager actions**. A seatbelt, not a sandbox.
+2. **`/sandbox`** — OS-level filesystem and network isolation for Bash. Anthropic on its own internal usage: "sandboxing safely reduces permission prompts by 84%" ([Oct 2025](https://www.anthropic.com/engineering/claude-code-sandboxing)). Unlike a denylist, a real boundary. macOS, Linux and WSL2 — **not native Windows**, so Windows students run unattended work in WSL2.
+3. **A container or VM** for anything you would not point at your home directory.
+
+<StatRow>
+  <Stat value="17%" label="of genuinely over-eager actions auto mode misses" source="Anthropic, Mar 2026" href="https://www.anthropic.com/engineering/claude-code-auto-mode" tone="warn" />
+  <Stat value="84%" label="fewer permission prompts with OS-level sandboxing" source="Anthropic, Oct 2025" href="https://www.anthropic.com/engineering/claude-code-sandboxing" tone="good" />
+  <Stat value="22x" label="cost of a full harness vs the same app built solo" source="Anthropic, Mar 2026" href="https://www.anthropic.com/engineering/harness-design-long-running-apps" tone="warn" />
+</StatRow>
+
+## The harness: what the run reads before it does anything
+
+A long run is many short sessions, each starting with no memory of the last, so the only continuity is what is on disk. Anthropic's [harness work](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) uses an **initializer** that runs once — setup script, progress file, feature list, first commit — and a **coding agent** that every later session advances **one** feature, cleanly. Copy one choice literally: the feature list is JSON, because models are less likely to casually rewrite JSON than Markdown.
+
+Three files at your repo root:
+
+```text
+PROGRESS.md    append-only. One block per session: what changed, where,
+               how it was verified, what the next session must know.
+BLOCKERS.md    empty is the good state. Two failed attempts at the same
+               thing → write it here, move on. Never a third attempt.
+TODO.json      the work as objects with an id, a title and done: false.
+               Flipped to true only after the check actually passed.
+```
+
+Put the ritual in the prompt verbatim: read those three files and the last `git log` lines, run the setup script, confirm the app still works, pick **one** unfinished item, implement, verify, commit, append to PROGRESS.md, stop.
+
+<Deeper title="Every harness part is a bet about what the model cannot do">
+Anthropic's [March 2026 follow-up](https://www.anthropic.com/engineering/harness-design-long-running-apps) deleted two components it had needed a year earlier, because a newer model stopped showing the behaviour they compensated for. Re-test your scaffolding on each model release and remove what no longer earns its place.
+</Deeper>
+
+## Gates the run cannot argue with
+
+The first section of Anthropic's [best-practices guide](https://code.claude.com/docs/en/best-practices) is about giving the agent a way to verify its work: without a runnable check, "looks done" is its only signal and you become the test suite. Four gates, rising in effort:
+
+- Ask for the check in the prompt and demand evidence — the command and its output, never a claim.
+- [`/goal`](https://code.claude.com/docs/en/goal) plus a condition: a small fast model re-reads the transcript each turn and judges it. It cannot run tools, so write conditions the agent's own output proves — "`npm test` exits 0" — and bound it with "or stop after 20 turns".
+- A **Stop hook**: your script blocks the turn from ending until it passes. (Claude Code overrides it after eight consecutive blocks, so it must be able to succeed.)
+- A **verification subagent** whose only job, in fresh context, is to refute the result.
+
+One script, and its exit code is the whole contract:
+
+<Terminal title="verify.sh">
+```bash
+#!/usr/bin/env bash
+# The run's referee. Non-zero anywhere means "not done".
+set -euo pipefail
+
+npm run typecheck      # the types still line up
+npm run build          # the thing actually builds
+npm test               # the behaviour you asked for still holds
+npm run check:links    # no dead internal links in the built output
+```
+</Terminal>
+
+Write that output for the agent: little on stdout, detail into a log file, one grep-friendly line per failure. That comes from the team that built [a C compiler with sixteen parallel agents](https://www.anthropic.com/engineering/building-c-compiler), with the warning that matters most here — **the agent solves exactly the problem your tests define**. Weak tests produce confident code solving the wrong problem.
+
+[Kent Beck's](https://newsletter.kentbeck.com/p/augmented-coding-beyond-the-vibes) three signs a run is off the rails: it loops; it adds functionality nobody asked for; it disables tests to get green. Put "never disable, skip or delete a test" in the prompt, and fail the gate if the test count drops.
+
+## Small commits are the unit of recovery
+
+Commit after every unit of progress, with a message naming the unit. That is the only mechanism that lets a 03:00 session return to a working state without you.
+
+Checkpoints are not a substitute. Claude Code [snapshots files](https://code.claude.com/docs/en/checkpointing) before each edit, but keeps only the 100 most recent per session and does **not** track changes made by Bash commands (`rm`, `mv`, `cp`) or most subagent edits. Checkpoints are local undo; git is permanent undo. Work on a branch, and take Simon Willison's [anti-pattern](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/) seriously: never open a pull request you have not read.
+
+## What the night costs, and how to cap it
+
+Long sessions are expensive structurally: the whole conversation is re-sent on every request, and cache reads are still billed.
+
+The multipliers: an agent uses roughly 4x the tokens of a chat, multi-agent setups generally 3–10x a single agent, and Anthropic's harness experiment cost $200 against $9 for the same app built solo. [Enterprise averages](https://code.claude.com/docs/en/costs) land near $13 per developer per active day.
+
+Levers by impact: `/clear` between tasks (free — `/compact` is itself a large request); expensive model to plan, cheaper for the parallel legwork; lower `/effort` on simple work, since thinking tokens bill as output. Then set hard stops before bed — an iteration cap, `--max-budget-usd`, and a turn limit inside the prompt.
+
+<Callout type="danger" title="The billing trap">
+An `ANTHROPIC_API_KEY` sitting in your exported environment silently switches you from your subscription to per-token billing. Check before a long unattended run, not after.
+</Callout>
+
+## What never goes into an unattended run
+
+<Compare a="Safe to leave running" b="Never, however good the prompt is">
+<div slot="a">
+Features built against a **spec you wrote**, in one repo you own, on a branch, with a dev database, a gate script, an iteration cap and deny rules on your secrets. Worst case: you wake up to a branch you delete.
+</div>
+<div slot="b">
+Anything touching **money**, **another team's repo**, **DNS or infrastructure**, **secret stores**, or **destructive commands** against data that already exists.
+</div>
+</Compare>
+
+Two incidents make it concrete. A founder declared a code freeze in chat; [the agent ran destructive commands anyway](https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/) against the live database, because it held production credentials and a sentence in a chat window is not a permission system. At Amazon, [an agent fixing an issue](https://incidentdatabase.ai/cite/1442/) deleted and recreated part of a working environment and took a service down for around thirteen hours, having inherited a human's broad permissions.
+
+Two traps specific to unattended runs. [`claude -p` without `--bare`](https://code.claude.com/docs/en/headless) runs that repository's hooks and `.mcp.json` servers **with no trust dialog** — never aim a headless run at a repo you have not read. And whatever `aws`, `gcloud` or `vercel` CLI is logged in on your laptop is what the agent inherits.
+
+## The master prompt you actually paste
+
+A few parts do most of the work in any prompt: goal, context, constraints, output shape, stop condition. When a result disappoints, the fix is usually a missing one of these, not a bigger model.
+
+<Widget name="prompt-lab" />
+
+The same set, tuned for a run that must survive being restarted from scratch:
+
+<Prompt title="Overnight run — master prompt" where="PROMPT.md · Claude Code">
+```text
+GOAL        [one sentence: what must be true when you are done]
+WHY         [who needs it / what it unblocks — this drives your trade-offs]
+
+CONTEXT     Read first, in this order: @PROGRESS.md, @BLOCKERS.md,
+            @TODO.json, @SPEC.md, then the last 10 lines of git log.
+            Pattern to follow: [an existing file that is already right].
+
+CONSTRAINTS Stack: [..]. Do not change: [..]. No new dependencies.
+            Out of scope: [..]. Never disable, skip or delete a test.
+
+PROCESS     Pick the single highest-priority unfinished item in TODO.json
+            and do only that one. 1) explore  2) plan  3) implement in
+            small steps  4) run ./verify.sh  5) commit with a message
+            naming the item. Use subagents for broad searches.
+
+DONE MEANS  ./verify.sh exits 0. Show the command and its real output as
+            evidence. An assertion that it passed is not evidence.
+
+IF STUCK    After two failed attempts at the same thing: stop, append what
+            you tried and what you saw to BLOCKERS.md, move to the next
+            item. Ask instead of guessing on anything ambiguous.
+
+OUTPUT      Append one block to PROGRESS.md: what changed, where, how it was
+            verified, what the next session must know. Then stop.
+
+LIMITS      Stop after [N] items or [N] turns, whichever comes first.
+```
+</Prompt>
+
+<Checklist
+  id="m15-preflight"
+  title="Pre-flight: before you close the laptop"
+  items={[
+    'git status is clean and the last commit passes verify.sh — you ran it yourself, just now',
+    'You are on a branch, never on main',
+    'SPEC.md, TODO.json, PROGRESS.md, BLOCKERS.md and verify.sh all exist at the repo root',
+    '.claude/settings.json: deny on .env, ~/.ssh and ~/.aws; ask on git push; defaultMode plan',
+    'Only a dev database is reachable from this folder — no production credentials anywhere near it',
+    'The run is inside a sandbox, container or VM (on Windows, that means WSL2)',
+    'An iteration cap and a budget cap are set, and you know the exact command that stops the run',
+    "Nothing in the task touches money, another team's repo, DNS, or a secret store",
+    'You have written down what you will check first in the morning',
+  ]}
+  xp={20}
+/>
+
+<Callout type="live" title="If you are teaching this page">
+Run the pre-flight list out loud against a real repo on the projector and let the room catch the item you are missing. There is always one.
+</Callout>
+
+## From vibe coder to agentic engineer
+
+On the first anniversary of [the tweet that started this](https://x.com/karpathy/status/2019137879310836075), its author proposed a new name for what the work had become: agentic engineering. The job moved. You are not typing the code, and you are not ignoring it either. You write the spec, choose the fence, build the gate, read the diff, and decide what a machine may do while you sleep. Those decisions do not get automated away, because each is about consequences in the world — the part the agent cannot see.
+
+What to build next:
+
+- **Something you will personally use every week.** You only maintain what you need.
+- **A repeatable gate.** Turn a check you do by hand into a script an agent can run. Best hour you will spend all month.
+- **A small eval set.** Keep 10–20 real tasks that went wrong and re-run them after you change CLAUDE.md, a skill or the model. That is how you stop guessing.
+
+Further reading: Simon Willison's [Agentic Engineering Patterns](https://simonwillison.net/guides/agentic-engineering-patterns/), and [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) if you want to build agents, not only drive them.
+
+## Three things to do in the next seven days
+
+1. **Tonight, 30 minutes.** In your QAIRU Event Sign-up repo, write `.claude/settings.json` with the deny rules above and `defaultMode` set to plan, then write `verify.sh` with the four checks. Run it and fix what it catches.
+2. **This week, one evening.** Write `SPEC.md`, `TODO.json`, `PROGRESS.md` and `BLOCKERS.md`, paste the master prompt into `PROMPT.md`, set an iteration cap, and do one supervised two-hour run on a branch while you are in the room. Read every commit before you merge.
+3. **Before the week ends, publish.** Deploy it, then post the URL and your `PROGRESS.md` in the QairuHub Telegram at [t.me/qairuhub](https://t.me/qairuhub). Someone there will break it for you — the fastest free code review in the country. Then pick your next project at [qairuhub.com](https://qairuhub.com).
+
+You finished the course. You can take an idea, spec it, fence an agent, make it prove its work, ship it to a real URL, and leave it running overnight without flinching. Almost nobody around you can do that yet. Go use the head start.
+
+<Artifact title="Overnight run kit" kind="prompt-pack">
+The master prompt, the settings.json fence, verify.sh and the pre-flight checklist — everything on this page in one folder you can drop into a repo.
+</Artifact>

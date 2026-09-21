@@ -1,0 +1,36 @@
+---
+interface Props {
+  value: string;
+  label: string;
+  source?: string;
+  href?: string;
+  tone?: 'good' | 'warn' | 'info' | 'neutral';
+}
+const { value, label, source, href, tone = 'neutral' } = Astro.props;
+---
+
+<div class:list={['stat', tone]} data-reveal>
+  <span class="value">{value}</span>
+  <span class="label">{label}</span>
+  {
+    source &&
+      (href ? (
+        <a class="src" href={href} target="_blank" rel="noopener noreferrer">
+          {source} ↗
+        </a>
+      ) : (
+        <span class="src">{source}</span>
+      ))
+  }
+</div>
+
+<style>
+  .stat { --c: #fff; display: grid; gap: 8px; align-content: start; padding: 22px; border-radius: 20px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); margin: 28px 0; }
+  .good { --c: var(--color-signal); }
+  .warn { --c: var(--color-amber); }
+  .info { --c: var(--color-ice); }
+  .value { font: 200 clamp(44px, 7vw, 68px) / 0.95 var(--font-display); letter-spacing: -0.04em; color: var(--c); }
+  .label { font-size: 15px; line-height: 1.45; color: #dfe3f7; }
+  .src { font: 500 11px/1.4 var(--font-mono); color: var(--color-faint) !important; text-decoration: none !important; letter-spacing: 0.04em; }
+  a.src:hover { color: var(--c) !important; }
+</style>

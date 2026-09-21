@@ -1,0 +1,173 @@
+---
+title: Why This Skill Matters Now
+subtitle: Two numbers get quoted at you constantly. Both are real, both are quoted wrongly, and the space between them is where this course lives.
+objective: read the honest evidence on AI coding from both directions and explain why feeling fast is not the same as being fast
+description: The YC 95% claim with its real scope, the METR trial and its follow-ups, trust and code-quality trends, and the 2026 market facts — every number with its source.
+artifact: The two-column evidence card
+---
+
+<Lead>
+Two things are true at once, and most of the internet only ever tells you one of them. Shipping something that works got dramatically cheaper. Shipping something *good* did not. Every number below carries its source, because you will be arguing about this for the rest of your career.
+</Lead>
+
+## Guess before you read
+
+Make a prediction first. Not because guessing is fun, but because a number you committed to sticks, and a number you scrolled past does not. Three questions, one slider each. Commit to a number before you press reveal.
+
+<Widget name="guess-the-number" />
+
+<Callout type="live" title="For whoever is teaching this">
+Put the three questions on the projector and take a guess from the room out loud before you reveal each answer. Expect the room to lean optimistic, in exactly the direction the developers in the METR study did. That is the whole module in thirty seconds.
+</Callout>
+
+## The 95% number is real, and it is not what you think
+
+In March 2025 one sentence did more for vibe coding's reputation than every demo combined. Jared Friedman, a managing partner at Y Combinator, said that for about a quarter of the startups in YC's Winter 2025 batch, roughly 95% of the codebase was AI-generated ([TechCrunch, 6 March 2025](https://techcrunch.com/2025/03/06/a-quarter-of-startups-in-ycs-current-cohort-have-codebases-that-are-almost-entirely-ai-generated/)).
+
+Read it again slowly. It is 25% of one batch, not 95% of Y Combinator. The 95% compares human-typed to AI-typed characters, and it excludes imported library code. And Friedman's own framing is the part that never travelled: those founders were highly technical people who could have written every line by hand. In the same YC video Diana Hu said judging model output takes taste and training, and Garry Tan noted that the reasoning models of the day were poor at debugging.
+
+So the stat is true, and what it means is this: experienced builders, given a good tool, stopped typing. It does not mean the typing was the hard part.
+
+<Deeper title="Why four honest answers to the same question all disagree">
+Ask "how much code does AI write?" and you get four numbers, all defensible, all measuring different things.
+
+- **Friedman, March 2025:** ~95% of the codebase, for ~25% of one YC batch, imports excluded.
+- **Sundar Pichai, 22 April 2026:** 75% of all new code at Google, in his words "AI-generated and approved by engineers" ([blog.google](https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/cloud-next-2026-sundar-pichai/)). Google's metric changed meaning along the way, from accepted autocomplete characters to agent output. Semafor called this class of claim "pretty impossible to fact-check" ([24 April 2026](https://www.semafor.com/article/04/24/2026/google-ceo-says-75-of-companys-new-code-is-ai-generated)).
+- **Satya Nadella, April 2025:** 20–30% of code in Microsoft repos, better in Python than in C++ ([TechCrunch](https://techcrunch.com/2025/04/29/microsoft-ceo-says-up-to-30-of-the-companys-code-was-written-by-ai/)).
+- **Independent measurement:** about 29% of newly written Python functions in the US were AI-written by the end of 2024, up from 5% in 2022 — a classifier run over 30 million contributions from roughly 160,000 GitHub developers, published in *Science* ([Complexity Science Hub](https://csh.ac.at/news/ai-is-already-writing-almost-one-third-of-new-software-code/)).
+
+Four denominators. When someone quotes one at you, the question is not "is that true?" but "of what?"
+</Deeper>
+
+## The best trial we have said the opposite
+
+METR is a research group that runs evaluations on AI systems. In early 2025 it ran the trial everyone now argues about, published on [10 July 2025](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/).
+
+Sixteen experienced open-source developers. 246 real issues from their own repositories — mature projects averaging over a million lines of code, which these developers had worked on for around five years. Every issue was randomly assigned to AI-allowed or AI-disallowed. The tooling was mostly Cursor Pro with Claude 3.5 and 3.7 Sonnet.
+
+With AI, the tasks took **19% longer**.
+
+The part that matters more than the result: before starting, those developers forecast they would be 24% faster. After finishing — after actually living through every task — they still believed they had been about 20% faster. The stopwatch said 19% slower. That is roughly a 40-point gap between the feeling and the measurement, and the people in the gap were experts on their own code.
+
+<Deeper title="What the METR study does not say">
+METR was unusually explicit about the limits. The result is not a claim about most developers, not about juniors, not about unfamiliar codebases, not about future models, and not evidence that better ways of using AI do not exist.
+
+The setting was deliberately the hardest case for AI: experts, enormous mature repositories, a high quality bar, and years of context living in the developer's head that no prompt captures. So "studies prove AI makes developers slower" is a misquote of a study whose own authors refuse that sentence.
+</Deeper>
+
+## What happened to that result afterwards
+
+Evidence that never updates is not evidence. On [24 February 2026](https://metr.org/blog/2026-02-24-uplift-update/) METR published the rerun: 57 developers (10 returning from the original study plus 47 new), more than 800 tasks across 143 repositories, starting in August 2025.
+
+Returning developers: 18% *less* time. Confidence interval −38% to +9%. New recruits: 4% less time, interval −15% to +9%. Both intervals cross zero, so neither is a number you can bank.
+
+Then METR did something rarer than running a study: it called its own dataset an unreliable signal and started redesigning the method. Some developers refused to take part at all if it meant working without AI. Between 30% and 50% of participants quietly avoided submitting the tasks they least wanted to do by hand. METR's own reading is that its estimate is likely a lower bound — the best AI use cases selected themselves out of the experiment.
+
+The honest sentence today: **the sign has probably flipped; the size is unknown.**
+
+In May 2026 the same lab asked 349 technical workers what they *felt*. Median self-report: 1.4–2x more value, 3x more speed ([METR, 11 May 2026](https://metr.org/blog/2026-05-11-ai-usage-survey/)). METR attached its own warning to its own survey, pointing back at the trial where people overestimated by about 40 points.
+
+<Callout type="tip" title="The pattern worth memorising">
+Effects that get **measured** — stopwatch, control group, randomisation — come out small, and sometimes negative. Effects that people **report about themselves** start at 1.4x and climb from there. Nobody in either group is lying. This is what happens when a tool removes the boring part of the work: you remember the flow, not the time spent re-reading a diff that was subtly wrong.
+</Callout>
+
+<Quiz
+  id="m1-perception-gap"
+  question="In the METR trial, what did the developers believe about their own speed after they had finished the tasks?"
+  options={[
+    'They realised they had been slower, but kept using AI anyway',
+    'They still believed AI had made them about 20% faster',
+    'The study did not ask them, only timed them',
+    'They believed AI had slowed them down, by roughly the amount it did',
+  ]}
+  answer={1}
+  explain="Even after living through every task, they estimated they had been ~20% faster while the measurement said 19% slower. That ~40-point gap between felt and measured speed is why the rest of this course is built around verification rather than vibes."
+  xp={10}
+/>
+
+## Everyone uses it. Almost nobody trusts it.
+
+Stack Overflow's 2025 developer survey collected more than 49,000 responses across 177 countries and was released on 29 July 2025. 84% of developers use AI tools or plan to. In the same survey, 46% distrust the accuracy of what those tools produce, and only 3.1% trust it highly. The top frustration, named by 66%, is an answer that is almost right but not quite; 45% say debugging AI-written code takes longer ([survey.stackoverflow.co](https://survey.stackoverflow.co/2025/ai)).
+
+That is not a contradiction. That is a profession that has decided the tool is worth using *and* worth checking.
+
+One more thing about that survey, and it is a skill rather than a fact: there is no published 2026 edition yet. Plenty of articles right now run the 84% and the 3% under a "Stack Overflow 2026" headline. Those are the 2025 numbers wearing a new date. Check the year on every statistic anyone hands you, including the ones on this page.
+
+Code quality points the same way. GitClear analysed 623 million code changes from 2023 to 2026: copy-pasted lines rose from 9.4% to 15.7% of new code in the first half of 2026, duplicated blocks rose about 81%, and refactoring — tidying what exists instead of adding more — fell from roughly 21% of changes in 2022 to 3.8% ([GitClear](https://www.gitclear.com/the_ai_code_quality_maintainability_gap)). GitClear sells code-quality tooling and the analysis is correlational, so take the direction, not the decimal. The direction is: agents add. They rarely tidy, unless you ask.
+
+Security has not improved on its own either. Veracode's July 2026 report found 56% of generated samples passing a security test, so 44% introduced a known kind of flaw — against a 55% pass rate a year earlier ([Veracode](https://www.veracode.com/blog/2026-genai-code-security-report-ai-risk/)). Its March 2026 edition put syntax correctness above 95% ([Veracode](https://www.veracode.com/blog/spring-2026-genai-code-security/)). Models learned to write code that runs. They did not learn to write code that is safe. Those test prompts contain no security instructions, so the number measures the default, not the ceiling. That is the good news: the default is the part you can change.
+
+## The money says this is not a fad
+
+- On 14 August 2026 SpaceX filed a [Form 8-K](https://www.sec.gov/Archives/edgar/data/1181412/000162828026056945/spcx-20260814.htm) recording that Anysphere, the company behind the Cursor editor, had merged into a SpaceX subsidiary, all-stock, at an implied equity value of $60.0 billion. A code editor, absorbed by a rocket company.
+- Lovable said in June 2026 it had reached $500 million in annualised revenue, with a million new projects started every week and over 50 million built in total ([TechCrunch, 9 June 2026](https://techcrunch.com/2026/06/09/lovable-says-it-has-hit-500m-in-annualized-revenue-with-1-million-new-projects-a-week/)) — reported alongside the question nobody outside the company can answer: how many of those are still alive?
+- Anthropic said in February 2026 that Claude Code was running above a $2.5 billion annual run-rate, more than double where it began that year ([Anthropic](https://www.anthropic.com/news/anthropic-raises-30-billion-series-g-funding-380-billion-post-money-valuation)).
+- JetBrains surveyed over 15,000 professional developers between May and July 2026: 90% use an AI coding agent at work at least weekly, 68% daily. Claude Code reached 39% work adoption, up from 18% in January 2026 ([JetBrains Research](https://blog.jetbrains.com/research/2026/08/ai-coding-agent-adoption-2026/)).
+
+Argue about whether any one valuation is sane. You cannot argue that this is a niche — nine in ten professional developers use an agent at work every single week.
+
+## The floor rose. The ceiling did not move by itself.
+
+<StatRow>
+  <Stat value="75%" label="of new code at Google, AI-generated and approved by engineers" source="Sundar Pichai, Apr 2026" href="https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/cloud-next-2026-sundar-pichai/" tone="info" />
+  <Stat value="90%" label="of professional developers use a coding agent at work every week" source="JetBrains, Aug 2026" href="https://blog.jetbrains.com/research/2026/08/ai-coding-agent-adoption-2026/" tone="info" />
+  <Stat value="19%" label="slower, not faster, when experts were timed on their own repositories" source="METR, Jul 2025" href="https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/" tone="warn" />
+  <Stat value="3.1%" label="of developers highly trust the accuracy of AI output" source="Stack Overflow, 2025" href="https://survey.stackoverflow.co/2025/ai" tone="warn" />
+</StatRow>
+
+Put the two columns beside each other and one sentence falls out of them.
+
+**The floor rose enormously.** Things that used to need a team, a budget and half a year now need a weekend and a clear head. A million new Lovable projects a week is the floor rising, and it is why you are reading this instead of a textbook.
+
+**The ceiling did not move by itself.** Faros AI looked at telemetry from more than 10,000 developers on 1,255 teams: the teams using AI heavily merged 98% more pull requests — and spent 91% more time reviewing them. Pull requests grew 154% larger, bugs per developer rose 9%, and there was no measurable improvement at the company level ([Faros AI](https://www.faros.ai/blog/ai-software-engineering)). The work did not vanish. It moved, from writing to reading.
+
+One builder measured the same thing on himself. In March 2026 Mac Budkowski described getting a working prototype of a small Farcaster app in about an hour, then spending more than 100 hours making it shippable: interface, infrastructure, contract security, edge cases ([kanfa.macbudkowski.com](https://kanfa.macbudkowski.com/vibecoding-cryptosaurus)). The first hour is the floor. The hundred hours are the ceiling.
+
+The *Science* study of 160,000 GitHub developers found the same shape from the other end: less experienced developers used AI on more of their work (37% versus 27%), and the measurable output gains went almost entirely to the experienced ones.
+
+Anthropic ran the version that should concern a student most. In January 2026 it put 52 mostly-junior engineers in front of an unfamiliar Python library. Those who delegated to AI scored 50% on a comprehension quiz afterwards; those who wrote it by hand scored 67%. The AI group finished about two minutes faster — not a meaningful difference. The people who kept their scores asked the model to *explain* while it worked, instead of only to produce ([Anthropic Research](https://www.anthropic.com/research/AI-assistance-coding-skills)).
+
+The floor is a gift; take it. The ceiling is a skill, and nobody hands it to you. The gap between feeling fast and being fast is the single most useful thing in this course, and every module after this one is a technique for closing it.
+
+<Myth
+  n={2}
+  myth="AI will replace engineers."
+  source="Stanford Digital Economy Lab, Aug 2026"
+  href="https://digitaleconomy.stanford.edu/news/canariesaug26/"
+>
+Not replace. Redistribute — and the redistribution has an address. Stanford's Digital Economy Lab, tracking US payroll data through June 2026, finds employment of 22-to-25-year-olds in the most AI-exposed occupations running about 19% below where it would be had it kept pace with less-exposed peers. Experienced workers show no comparable gap, and the mechanism is reduced hiring rather than people being fired. The authors call these descriptive patterns, not causal estimates, and the data is US-only.
+
+Meanwhile 64% of developers in Stack Overflow's 2025 survey do not see AI as a threat to their job, and the activity growing fastest is review: reading code, judging code, being accountable for it. That job is not disappearing. It is getting harder to enter and more valuable to hold — which is an argument for learning to verify, not for learning to prompt.
+</Myth>
+
+## Closing the gap starts with one prompt
+
+The perception gap has a practical cause: when an agent finishes you see a confident summary, not the list of things it never checked. So ask for that list. Paste this at the end of any agent session, before you accept anything.
+
+<Prompt title="Close the gap" where="Claude Code · after the agent says it is done">
+```text
+Before I accept this work, answer these four questions. Do not change any code yet.
+
+1. List every file you changed, one line each, saying what changed.
+2. For each change, say how you verified it actually works.
+   If you did not run it or test it, write "not verified".
+3. List what you assumed about my code, my data or my environment
+   but did not check.
+4. Name the single change most likely to be wrong, and say why.
+```
+</Prompt>
+
+Run it once today on anything you have already built with an agent. Question 2 is where the surprises live, and one honest "not verified" is worth more to you than this entire page of statistics.
+
+<ProjectStep n={2} title="Write down your prediction before you build anything">
+You picked **QAIRU Event Sign-up** in the last module. Before a single line exists, write two numbers in a file called `notes.md` at the root of the project:
+
+1. How many hours you think this would take you **by hand**, with no AI.
+2. How many hours you think it will take **with an agent**.
+
+Then add one line saying what "finished" means — the specific thing a visitor must be able to do before you call it done. Save the file. At the end of the course you compare those three lines against what actually happened. You are now running the METR study on yourself, with a sample size of one.
+</ProjectStep>
+
+<Artifact title="The two-column evidence card" kind="cheatsheet">
+Every number from this module on one page, in two columns — what rose and what did not — each one linked to its primary source, so you can win the argument without opening twelve tabs.
+</Artifact>

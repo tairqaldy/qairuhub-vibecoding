@@ -1,0 +1,143 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import { labs } from '@/data/curriculum';
+import { href, useT } from '@/i18n/ui';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+const t = useT(lang);
+
+const c = {
+  en: {
+    title: 'Labs',
+    desc: 'Nine hands-on sessions on your own machine, from installing Node to running two agents in parallel.',
+    kicker: 'Hands-on · 9 labs',
+    h1a: 'Do it',
+    h1b: 'for real',
+    lead: 'The modules explain. The labs make you type. Every one has exact commands, the exact prompts to paste, and a check at the end so you know whether it actually worked. Start at 00 even if you think you can skip it.',
+    needK: 'What you need',
+    need: [
+      'A laptop you can install software on — Windows, macOS or Linux',
+      'About 25 minutes per lab, and a willingness to break things',
+      'Lab 08 covers the free tools if you cannot pay for anything',
+    ],
+    levels: ['', 'Beginner', 'Intermediate', 'Advanced'],
+    startBtn: 'Start with Lab 00',
+    done: 'done',
+  },
+  kk: {
+    title: 'Практика',
+    desc: 'Өз компьютеріңде орындалатын тоғыз сабақ: Node орнатудан бастап екі agent-ті қатар жүргізуге дейін.',
+    kicker: 'Тәжірибе · 9 практика',
+    h1a: 'Шынымен',
+    h1b: 'істеп көр',
+    lead: 'Модульдер түсіндіреді. Практика жаздырады. Әрқайсысында нақты командалар, көшіріп қоятын нақты prompt-тар және соңында шынымен жұмыс істегенін тексеретін қадам бар. Өткізіп жіберуге болады деп ойласаң да, 00-ден баста.',
+    needK: 'Не керек',
+    need: [
+      'Бағдарлама орната алатын ноутбук — Windows, macOS немесе Linux',
+      'Әр практикаға шамамен 25 минут және бірдеңені бұзуға дайындық',
+      'Ештеңеге төлей алмасаң, 08-практика тегін құралдарды қамтиды',
+    ],
+    levels: ['', 'Бастаушы', 'Орта', 'Жоғары'],
+    startBtn: '00-практикадан бастау',
+    done: 'дайын',
+  },
+}[lang];
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc} act="how">
+  <section class="hero wrap">
+    <p class="kicker">{c.kicker}</p>
+    <h1><span class="block">{c.h1a}</span><span class="block accent">{c.h1b}</span></h1>
+    <p class="lead">{c.lead}</p>
+    <div class="need">
+      <p class="eyebrow">{c.needK}</p>
+      <ul>{c.need.map((n) => <li>{n}</li>)}</ul>
+    </div>
+    <div class="cta">
+      <a class="btn btn-signal" href={href(lang, 'labs/setup')}>{c.startBtn} →</a>
+      <span class="count"><b data-done>0</b>/{labs.length} {c.done}</span>
+    </div>
+  </section>
+
+  <section class="wrap band">
+    <ol class="labs">
+      {
+        labs.map((l, i) => (
+          <li data-reveal style={`--i:${i}`}>
+            <a href={href(lang, `labs/${l.slug}`)} data-lab={l.slug}>
+              <span class="top">
+                <span class="n">{String(l.order).padStart(2, '0')}</span>
+                <span class={`lvl lvl-${l.level}`}>{c.levels[l.level]}</span>
+                <span class="check" aria-hidden="true">✓</span>
+              </span>
+              <span class="t">{l.title[lang]}</span>
+              <span class="b">{l.blurb[lang]}</span>
+              <span class="foot">
+                <span>{l.minutes} {t('lesson.minutes')}</span>
+                <span>+{l.xp} XP</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { padding: clamp(48px, 8vw, 88px) 0 0; }
+  .kicker { margin: 0 0 18px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
+  h1 { font-size: clamp(44px, 9vw, 92px); font-weight: 300; letter-spacing: -0.045em; line-height: 0.98; }
+  .block { display: block; }
+  .accent { color: var(--color-signal-soft); }
+  .lead { max-width: 62ch; margin: 26px 0 0; font-size: clamp(16.5px, 2vw, 19px); line-height: 1.65; color: var(--color-muted); }
+  .need { margin-top: 30px; padding: 20px 22px; border-radius: 18px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); max-width: 62ch; }
+  .need ul { margin: 10px 0 0; padding-left: 18px; display: grid; gap: 5px; font-size: 15.5px; color: var(--color-muted); }
+  .need li::marker { color: var(--color-signal-soft); }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 26px; }
+  .count { font: 400 13px/1 var(--font-mono); color: var(--color-faint); }
+  .count b { color: #fff; }
+
+  .band { padding: clamp(40px, 6vw, 64px) 0 0; }
+  .labs { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .labs a { display: grid; gap: 10px; padding: 22px; border-radius: 20px; border: 1px solid var(--color-line); background: var(--color-fill); text-decoration: none; color: inherit; height: 100%; align-content: start; transition: border-color 0.3s, background 0.3s, transform 0.45s var(--ease-out-expo); }
+  .labs a:hover { border-color: rgb(43 127 255 / 0.55); background: var(--color-fill-hover); transform: translateY(-3px); }
+  .top { display: flex; align-items: center; gap: 10px; }
+  .n { font: 500 12px/1 var(--font-mono); color: var(--color-signal-soft); }
+  .lvl { padding: 3px 9px; border-radius: 999px; font: 500 10.5px/1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--color-line); color: var(--color-faint); }
+  .lvl-1 { color: var(--color-ok); border-color: rgb(72 213 151 / 0.4); }
+  .lvl-2 { color: var(--color-signal-soft); border-color: rgb(43 127 255 / 0.45); }
+  .lvl-3 { color: var(--color-pink); border-color: rgb(255 120 210 / 0.45); }
+  .check { margin-left: auto; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--color-line-strong); font-size: 11px; color: transparent; transition: all 0.3s; }
+  .labs a.is-done .check { background: var(--color-signal); border-color: var(--color-signal); color: #fff; }
+  .t { font: 400 21px/1.25 var(--font-display); letter-spacing: -0.02em; color: #fff; }
+  .b { font-size: 15px; line-height: 1.5; color: var(--color-muted); }
+  .foot { display: flex; gap: 14px; margin-top: 4px; font: 400 11.5px/1 var(--font-mono); color: var(--color-faint); }
+
+  @media (min-width: 720px) { .labs { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1040px) { .labs { grid-template-columns: repeat(3, 1fr); } }
+</style>
+
+<script>
+  const KEY = 'vc:progress:v1';
+  function paint() {
+    let earned: Record<string, number> = {};
+    try {
+      earned = JSON.parse(localStorage.getItem(KEY) || '{}').earned ?? {};
+    } catch {}
+    let done = 0;
+    document.querySelectorAll<HTMLAnchorElement>('[data-lab]').forEach((a) => {
+      const ok = `lab:${a.dataset.lab}` in earned;
+      a.classList.toggle('is-done', ok);
+      if (ok) done++;
+    });
+    const d = document.querySelector<HTMLElement>('[data-done]');
+    if (d) d.textContent = String(done);
+  }
+  paint();
+  window.addEventListener('vc:progress', paint);
+</script>

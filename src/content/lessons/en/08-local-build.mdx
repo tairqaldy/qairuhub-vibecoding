@@ -1,0 +1,233 @@
+---
+title: 'Code & Local Build'
+subtitle: A terminal, a folder, a dev server and one file that must never reach GitHub. This is the bench you will work on for the rest of the course.
+objective: navigate a project from the terminal, start and stop a dev server, and keep your secrets out of the repo
+description: The local workshop bench for someone who has never opened a terminal - paths, the ten commands that cover most tutorials, node_modules, localhost and .env.
+artifact: Local setup cheat sheet
+---
+
+<Lead>
+A terminal is a text box that runs commands. That is the whole secret. Everything in this module exists because your agent works through that text box, and you cannot steer what you *cannot read*.
+</Lead>
+
+The last four modules were about what you ask for. This one is about where you ask it.
+
+## The terminal is a text box, not a test
+
+The terminal is a window where you type commands instead of clicking. It is precise, scriptable, and identical on your laptop and on a server on the other side of the planet. Clicking is pointing at a menu; the terminal is speaking the language — slower to learn, far more you can say.
+
+It matters now for one reason: AI coding agents work through it. When Claude Code installs a package or runs your tests, it runs the same commands you would, and shows you the output. If those lines are noise to you, every session is a black box and you are approving things you cannot judge.
+
+Two facts make it stop being scary. A terminal does nothing until you press Enter. And when something fails, the failure text on your screen is the most useful thing in the room — not something to hide from.
+
+<Callout type="tip" title="You are already in one">
+Claude Code is a terminal program. Inside a session, a line starting with `!` runs a shell command you type yourself and drops the output into the conversation, and `@` autocompletes a file path ([interactive mode](https://code.claude.com/docs/en/interactive-mode)). The commands below are not a separate skill from the agent — they are the same skill.
+</Callout>
+
+## Every command happens somewhere
+
+A terminal is always standing inside one folder. That folder is the current directory, and most commands act on it. Most beginner confusion — "the command did nothing", "file not found" — is really "I was standing in the wrong place".
+
+A path is the address of a folder or file. `/` separates the parts on macOS, Linux, WSL and Git Bash; `\` separates them on native Windows. The same Claude Code binary lands at `~/.local/bin/claude` on macOS and Linux, and at `%USERPROFILE%\.local\bin\claude.exe` on Windows — one file, two spellings ([setup docs](https://code.claude.com/docs/en/setup)). `~` means your home folder. `.` means here. `..` means one level up.
+
+One rule to carry: always `cd` into your project folder before starting an agent. Start it in your home folder or on the Desktop instead, and every document and every other project you own is sitting inside its working directory. One project, one folder, one session.
+
+## Ten commands cover almost every tutorial
+
+| Command | What it does |
+|---|---|
+| `pwd` | print where you are |
+| `ls` | list what is in this folder |
+| `cd name` | go into a folder |
+| `cd ..` | go back up one level |
+| `cat file` | print a file to the screen |
+| `mkdir name` | make a folder |
+| `touch name` | make an empty file |
+| `cp a b` | copy a to b |
+| `mv a b` | move or rename |
+| `rm name` | delete |
+
+On Windows these work as written in Git Bash. PowerShell answers to most of them as well — `touch` is the usual miss. CMD does not. The Windows section below tells you which of the three you are looking at.
+
+Two keys save more time than any command in that table: the Up arrow brings back what you last typed, and in a real terminal Tab completes a half-finished name.
+
+<Terminal title="bash">
+
+```bash
+pwd
+cd qairu-event
+ls
+cat package.json
+cp .env.example .env
+```
+
+</Terminal>
+
+<Callout type="danger" title="rm is not the Recycle Bin">
+`rm` deletes immediately, with no undo and no confirmation. And it is not covered by your agent's safety net: Claude Code [checkpoints](https://code.claude.com/docs/en/checkpointing) do not track files changed by Bash commands such as `rm`, `mv` or `cp`, or remote side effects like deploys and pushes. Git commits are the real undo — module 9.
+</Callout>
+
+Now do it, in a terminal that cannot hurt you.
+
+<Widget name="fake-terminal" />
+
+## node_modules is not your code
+
+Almost nobody writes everything from scratch. A package manager downloads the libraries your project needs, and the libraries those need, at compatible versions, and records the exact versions in a lock file so every machine installs the same thing. For JavaScript that is npm, pnpm or bun; for Python, pip or uv. An app store for code blocks, instead of hunting for downloads by hand.
+
+- **`package.json`** — what you asked for: the dependencies and the named commands (`dev`, `build`, `test`).
+- **the lock file** — what you actually got, down to the exact version.
+- **`node_modules/`** — the downloaded code itself. Hundreds of folders. Nobody reads it.
+- **`npm install`** — the command that turns the first two into the third.
+
+`node_modules` never goes into git: it is enormous, and one command rebuilds it anywhere. The tools assume this. When Claude Code creates a git worktree it is a fresh checkout, so `node_modules` is simply not there and you reinstall it ([worktrees](https://code.claude.com/docs/en/worktrees)). If an agent proposes committing that folder, say no.
+
+## localhost is your house, not the internet
+
+`npm run dev` looks up `dev` in `package.json` and runs it. That starts a dev server: a small web server running on your own machine that serves your project to your own browser and reloads the page when you save a file.
+
+It prints an address, usually something like `http://localhost:3000`. Another project — or a second server on the same machine — will print a different number. Read it off your own screen rather than memorising it: the port is just a door number on your own machine, and the terminal always tells you which door it opened.
+
+Three habits:
+
+1. Give the dev server its own terminal tab. It keeps running and keeps printing; it is not frozen.
+2. `Ctrl+C` stops it. "Port already in use" almost always means you started a second one.
+3. A blank page with no errors is still progress. Check the terminal output and the browser console before you tell the agent it is broken — paste both.
+
+<Quiz
+  id="m8-localhost"
+  question="Your dev server prints http://localhost:3000 and the page looks perfect. You send that link to a friend across town. What do they see?"
+  options={[
+    'The same page, because the link works once the server is running',
+    'Nothing of yours — on their computer that address points at their own machine',
+    'Your page, but only while you both stay on the same Wi-Fi',
+    'A certificate warning, and then your page',
+  ]}
+  answer={1}
+  explain="localhost is the name every computer uses for itself, so your friend reaches their own machine and finds nothing. Making a page reachable by other people is deploying, which is module 12."
+  xp={10}
+/>
+
+## .env holds the keys, and it never leaves your laptop
+
+Environment variables are named values that live outside your code and are handed to the program when it starts: API keys, a database address, settings like `NODE_ENV=production`. They keep secrets out of the repository and let the same code behave differently on your laptop and on the server. Locally they sit in a `.env` file that must be listed in `.gitignore`; on a host you paste them into the dashboard instead. The office keys stay with the security guard, not taped to the front door.
+
+The rule has no exceptions, and it has one correct order:
+
+<Compare a="What beginners do" b="What you do">
+<div slot="a">
+Build the app. Get it working. Run `git init`, commit everything, push to GitHub. Add `.gitignore` later, when a tutorial mentions it.
+
+The key is now in the repository history. Deleting the file does not remove it. The only fix is to revoke that key and issue a new one.
+</div>
+<div slot="b">
+Create `.gitignore` with `.env` and `node_modules/` in it **before the first commit**.
+
+Commit a `.env.example` with the key names and empty values, so anyone — including you on a new laptop — knows which variables the project needs without ever seeing a real one.
+</div>
+</Compare>
+
+And remember where secrets may not go at all: the frontend is the part that runs on the user's device, and anyone can open the browser developer tools and read it. Keys belong on the backend or in the host's dashboard.
+
+<Deeper title="Can I just tell my agent not to read .env?">
+You can, and you should — but do not mistake it for a lock. In [`.claude/settings.json`](https://code.claude.com/docs/en/settings) a rule like `"deny": ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)"]` blocks the Read tool and also covers `cat`, `head`, `tail` and `sed` in Bash. It does not stop a script that opens the file itself, and Bash rules match command text rather than the program. The [permissions docs](https://code.claude.com/docs/en/permissions) say it plainly: these rules are convenience, not a security boundary. Real isolation comes from sandboxing, and sandboxing is not available on native Windows at all. So treat the deny list as a second layer, and rotate any key that has ever been committed or pasted into a chat.
+</Deeper>
+
+## "It works on my machine" is a diagnosis, not a joke
+
+It means your machine has something the other machine does not. There are five usual candidates, and you can check all of them in two minutes.
+
+- **A missing environment variable.** Your `.env` exists locally and nowhere else. Fix: add the variables in the host dashboard.
+- **An uncommitted file.** It works because the file is on your disk, not because it is in the project. Fix: `git status`.
+- **Dependencies never installed.** The other machine has `package.json` but no `node_modules`. Fix: run the install command.
+- **Capital letters.** Windows treats `Hero.astro` and `hero.astro` as the same file. Most deploy servers run Linux and treat them as two different files, so an import that works locally fails in the build. Fix: match the filename exactly, character for character.
+- **A different version.** A newer or older runtime than yours. Claude Code itself shows the pattern: the npm install route needs Node.js 22 or newer ([setup docs](https://code.claude.com/docs/en/setup)).
+
+Deploying is what turns this from an argument into a fact. Working on your machine is not done; deployed is done. Module 12.
+
+## If you are on Windows, read this part twice
+
+Most of this course's audience is on Windows; most tutorials are written by people who are not. You do not need Linux. Claude Code runs natively on Windows 10 1809 or newer with 4 GB of RAM or more, from PowerShell or CMD, and WSL is **not** required — WSL 2 only matters if you want Claude Code's sandboxing, which native Windows does not support ([setup docs](https://code.claude.com/docs/en/setup)).
+
+Install [Git for Windows](https://git-scm.com/downloads/win) anyway. With it, Claude Code uses Git Bash for its Bash tool; without it, it falls back to a PowerShell tool — and module 9 needs git regardless.
+
+First, know which shell you are looking at.
+
+| The prompt line | The shell | So |
+|---|---|---|
+| `PS C:\Users\you>` | PowerShell | install commands written for PowerShell belong here |
+| `C:\Users\you>` | CMD | install commands written for CMD belong here |
+| `you@laptop:~$` | Git Bash or WSL | the macOS/Linux commands in tutorials work as written |
+
+Then read the error instead of retrying it.
+
+| The message | What actually happened |
+|---|---|
+| `The token '&&' is not a valid statement separator` | you pasted a CMD command into PowerShell |
+| `'irm' is not recognized` | you pasted a PowerShell command into CMD |
+| `'claude' is not recognized` | the install folder is not on PATH — fix it, then open a **new** terminal |
+| `Claude Code does not support 32-bit Windows` | you opened "PowerShell (x86)" instead of PowerShell |
+
+All four come from the official [setup](https://code.claude.com/docs/en/setup) and [install troubleshooting](https://code.claude.com/docs/en/troubleshoot-install) pages. The PATH one is the most common. Here is the fix — then close the window and open a fresh one, because a running terminal never notices a PATH change:
+
+<Terminal title="powershell">
+
+```powershell
+$currentPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
+[Environment]::SetEnvironmentVariable('PATH', "$currentPath;$env:USERPROFILE\.local\bin", 'User')
+```
+
+</Terminal>
+
+<Callout type="live" title="For whoever is teaching this">
+Do the shell table live. Before anyone installs anything, ask the room to read out their own prompt line. Two minutes here saves most of the install firefighting during the lab.
+</Callout>
+
+## Make the agent give you the tour
+
+You do not have to learn a project's layout by reading it. Ask — then check every answer yourself with the commands above. That is the point of this module: you can now audit what the agent tells you.
+
+<Prompt title="Bench check" where="Claude Code · in your project folder">
+
+```text
+I am new to the terminal. In this project, do these four things and explain each one in two sentences:
+
+1. Show me the folder structure, ignoring node_modules and .git.
+2. Tell me the exact command that starts the dev server and the address it will print.
+   Read this from package.json - do not guess.
+3. Check whether .gitignore contains .env and node_modules. If either is missing, show me
+   the line you would add before you add it.
+4. List every environment variable this project reads, by name only. Never print a value.
+
+Change nothing else. If you are unsure about something, say so instead of guessing.
+```
+
+</Prompt>
+
+<ProjectStep n={8} title="Set up the bench before you ask for a single feature">
+Get to a page you can break and fix before you ask for any feature.
+
+1. `mkdir qairu-event`, then `cd qairu-event`. One project, one folder, nothing loose on the Desktop.
+2. Let the agent scaffold the project. Then run the install command and start the dev server **yourself**, so you have typed them once.
+3. Open the address the terminal printed. A nearly empty page counts.
+4. Create `.gitignore` containing `.env` and `node_modules/`. Create `.env.example` with key names and empty values, and `.env` with the real ones. In that order, before module 9 turns this folder into a repo.
+
+You are done when you can change one word in the page, see it update in the browser, stop the server with `Ctrl+C`, and start it again from memory.
+</ProjectStep>
+
+<Checklist
+  id="m8-first-commit"
+  title="Before your first commit"
+  items={[
+    '.gitignore exists and lists .env and node_modules/',
+    '.env.example is in the project, with key names and empty values',
+    'No real API key appears in any file you are about to commit',
+    'The dev server starts with one command you can name from memory',
+    'You know which shell your terminal is running',
+  ]}
+  xp={15}
+/>
+
+<Artifact title="Local setup cheat sheet" kind="cheatsheet">
+The ten commands, the Windows error table, and the .env rule on one page you can keep open during the lab.
+</Artifact>

@@ -1,0 +1,193 @@
+---
+title: The Tweet That Named a Movement
+subtitle: One post, nineteen months, two dictionaries — and a rename that most people missed.
+objective: place any piece of AI coding work on the spectrum from vibe coding to agentic engineering, and say which one is safe where
+description: How a throwaway post on 2 February 2025 became the Collins Word of the Year, and why its author now calls the professional version agentic engineering.
+artifact: The three-mode spectrum — one table you can apply to any task
+---
+
+<Lead>
+On a Sunday night in February 2025, Andrej Karpathy posted 997 characters about how he had been writing code lately. He was describing a habit, not launching a movement. Nineteen months later the phrase he used is in the *dictionary*.
+</Lead>
+
+You need this story for one reason, and it is not nostalgia. Almost every argument you will have about AI and code — with a teammate, with a client, with a lecturer, with yourself at two in the morning — comes from people using one phrase to mean three different things. By the end of this page you will be able to tell those three apart and say out loud which one is safe where.
+
+## What he actually posted, and the line everybody skips
+
+<Story title="A Sunday night post, and a Monday morning in Astana" date="2 Feb 2025">
+The post went out at 23:17 UTC on Sunday 2 February 2025 — 04:17 on Monday morning here. Karpathy was not announcing a methodology. He was describing a habit: he had been building with Cursor Composer and Sonnet, dictating into SuperWhisper, barely touching the keyboard. The instruction he gave himself, in his own words: "forget that the code even exists".
+</Story>
+
+He asked for changes as small as "decrease the padding on the sidebar by half", because finding the line himself was more effort than asking. He accepted every diff without reading it. When something broke, he pasted the error message back with no comment, and usually that was enough. The code grew past what he could hold in his head. Bugs he could not fix, he worked around, or attacked with random changes until they went away.
+
+Then the sentence almost nobody quotes: "It's not too bad for throwaway weekend projects".
+
+<Post
+  author="Andrej Karpathy"
+  handle="@karpathy"
+  date="2 Feb 2025"
+  href="https://x.com/karpathy/status/1886192184808149383"
+  platform="x"
+  stat="7.36M views"
+>
+The post that named it. Opening line: "There's a new kind of coding I call 'vibe coding'". The method: "I 'Accept All' always, I don't read the diffs anymore." The scope: "throwaway weekend projects".
+</Post>
+
+The original definition had three parts. One: you do not read the code. Two: the project is disposable. Three: you talk instead of typing. Later usage kept the first part as a vague vibe, dropped the second, and forgot the third. Hold on to the second one. It is the part that keeps you out of trouble.
+
+## Nine months from a tweet to the Word of the Year
+
+| Date | What happened |
+|---|---|
+| 24 Jan 2023 | Karpathy posts seven words: ["The hottest new programming language is English"](https://x.com/karpathy/status/1617979122625712128). The idea arrives two years before the tools. |
+| 2 Feb 2025 | [The vibe coding post](https://x.com/karpathy/status/1886192184808149383). |
+| Late Feb 2025 | Claude Code ships — [about three weeks after the tweet](https://simonwillison.net/guides/agentic-engineering-patterns/what-is-agentic-engineering/). |
+| 19 Mar 2025 | Simon Willison draws the line: [no review means vibe coding](https://simonwillison.net/2025/Mar/19/vibe-coding/); reviewed means software development. |
+| 27 Apr 2025 | Karpathy ships [MenuGen](https://karpathy.bearblog.dev/vibe-coding-menugen/) and reports he felt 80% done when he was closer to 20%. |
+| 7 Oct 2025 | Willison proposes ["vibe engineering"](https://simonwillison.net/2025/Oct/7/vibe-engineering/) for the professional end. |
+| 13 Oct 2025 | Karpathy says nanochat is ["basically entirely hand-written (with tab autocomplete)"](https://x.com/karpathy/status/1977758204139331904) — agents were net unhelpful on it. |
+| 6 Nov 2025 | [Collins Word of the Year 2025: vibe coding.](https://blog.collinsdictionary.com/language-lovers/collins-word-of-the-year-2025-ai-meets-authenticity-as-society-shifts/) |
+| 26 Jan 2026 | Karpathy reports flipping from 80% manual to [80% agent coding in December](https://x.com/karpathy/status/2015883857489522876). |
+| 4 Feb 2026 | On the anniversary, he names the professional mode ["agentic engineering"](https://x.com/karpathy/status/2019137879310836075). |
+| 30 Apr 2026 | He publishes his summary of the Sequoia AI Ascent chat: [floor and ceiling](https://karpathy.bearblog.dev/sequoia-ascent-2026/). |
+| 15 Sep 2026 | Merriam-Webster adds it to the dictionary in a [1,400-entry update](https://www.nbcnews.com/news/us-news/merriam-webster-gives-dictionary-glow-1400-new-words-definitions-rcna598097). |
+
+<StatRow>
+  <Stat value="7.36M" label="views on the original post" source="X, 21 Sep 2026" href="https://x.com/karpathy/status/1886192184808149383" tone="info" />
+  <Stat value="9 months" label="from tweet to Word of the Year" source="Collins, 6 Nov 2025" href="https://www.collinsdictionary.com/woty" tone="info" />
+  <Stat value="12 months" label="until its author renamed the serious half" source="X, 4 Feb 2026" href="https://x.com/karpathy/status/2019137879310836075" tone="info" />
+</StatRow>
+
+Look closely at what Collins actually printed. Its definition is "the use of artificial intelligence prompted by natural language to write computer code" — and that is the whole thing. No mention of reviewing. No mention of scope. The press copy that summarised Merriam-Webster's new entry lands in the same place: vibe coding "describes using an AI system to generate computer code" ([CP24, with Associated Press files, 19 Sep 2026](https://www.cp24.com/news/world/2026/09/19/merriam-webster-adds-1400-words-from-glow-up-to-trash-panda/)).
+
+So the dictionary meaning is now: any coding with AI. The original meaning was: coding you do not look at. Those are not the same thing, and one of them is dangerous in places the other is not. That gap is why a second word had to be invented.
+
+## Simon Willison drew the line the dictionaries erased
+
+In March 2025, Simon Willison published the post that most professionals still cite. His definition is narrow on purpose: vibe coding is "building software with an LLM without reviewing the code it writes". His rule for himself is the useful part — he does not commit code to his repository if he could not explain exactly what it does to another person. Review it, test it, understand it, and you are not vibe coding any more. You are doing software development.
+
+He was not sneering at it. The same post argues vibe coding is genuinely good: it is how beginners build intuition, and how anyone automates a tedious task. His conditions are the ones to memorise — keep it low-stakes, and watch what you expose: secrets, private data, and APIs that bill you per call.
+
+<Post
+  author="Simon Willison"
+  handle="simonwillison.net"
+  date="19 Mar 2025"
+  href="https://simonwillison.net/2025/Mar/19/vibe-coding/"
+  platform="blog"
+>
+Title and thesis in one: "Not all AI-assisted programming is vibe coding (but vibe coding rocks)". Defines the term by the absence of review, defends it for low-stakes work, and warns about secrets, private data and billable APIs.
+</Post>
+
+<Myth
+  n={1}
+  myth="Vibe coding just means using AI to write code."
+  source="Simon Willison, 19 Mar 2025"
+  href="https://simonwillison.net/2025/Mar/19/vibe-coding/"
+>
+It means producing code **without engaging with the code that comes out**. Karpathy's version of it is accepting every diff without reading one. Willison's version is building with a model and not reviewing what it writes. Neither definition mentions a tool, and that is the point: you can vibe code inside Claude Code, and you can do careful engineering inside Claude Code. The difference is whether anybody looked.
+
+That distinction carries the whole safety argument. On a weekend prototype, not looking costs you nothing. On something with a database and real users, not looking is how you find out about your own security model from a stranger on the internet.
+</Myth>
+
+## Then the man who named it renamed the serious half
+
+Something changed at the end of 2025. Karpathy's own account of it is unusually specific: in November he was at roughly 80% manual and autocomplete coding with 20% agents; by December it had [flipped to 80% agent coding](https://x.com/karpathy/status/2015883857489522876), 20% edits and touch-ups. He also wrote, on [26 December 2025](https://x.com/karpathy/status/2004607146781278521), that he had never felt this much behind as a programmer — a sentence worth remembering the next time you feel lost in this course.
+
+On 4 February 2026, a year and two days after the original, he posted a retrospective. Vibe coding, he said, made sense when models were weak enough that the whole thing was for fun. By 2026, programming through agents was becoming the default professional workflow, with real oversight and no trade against software quality. He needed a different name for that, and his current favourite was "agentic engineering". His reasoning is two lines long and worth copying down: "agentic" because "you are not writing the code directly 99% of the time", and "engineering" because there is "an art & science and expertise to it" — meaning it can be taught, which is the premise of this entire masterclass.
+
+<Post
+  author="Andrej Karpathy"
+  handle="@karpathy"
+  date="4 Feb 2026"
+  href="https://x.com/karpathy/status/2019137879310836075"
+  platform="x"
+  stat="1.3M views"
+>
+The one-year retrospective. Calls the original "a shower of thoughts throwaway tweet", notes that professionals now work through agents with oversight, and names the discipline: "personally my current favorite 'agentic engineering'".
+</Post>
+
+In April 2026, at Sequoia's AI Ascent, he gave the framing this course is built on. In his own written summary of that conversation: "Vibe coding raises the floor." and "Agentic engineering raises the ceiling." The floor is that anyone can now make software exist. The ceiling is how good that software can get without a proportional drop in quality, security and maintainability. Agentic engineers, in his description, design the specs, supervise the plans and inspect the diffs.
+
+And his sentence to take out of the room with you: "You can outsource your thinking, but you can't outsource your understanding."
+
+<Post
+  author="Andrej Karpathy"
+  handle="karpathy.bearblog.dev"
+  date="30 Apr 2026"
+  href="https://karpathy.bearblog.dev/sequoia-ascent-2026/"
+  platform="blog"
+>
+His written summary of the Sequoia fireside chat. Floor versus ceiling; December 2025 as the step change when generated chunks became larger and more coherent; and the line about outsourcing thinking but never understanding.
+</Post>
+
+<Deeper title="Did he say vibe coding is dead?">
+No. The 4 February 2026 post contains neither the word "dead" nor the word "passé" — "passé" belongs to [a headline at The New Stack](https://thenewstack.io/vibe-coding-is-passe/), not to him. At Sequoia he framed the two modes as coexisting, floor and ceiling. And his [2025 year in review](https://karpathy.bearblog.dev/year-in-review-2025/), published 19 December 2025, celebrates vibe coding precisely because "programming is not strictly reserved for highly trained professionals" any more. Renaming the professional mode is not a funeral for the amateur one. If somebody tells you otherwise, they read a headline.
+</Deeper>
+
+<Deeper title="Where Claude Code fits in this story">
+It ships about three weeks after the tweet, in late February 2025, and for most of that year it is one tool among many. Then in his [2025 year in review](https://karpathy.bearblog.dev/year-in-review-2025/) Karpathy calls it "the first convincing demonstration of what an LLM Agent looks like". That is the difference between a tool that completes your sentences and one that runs commands, reads files and checks its own work. Simon Willison's definition of a coding agent is the compact one: ["Agents run tools in a loop to achieve a goal"](https://simonwillison.net/guides/agentic-engineering-patterns/what-is-agentic-engineering/). Acts II and III of this course are almost entirely about that loop.
+</Deeper>
+
+## Where your work sits on the spectrum
+
+Here is the payload. Three modes, and the question that decides which one you are in.
+
+| | Vibe coding | AI-assisted coding | Agentic engineering |
+|---|---|---|---|
+| **You supply** | a wish | a wish, plus judgement on every change | a spec, success criteria, and tests |
+| **You skip** | reading the code | typing the code | typing the code — never the thinking |
+| **Can you explain the result?** | no, and you do not try | yes, line by line | yes, and there is a test that proves it |
+| **Safe when** | throwaway, no users, no real data, no keys | anything you intend to maintain | production, teams, money, other people's data |
+| **The tell** | "Accept All" | you read the diff before merging | the spec and the failing test exist before the agent starts |
+
+The tool does not decide your row. Claude Code will happily run all three. You decide, usually without noticing — which is exactly why it is worth naming out loud before you start.
+
+Two questions settle almost every case. First: did anyone read this? Second: what happens if it is wrong — does a weekend project break, or does a stranger read somebody's phone number? Those two answers put you in a row. Note that the boundary is genuinely blurring at the top: in May 2026 Willison admitted that as agents got more reliable he stopped reviewing every line even for production work, and called that drift [closer than he would like](https://simonwillison.net/2026/May/6/vibe-coding-and-agentic-engineering/). If it happens to him, it will happen to you. Name your row on purpose.
+
+<Prompt title="Mode check" where="Claude Code · before you build anything">
+```text
+Before you write any code, answer these four questions in plain text, then stop.
+
+1. In one sentence, what exactly am I asking you to build?
+2. If this code is wrong, what breaks and who is affected? Be concrete.
+3. Which mode does this task call for:
+   vibe coding (nobody reviews the output),
+   AI-assisted (I read every diff before it lands),
+   or agentic engineering (spec + success criteria + tests before you start)?
+4. What do you need from me before you begin?
+
+Do not write code yet. Wait for my answer.
+```
+</Prompt>
+
+Paste that in before your next build. It takes thirty seconds, it costs almost nothing, and it is the difference between choosing a mode and drifting into one.
+
+<Quiz
+  id="m0-spectrum"
+  question="You describe a feature to an agent. It writes about 400 lines. You read every diff, run the tests it wrote, fix two things yourself, then merge. Where does that sit?"
+  options={[
+    'Vibe coding, because you did not type the code yourself',
+    'AI-assisted coding, because you reviewed and own what shipped',
+    'Agentic engineering, because you used an agent',
+    'Nowhere — the spectrum only applies to production code',
+  ]}
+  answer={1}
+  explain="Who types is not the question; what you reviewed and can explain is. Not reading the diffs is vibe coding — you read them. Agentic engineering is that plus the spec, the success criteria and the tests you set up before the agent starts. And the spectrum applies to weekend projects too; that is where most people first get burned."
+  xp={10}
+/>
+
+<Callout type="live" title="If you are teaching this page">
+Put the original post on screen and read three fragments aloud in this order: the name, "Accept All", and "throwaway weekend projects". Pause after the third. Then ask the room how many people had heard the first two and not the third. That show of hands is the whole module.
+</Callout>
+
+<ProjectStep n={1} title="Meet the project you will carry through this course">
+Every module from here moves one real thing forward: **QAIRU Event Sign-up** — a page that shows one event and lets people reserve a seat. A form, a list of who is coming, a cap on the number of places.
+
+It is deliberately small enough to finish inside this course, and deliberately real enough to break. The moment it holds a name and an email address, it stops being a weekend project and it stops belonging in the left-hand column of that table.
+
+Do this before the next module: write three sentences describing your version of it in your own words — what the event is, who signs up, what happens when the seats run out. Keep them. In Module 4 you will hand exactly those sentences to an agent and watch what it does with them.
+</ProjectStep>
+
+<Artifact title="The three-mode spectrum" kind="cheatsheet">
+Vibe coding, AI-assisted, agentic engineering — what you supply, what you skip, and the one question that tells you which row you are standing in.
+</Artifact>

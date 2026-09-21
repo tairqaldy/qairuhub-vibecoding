@@ -1,0 +1,32 @@
+---
+// The running project ("QAIRU Event Sign-up") advances one step per module.
+import { langFromUrl, useT } from '@/i18n/ui';
+
+interface Props {
+  n: number;
+  title: string;
+}
+const t = useT(langFromUrl(Astro.url));
+const { n, title } = Astro.props;
+---
+
+<section class="project" data-reveal>
+  <header>
+    <span class="badge">{t('lesson.project')} · {String(n).padStart(2, '0')}</span>
+    <span class="name">QAIRU Event Sign-up</span>
+  </header>
+  <h3>{title}</h3>
+  <div class="in"><slot /></div>
+</section>
+
+<style>
+  .project { margin: 48px 0; padding: 26px 24px; border-radius: 22px; border: 1px solid color-mix(in oklab, var(--color-signal) 40%, transparent); background:
+      repeating-linear-gradient(135deg, rgb(43 127 255 / 0.035) 0 12px, transparent 12px 24px),
+      rgb(43 127 255 / 0.03); }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .badge { font: 600 11px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 10px; border-radius: 999px; background: var(--color-signal); color: var(--color-signal-ink); }
+  .name { font: 500 12px/1 var(--font-mono); color: var(--color-muted); }
+  h3 { margin: 14px 0 0 !important; font-size: clamp(22px, 3vw, 28px) !important; }
+  .in { margin-top: 14px; }
+  .in > :global(* + *) { margin-top: 1em; }
+</style>

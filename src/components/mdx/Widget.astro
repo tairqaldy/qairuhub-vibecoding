@@ -1,0 +1,47 @@
+---
+// Mounts an interactive widget by name inside a lesson.
+import { langFromUrl } from '@/i18n/ui';
+import Tokenizer from '@/components/widgets/Tokenizer';
+import PrdWizard from '@/components/widgets/PrdWizard';
+import AgentsMdBuilder from '@/components/widgets/AgentsMdBuilder';
+import FakeTerminal from '@/components/widgets/FakeTerminal';
+import GitSim from '@/components/widgets/GitSim';
+import SpotTheBug from '@/components/widgets/SpotTheBug';
+import DeploySim from '@/components/widgets/DeploySim';
+import ClaudeCodeSim from '@/components/widgets/ClaudeCodeSim';
+import GuessTheNumber from '@/components/widgets/GuessTheNumber';
+import ContextMeter from '@/components/widgets/ContextMeter';
+import PromptLab from '@/components/widgets/PromptLab';
+import Orchestrator from '@/components/widgets/Orchestrator';
+
+interface Props {
+  name:
+    | 'tokenizer'
+    | 'prd-wizard'
+    | 'agents-md-builder'
+    | 'fake-terminal'
+    | 'git-sim'
+    | 'spot-the-bug'
+    | 'deploy-sim'
+    | 'claude-code-sim'
+    | 'guess-the-number'
+    | 'context-meter'
+    | 'prompt-lab'
+    | 'orchestrator';
+}
+const { name } = Astro.props;
+const lang = langFromUrl(Astro.url);
+---
+
+{name === 'tokenizer' && <Tokenizer client:visible lang={lang} />}
+{name === 'prd-wizard' && <PrdWizard client:visible lang={lang} />}
+{name === 'agents-md-builder' && <AgentsMdBuilder client:visible lang={lang} />}
+{name === 'fake-terminal' && <FakeTerminal client:visible lang={lang} />}
+{name === 'git-sim' && <GitSim client:visible lang={lang} />}
+{name === 'spot-the-bug' && <SpotTheBug client:visible lang={lang} />}
+{name === 'deploy-sim' && <DeploySim client:visible lang={lang} />}
+{name === 'claude-code-sim' && <ClaudeCodeSim client:visible lang={lang} />}
+{name === 'guess-the-number' && <GuessTheNumber client:visible lang={lang} />}
+{name === 'context-meter' && <ContextMeter client:visible lang={lang} />}
+{name === 'prompt-lab' && <PromptLab client:visible lang={lang} />}
+{name === 'orchestrator' && <Orchestrator client:visible lang={lang} />}

@@ -1,0 +1,26 @@
+---
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<li class="step">
+  <div class="rail" aria-hidden="true"><span class="num"></span></div>
+  <div class="in">
+    <h4>{title}</h4>
+    <slot />
+  </div>
+</li>
+
+<style>
+  .step { counter-increment: step; display: grid; grid-template-columns: 40px 1fr; gap: 16px; margin: 0 !important; }
+  .rail { position: relative; display: flex; justify-content: center; }
+  .rail::after { content: ''; position: absolute; top: 40px; bottom: -4px; width: 1px; background: linear-gradient(180deg, var(--color-line-strong), var(--color-line)); }
+  .step:last-child .rail::after { display: none; }
+  .num { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid color-mix(in oklab, var(--act) 50%, transparent); background: color-mix(in oklab, var(--act) 10%, var(--color-ink)); font: 600 14px/1 var(--font-mono); color: var(--act); }
+  .num::before { content: counter(step); }
+  .in { padding-bottom: 32px; min-width: 0; }
+  h4 { margin: 5px 0 10px !important; font: 500 19px/1.3 var(--font-display) !important; letter-spacing: -0.01em !important; color: #fff; }
+  .in > :global(* + *) { margin-top: 0.9em; }
+</style>

@@ -1,0 +1,28 @@
+---
+// Root: send visitors to their last language, else browser preference, else EN.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vibecoding · QairuHub</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://vibecoding.qairuhub.com/en/" />
+    <meta http-equiv="refresh" content="0; url=/en/" />
+    <script is:inline>
+      (function () {
+        var lang = 'en';
+        try {
+          var saved = localStorage.getItem('vc:lang');
+          if (saved === 'en' || saved === 'kk') lang = saved;
+          else if ((navigator.language || '').toLowerCase().startsWith('kk')) lang = 'kk';
+        } catch (e) {}
+        location.replace('/' + lang + '/');
+      })();
+    </script>
+  </head>
+  <body style="background:#03040c;color:#fff;font-family:system-ui;padding:40px">
+    <p><a href="/en/" style="color:#2b7fff">English</a> · <a href="/kk/" style="color:#2b7fff">Қазақша</a></p>
+  </body>
+</html>

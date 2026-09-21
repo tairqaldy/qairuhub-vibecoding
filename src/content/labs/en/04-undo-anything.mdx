@@ -1,0 +1,320 @@
+---
+title: "Undo Anything: Git, Checkpoints & Rewind"
+subtitle: Twenty minutes of breaking your own project on purpose, so that approving a change stops costing you anything.
+objective: undo any bad agent change three different ways, and name the damage that none of the three can reach
+description: Break your project three times and recover it three ways — git revert, throwing away an uncommitted mess, and Claude Code's own rewind. Plus the damage nothing undoes.
+artifact: The three-layer undo card
+prerequisites:
+  - A folder with a git history — the QAIRU Event Sign-up page from Lab 02, or any project with at least one commit
+  - Claude Code installed and logged in (Lab 01)
+  - git on your PATH — on Windows, install Git for Windows first
+doneWhen: Your project is back at a clean, committed state after three deliberate breakages, and you can name one kind of change that a rewind will never bring back.
+---
+
+<Lead>
+Most people slow down with an agent for one reason: every approval feels like a *one-way door*. It is not. Spend twenty minutes breaking your own project on purpose — three kinds of damage, three ways back — and the door swings both ways for the rest of your life.
+</Lead>
+
+This is not a git tutorial. It is a nerve tutorial. Anthropic reports that Claude Code users approve 93% of permission prompts, and names the result: "approval fatigue, where people stop paying close attention" ([Anthropic, 25 Mar 2026](https://www.anthropic.com/engineering/claude-code-auto-mode)). You will not read every diff forever. So the skill that actually keeps you safe is not vigilance — it is recovery.
+
+## Three layers, and the question that picks between them
+
+| Layer | Brings back | Leaves alone | Where you type it |
+|---|---|---|---|
+| Rewind — `Esc` `Esc` or `/rewind` | files that Claude's own edit tools changed in this session, plus the conversation | anything a Bash command touched, most subagent edits, your own manual edits, anything remote | inside Claude Code, as a menu |
+| `git restore` / `git reset --hard` | tracked files, back to your last commit | new untracked files, and anything already committed | your terminal |
+| `git revert` | a commit that is already in history, by writing its opposite as a new commit | work you never committed | your terminal |
+
+One question sorts almost every emergency: **did it get committed?** If yes, `git revert`. If no, `git restore` or `git reset --hard`. If it is still inside the same Claude session and only the edit tools were involved, rewind beats both — and it hands your prompt back so you can fix the wording and try again.
+
+<StatRow>
+  <Stat value="100" label="most recent checkpoints keep file snapshots" source="Claude Code docs · checkpointing" href="https://code.claude.com/docs/en/checkpointing" tone="info" />
+  <Stat value="~30 days" label="then those snapshots are deleted" source="cleanupPeriodDays" href="https://code.claude.com/docs/en/checkpointing" tone="warn" />
+  <Stat value="93%" label="of permission prompts get approved" source="Anthropic, 25 Mar 2026" href="https://www.anthropic.com/engineering/claude-code-auto-mode" tone="warn" />
+</StatRow>
+
+Rewind is a session convenience with an expiry date. Git is the floor you land on. Never let an agent work in a folder git does not know about ([checkpointing](https://code.claude.com/docs/en/checkpointing)).
+
+## Break it three times, bring it back three times
+
+<Steps>
+
+<Step title="Open two windows and make a save point">
+Left window: Claude Code. Right window: a plain terminal in the same folder. Keep both open for the whole lab — the repo is yours, not the agent's, and you want to watch it change while Claude works.
+
+<Terminal title="terminal — right window">
+```bash
+cd qairu-signup
+git status
+git log --oneline
+```
+</Terminal>
+
+If `git status` shows anything modified, save it now. The message does not have to be beautiful.
+
+<Terminal title="terminal — right window">
+```bash
+git add -A
+git commit -m "save point before lab 04"
+```
+</Terminal>
+
+In the left window, start the agent in Manual mode so every action is visible before it runs:
+
+<Terminal title="terminal — left window">
+```bash
+claude --permission-mode manual
+```
+</Terminal>
+</Step>
+
+<Step title="Break it on purpose, and let the damage reach a commit">
+Give Claude something you genuinely do not want, and let it save the result. Approve each step.
+
+<Prompt title="Breakage 1 — committed damage" where="Claude Code · manual mode">
+```text
+Rewrite index.html so that every heading is in ALL CAPITAL LETTERS,
+replace the seat counter with the word "SOON", and delete the text
+labels on the sign-up form inputs.
+
+Then commit the change with the message "restyle".
+```
+</Prompt>
+
+Open the page in a browser. It is worse, and the form is now unusable for anyone on a screen reader. Good.
+
+<Terminal title="terminal — right window">
+```bash
+git log --oneline
+```
+</Terminal>
+
+Two commits. The damage is in your history now, which rules out layers two and three.
+</Step>
+
+<Step title="Undo #1 — git revert, the one that is safe in front of other people">
+<Terminal title="terminal — right window">
+```bash
+git revert --no-edit HEAD
+git log --oneline
+```
+</Terminal>
+
+Reload the browser: the page is back. But `git log` now shows **three** commits, not one. `git revert` erased nothing. It read the bad commit, worked out its exact opposite, and saved that as a new commit on top.
+
+That sounds worse than deleting the mistake. It is better: once anyone else has a copy of a commit, rewriting history breaks their clone, while adding one never does. `--no-edit` skips the text editor. For an older commit, pass its short hash: `git revert --no-edit <hash>`.
+</Step>
+
+<Step title="Break it again — this time, do not let it commit">
+<Prompt title="Breakage 2 — uncommitted mess, plus a file you never asked for" where="Claude Code · manual mode">
+```text
+Change the page background to hot pink, add a giant "SOLD OUT!!!"
+banner above the form, and create a new file called scratch-notes.md
+with your reasoning.
+
+Do not commit anything.
+```
+</Prompt>
+
+Approve it. Now you have two problems in one folder: a tracked file that was modified, and a brand-new file git has never seen. They need different commands, and this is where beginners lose time.
+
+<Terminal title="terminal — right window">
+```bash
+git status
+git diff --stat
+```
+</Terminal>
+
+`index.html` sits under "Changes not staged for commit". `scratch-notes.md` sits under "Untracked files". Remember the difference.
+</Step>
+
+<Step title="Undo #2 — throw the uncommitted mess away">
+<Terminal title="terminal — right window">
+```bash
+git restore .
+git status
+```
+</Terminal>
+
+`index.html` is clean. `scratch-notes.md` is still sitting there: `git restore` only restores files git already tracks, and it cannot restore a file to a state it never had.
+
+For untracked leftovers, look before you shoot. `-n` is a dry run; `-f` does it for real.
+
+<Terminal title="terminal — right window">
+```bash
+git clean -nd
+git clean -fd
+git status
+```
+</Terminal>
+
+<Callout type="danger" title="git clean is the one command in this lab with no undo">
+`git clean -fd` deletes untracked files permanently. Git never had a copy, so no revert, no reset and no rewind brings them back. Run the `-nd` dry run first, every time. Files listed in `.gitignore` are left alone — unless you add `-x`, which you should not do while you are learning.
+</Callout>
+
+<Callout type="warn" title="When git restore is not enough">
+If you or the agent already ran `git add`, the bad change sits in the staging area, and `git restore .` copies it straight back into your files. The hammer is `git reset --hard HEAD`: it throws away the staged and the unstaged version of every tracked file.
+
+In auto mode, Claude Code's classifier blocks `git reset --hard`-style discards of uncommitted work, and force pushes, by default ([permission modes](https://code.claude.com/docs/en/permission-modes)). Commands that destroy work you cannot get back are commands you type yourself, on purpose.
+</Callout>
+</Step>
+
+<Step title="Undo #3 — rewind, without touching git at all">
+First, the cheaper move that comes before any undo: while Claude is mid-answer, press `Esc` **once**. It stops and keeps the work already done. Half a wrong change is easier to fix than a whole one.
+
+Now break the page a third time and take it back from inside the session.
+
+<Prompt title="Breakage 3 — pure edit-tool damage" where="Claude Code · manual mode">
+```text
+Rename every CSS class in index.html to a single letter to save bytes.
+Do not commit.
+```
+</Prompt>
+
+Approve it, then look at what it did to a file you have to maintain. Now, with an **empty input box**, press `Esc` twice (or type `/rewind`).
+
+A menu opens listing your prompts — every prompt that starts a turn creates a checkpoint. Six choices appear: Restore code and conversation, Restore conversation, Restore code, Summarize from here, Summarize up to here, Never mind.
+
+Select the CSS-renaming prompt and choose **Restore code and conversation**. The file goes back, and that prompt reappears in your input box, so you can fix the wording rather than retype it. Confirm it from the outside:
+
+<Terminal title="terminal — right window">
+```bash
+git status
+```
+</Terminal>
+
+Nothing modified. You just undid an agent's work without a single git command.
+
+<Deeper title="Try an idea without losing the session you are in">
+Rewind moves you backwards along one line. To test an alternative and keep the original conversation intact, the docs point at `/branch`, or restarting with `claude --continue --fork-session`: same history behind you, two futures in front of you ([checkpointing](https://code.claude.com/docs/en/checkpointing)).
+</Deeper>
+</Step>
+
+<Step title="Find the undo that does not exist">
+The most important step in this lab, and it takes ninety seconds.
+
+<Prompt title="The side effect" where="Claude Code · manual mode">
+```text
+Using a shell command, not your edit tool, create a file called
+agent-was-here.txt containing today's date. Then stop.
+```
+</Prompt>
+
+Approve the Bash call. (If Claude reaches for its edit tool anyway, reply: `run it as a shell command, not with your edit tool`.)
+
+Now press `Esc` `Esc` and restore the code to before that prompt. Then look in the right window:
+
+<Terminal title="terminal — right window">
+```bash
+git status
+```
+</Terminal>
+
+`agent-was-here.txt` is still there. Rewind restored nothing, because checkpoints snapshot what Claude's *edit tools* touch — not files created, moved or deleted by a Bash command, not most subagent edits, not edits you made yourself in another editor, and nothing that left your machine.
+
+Clean it up yourself, which is the whole point:
+
+<Terminal title="terminal — right window">
+```bash
+git clean -nd
+git clean -fd
+```
+</Terminal>
+</Step>
+
+<Step title="Finish clean, then write the rule down">
+<Terminal title="terminal — right window">
+```bash
+git status
+git log --oneline
+```
+</Terminal>
+
+A clean working tree and three commits: your save point, the breakage, and the revert that cancelled it. Everything else you did today left no trace.
+
+Last thirty seconds — turn this into a standing rule, in the memory file from Lab 03:
+
+<Prompt title="Teach it the habit" where="Claude Code · any mode">
+```text
+Add this to CLAUDE.md, in the existing rules section, in one line:
+before starting any change that touches more than two files, stop and
+tell me to commit first.
+```
+</Prompt>
+
+Approve the edit and commit CLAUDE.md. Next week the agent reminds you, instead of the other way round.
+</Step>
+
+</Steps>
+
+## The damage that has no undo
+
+Three layers cover your files. They cover nothing beyond your files.
+
+<Callout type="danger" title="Nothing in this lab reverses any of these">
+A `git push` other people have already pulled. A deploy that is live. A row deleted from a database. A message that was sent. A file removed by a Bash `rm`. A charge on a paid API. An API key that reached a public repo — that key is burned, and rotating it is the only fix.
+
+So the rule is not "review everything". It is: know which actions leave your machine, and slow down only for those.
+</Callout>
+
+<Quiz
+  id="lab04-rewind-limits"
+  question="You ask Claude to tidy the project. It uses a shell command to move about.html into a new pages/ folder, then uses its edit tool to update the links in index.html. You hate the result, press Esc Esc, and choose 'Restore code and conversation'. What is on disk now?"
+  options={[
+    "Everything is back: index.html is restored and about.html has moved back to where it was",
+    "index.html is restored, but about.html is still in pages/ — that move was a shell command",
+    "Nothing changed on disk; rewind only restores the conversation, never files",
+    "The whole folder is restored from your last git commit",
+  ]}
+  answer={1}
+  explain="Checkpoints snapshot files that Claude's own edit tools touch. Files moved, created or deleted by a Bash command are not in that snapshot, and neither are most subagent edits. That is exactly why a commit before the risky prompt is the layer underneath rewind — with one, 'git restore .' finishes the job."
+  xp={10}
+/>
+
+<Deeper title="You reset too far and lost a commit. Try git reflog.">
+`git reflog` prints every position your branch tip has been in recently, including ones you just threw away. Find the line from before the mistake, copy its hash, then `git reset --hard <hash>` to go back, or `git checkout -b rescue <hash>` to park it somewhere safe and look first.
+
+The limit is exact: reflog only knows about commits. Work that was never committed was never written down anywhere, so nothing finds it.
+</Deeper>
+
+## Lock it in
+
+<Prompt title="Panic prompt" where="Claude Code · paste this when you have already broken something">
+```text
+I need to undo something. Do not change any files yet.
+
+1. Run `git status` and `git log --oneline -5` and show me the raw output.
+2. Tell me which of these describes my situation:
+   (a) the bad change is already committed
+   (b) the bad change is uncommitted
+   (c) both, plus new files I never asked for
+3. For my case, give me the exact commands in the order I should run them,
+   and for each one say what it deletes permanently.
+4. Tell me what git cannot recover here, if anything.
+
+Then stop and wait. I will run the commands myself.
+```
+</Prompt>
+
+Save that one. Asking the agent to explain the recovery while you type the commands yourself is the right division of labour for anything destructive.
+
+<Checklist
+  id="lab04-before-you-break-it"
+  title="Before you let an agent loose again"
+  items={[
+    "The folder is a git repo and git status is clean before the risky prompt",
+    "I can say which layer undoes this: revert, reset, or rewind",
+    "I ran git clean -nd before ever running git clean -fd",
+    "I know that Bash side effects and subagent edits survive a rewind",
+    "Nothing in this task pushes, deploys, sends or bills anyone",
+  ]}
+  xp={15}
+/>
+
+<Callout type="live" title="If you are teaching this page">
+Do breakage 3 and the rewind live on the projector, then stop and ask the room to guess what happens in step 7 before you run it. Most will say the file disappears. Run it, show `agent-was-here.txt` still sitting there, and let the silence do the teaching. That one file is what people remember six months later.
+</Callout>
+
+<Artifact title="The three-layer undo card" kind="cheatsheet">
+Committed, uncommitted, or still in the session — the one question that picks your recovery, the exact commands for each, and the short list of damage that no undo reaches.
+</Artifact>

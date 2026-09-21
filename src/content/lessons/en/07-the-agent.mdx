@@ -1,0 +1,316 @@
+---
+title: The AI Coding Agent
+subtitle: What is actually happening when the cursor starts moving on its own, and the six-part prompt that decides how good the result is.
+objective: run a coding agent on purpose — pick a permission mode, review a plan before it edits anything, undo a mistake, and write a prompt with all six parts
+description: "Tools in a loop: permission modes, plan mode, CLAUDE.md, checkpoints, skills, subagents, hooks and MCP, plus an honest look at Cursor, Codex, Copilot and the free options."
+artifact: Prompt pack — six prompts that cover most of the work
+---
+
+<Lead>
+A coding agent is not a faster autocomplete. It is a model handed tools — read a file, edit it, run a command, read the output — and then put in *a loop* until the task is done or you stop it. The rest of this module is about who holds the leash.
+</Lead>
+
+Anthropic's docs describe Claude Code as an agentic coding tool that reads your codebase, edits files, runs commands and plugs into your dev tools, in the terminal, your IDE, a desktop app and the browser. The model is the brain. Claude Code is the [harness](https://code.claude.com/docs/en/how-claude-code-works) around it: the tools, the context management, the thing that actually runs the command.
+
+## The loop you are stepping into
+
+Five moves, repeated. You describe a task in plain language. It gathers context — searches and reads files, git state, your CLAUDE.md. It acts: edits, commands. It verifies: runs the tests or the build and reads the output. Then you steer. `Esc` interrupts it mid-action and keeps the work so far; typing while it works queues a correction it reads after the current action, instead of throwing everything away.
+
+That last move is the job. An agent stops when the work *looks* done, so without a check it can run, "looks done" is its only signal and you are the test suite. [Anthropic's guide](https://code.claude.com/docs/en/best-practices) now opens with exactly that: hand it something that returns pass or fail — a test, a build exit code, a linter, a screenshot comparison. If you cannot verify it, do not ship it.
+
+All surfaces run the same engine, and your CLAUDE.md, settings and MCP servers are shared across the local ones.
+
+| Surface | Best for | Worth knowing |
+|---|---|---|
+| Terminal CLI | everything, plus scripting | the only surface that runs `claude -p "query"` non-interactively |
+| Desktop app | visual diffs, parallel sessions | includes Claude Code, no CLI install; paid plan required |
+| Web, [claude.ai/code](https://claude.ai/code) | long jobs you walk away from | runs in Anthropic-managed cloud VMs after you disconnect |
+| VS Code / JetBrains | inline diffs, plan review in the editor | the VS Code extension bundles its own CLI and does **not** put `claude` on your PATH |
+
+## Permission modes are a trust dial, not a settings page
+
+Every action is allowed, asked about, or denied. The mode decides which.
+
+| Mode (UI label) | Config value | Runs without asking |
+|---|---|---|
+| Manual | `default` | reads only |
+| Accept edits | `acceptEdits` | reads, file edits, common file commands in the working directory |
+| Plan | `plan` | reads and exploration; no source edits until you approve a plan |
+| Auto | `auto` | everything, with a separate classifier model reviewing each action |
+| Don't ask | `dontAsk` | only pre-approved tools, everything else denied — for CI |
+| Bypass permissions | `bypassPermissions` | everything, no review |
+
+`Shift+Tab` cycles them and the status bar says where you are; `claude --permission-mode plan` starts you in one. A repo cannot trap you: `auto` and `bypassPermissions` are ignored when a project's own `.claude/settings.json` sets them.
+
+Since 2026 the built-in starting mode on Pro, Max and Team plans is **auto** in terminal and VS Code sessions. Enterprise plans, Console API keys and every `claude -p` run still start in Manual. "Claude Code asks about everything by default" is out of date — which changes what you have to watch.
+
+<StatRow>
+  <Stat value="93%" label="of permission prompts get approved anyway" source="Anthropic, Mar 2026" href="https://www.anthropic.com/engineering/claude-code-auto-mode" tone="warn" />
+  <Stat value="17%" label="of genuinely over-eager actions the classifier misses" source="Anthropic, Mar 2026" href="https://www.anthropic.com/engineering/claude-code-auto-mode" tone="warn" />
+  <Stat value="84%" label="fewer prompts with OS-level sandboxing" source="Anthropic, Oct 2025" href="https://www.anthropic.com/engineering/claude-code-sandboxing" tone="good" />
+</StatRow>
+
+Auto mode exists because of the first number. Anthropic's post states it plainly: "Claude Code users approve 93% of permission prompts." Clicking Yes ninety-three times in a hundred is a reflex, not review — the post calls it approval fatigue. So a second model reviews actions instead of you, blocking things that escalate beyond what you asked for. The same post reports a 0.4% false-positive rate and a 17% false-negative rate on real over-eager actions, and the docs say outright that it reduces prompts without guaranteeing safety. A seatbelt, not a cage.
+
+<Callout type="danger" title="What bypassPermissions actually risks">
+`bypassPermissions` (the `--dangerously-skip-permissions` flag) removes the asking entirely: no prompts, no classifier. Every command the agent decides to run, runs — including ones that delete files, push to a remote, or send data somewhere. The docs restrict it to containers and VMs, and on a laptop holding your SSH keys and `.env` files it is a bad trade for a few saved keystrokes. Two things survive even there: explicit `deny` rules win in every mode, and `rm -rf /` or `rm -rf ~` are never auto-approved.
+</Callout>
+
+<Deeper title="What auto mode blocks — and why a sandbox is a different thing">
+The classifier blocks download-and-execute patterns like `curl | bash`, sending sensitive data out, production deploys and migrations, mass cloud deletion, permission grants, force pushes and `git reset --hard`-style discards of uncommitted work. Say "don't push" in chat and it treats that as a boundary until you lift it.
+
+Sandboxing (`/sandbox`) is different: OS-level filesystem and network isolation for the Bash tool. It runs on macOS, Linux and WSL2 — **not** native Windows, which is most of this room. There, allow/deny rules and Manual mode are your controls. And know their limit: Bash rules match command text, not programs, so `Bash(rm *)` will not stop a Python script that deletes the same file. Convenience, not a security boundary.
+</Deeper>
+
+## Plan mode: argue with 200 lines, not 2,000
+
+In plan mode the agent reads and explores but cannot touch your source. It comes back with a plan; `Ctrl+G` opens that plan in your editor so you can rewrite it before approving. Adding one constraint to a plan is cheaper than reverting a diff across eleven files. On approval you pick how it runs: auto mode, manual approval of each edit, or "No, keep planning".
+
+For anything non-trivial the recommended shape is explore, plan, implement, commit. Skip the plan when you could describe the diff in one sentence — a typo, a rename, a log line. Planning pays when the approach is uncertain, the change spans files, or the code is unfamiliar to both of you.
+
+## What it loads before you type anything
+
+`CLAUDE.md` is read whole at the start of every session, broad to specific: `~/.claude/CLAUDE.md`, then the project's `./CLAUDE.md` or `./.claude/CLAUDE.md`, then a gitignored `./CLAUDE.local.md`. Since v2.1.277 Claude Code also reads a repo's `AGENTS.md` by itself when no CLAUDE.md exists — the same file Codex, Cursor, Copilot and Jules already read. Module 6 covered what to put in it; carry two facts here. Keep it under 200 lines, because bloat makes rules get ignored. And it is context, not enforcement: to truly block something, use a deny rule or a hook.
+
+Everything shares one context window — conversation, every file read, every command's output, CLAUDE.md, loaded skills — and quality drops as it fills. Four commands are the whole toolkit: `/context` shows what is eating the window, `/clear` starts a fresh conversation and costs nothing, `/compact keep the API decisions and the file list` summarises on your terms, and `/btw what does localStorage do?` asks a side question that never enters the history. The docs' own rule: corrected it twice on the same thing? `/clear` and write a better prompt instead of a third correction.
+
+## Rewind is local undo. Git is real undo.
+
+Every prompt that starts a turn creates a checkpoint. `Esc` `Esc` on an empty input (or `/rewind`) opens the menu: restore code and conversation, restore one of them, or summarise part of the session. The last 100 checkpoints per session are kept, and snapshots are swept after about 30 days.
+
+Here is the part people learn the hard way. Checkpoints track edits made by Claude's own edit tools. They do **not** track files changed by Bash commands, most subagent edits, your own manual edits, or anything remote — a database write, a deploy, a push. That is the entire argument for `git init` and a commit before you let an agent run.
+
+<Quiz
+  id="m7-rewind-gap"
+  question="The agent ran a shell command that deleted a folder, including a file you still needed. What actually gets it back?"
+  options={[
+    'Esc Esc, then "Restore code" — checkpoints cover every change made during the session',
+    '/compact, which rebuilds the session state from its summary',
+    'A git commit you made before the run — checkpoints do not track files changed by Bash commands',
+    '/context, which reloads the files that were in the window',
+  ]}
+  answer={2}
+  explain="Checkpoints snapshot edits made by Claude's own edit tools. Bash side effects, most subagent edits and anything remote sit outside them. Hence the habit: commit first, then let the agent try the risky thing."
+  xp={10}
+/>
+
+## Four ways to teach it once instead of every time
+
+**Skills** are a folder with a `SKILL.md` in `.claude/skills/<name>/`. Only the description sits in context; the body loads when it is needed, which is why a skill beats another 40 lines of CLAUDE.md. Call it as `/name`, or let the agent pick it up when the description matches. It follows the open [Agent Skills](https://agentskills.io) standard, so skills are not Claude-only.
+
+**Subagents** are helpers with their own context window, tool list and permissions. They do the noisy work — searching a big repo, reading a log — and return a summary, so the mess lands in their window, not yours. Explore, Plan and general-purpose are built in; yours live in `.claude/agents/<name>.md`. Their edits usually are not restored by `/rewind`.
+
+**Hooks** are your own shell commands, run at lifecycle events: `PreToolUse` (which can block an action by exiting with code 2), `PostToolUse`, `Stop`, `Notification`. Unlike a line in CLAUDE.md, a hook always fires. That is the difference between "please run the formatter" and a formatter that runs.
+
+**MCP** is an open standard for plugging external tools and data into an agent: issue trackers, databases, browsers, design tools. The cleanest first server is the Claude Code documentation itself.
+
+<Terminal title="bash">
+```bash
+claude mcp add --transport http claude-code-docs https://code.claude.com/docs/mcp
+claude mcp list
+# claude-code-docs ... Connected
+```
+</Terminal>
+
+Now it looks up its own docs instead of guessing at a flag. The classic mistake is dropping the `--` when the server is a local command (`claude mcp add playwright -- npx -y @playwright/mcp@latest`); everything after `--` is the command that starts the server. MCP tool definitions are deferred, so they cost little context — but a plain CLI tool like `gh` is still cheaper for the same job.
+
+<Callout type="live" title="For the room">
+Do the mode cycle live before anything else: start a session, press `Shift+Tab` four times, read the status bar aloud each time. Thirty seconds, and it is the thing beginners most often do not know exists.
+</Callout>
+
+<Widget name="claude-code-sim" />
+
+## The landscape in September 2026, without the hype
+
+Every tool below is the same idea — a model, tools, a loop, a permission model, an instructions file. They differ in where they run and what they cost.
+
+| Tool | Where it runs | Free tier today | Paid entry | Honest note |
+|---|---|---|---|---|
+| **Claude Code** | terminal, IDE, desktop, web | none — the free claude.ai plan does not include it | Pro $20/mo, or $17/mo billed annually | what this course teaches; auto mode is the built-in start on Pro |
+| **Cursor** | VS Code fork, plus a CLI | Hobby, limited agent requests, no card | $20 | owned by SpaceX since 14 Aug 2026; the usage pool burns fast on frontier models |
+| **Codex** | CLI, IDE extension, cloud | included in ChatGPT Free, small allowance | $8 Go / $20 Plus | one subscription, three surfaces; limits are published as ranges, not numbers |
+| **Gemini CLI** | terminal | none for consumers since 18 Jun 2026 | enterprise licence or paid key | replaced by Antigravity CLI for everyone else |
+| **Antigravity / `agy`** | IDE, desktop app, terminal | yes — free Individual plan, weekly limits | Google AI Pro | most generous free agent right now; **18+ only** |
+| **Copilot agent mode** | VS Code, cloud agent, CLI | Free plan; Student plan with 200 AI credits/month | $10 | cheapest paid tier; model choice was removed on Free and Student |
+| **Devin Desktop** (ex-Windsurf) | IDE plus cloud agent | free, light quota | $20 | third name in two years: Codeium, Windsurf, Devin Desktop — tutorials go stale |
+| **opencode** | terminal | yes, plus rotating free Zen models | pay as you go | free models are weak, and free-tier prompts may be used for training |
+| **Jules** | cloud, on your GitHub repo | 15 tasks/day | Google AI Pro | the easiest first agent that works while you sleep |
+
+<Myth
+  n={9}
+  myth="The free option is Gemini CLI."
+  source="Gemini CLI maintainers, May 2026"
+  href="https://github.com/google-gemini/gemini-cli/discussions/27274"
+>
+Not since 18 June 2026. The maintainers announced that "Gemini CLI will stop serving requests for Google AI Pro and Ultra", and free users with them; consumers were moved to Antigravity CLI. The repo's README still advertises 1,000 free requests a day — a lesson in itself: trust the docs page, not the README. The free slots today are Antigravity's Individual plan, Copilot Student, Cursor Hobby, opencode with free models, and Codex inside a ChatGPT free account.
+</Myth>
+
+Kazakhstan is on Anthropic's supported-countries list for both Claude.ai and the API, and on Antigravity's list too. Three accounts cost nothing and need no card: GitHub with Education applied for (Copilot Student), a personal Google account (Antigravity, Jules), a ChatGPT free account (Codex). If you can spend $20 a month, spend it on one plan, not three. A flat subscription with usage bars is predictable; per-token API keys are where surprise bills live — across enterprise deployments the [docs report](https://code.claude.com/docs/en/costs) about $13 per developer per active day.
+
+<Deeper title="The habits are portable. The tools are not.">
+In one year: Gemini CLI paywalled its consumers, Windsurf became Devin Desktop, Roo Code's repo was archived on 15 May 2026, Cursor was acquired for $60B, and GitHub swapped Copilot's premium requests for token-metered credits. What survives a rename is your habits — an `AGENTS.md` at the repo root, a commit before every agent run, a plan you read before code exists, a test the agent has to pass.
+
+There is a security reason to stay portable. In July 2026 Pillar Security demonstrated sandbox escapes across Cursor, Codex, Gemini CLI and Antigravity, triggered by prompt injection hidden in README files and dependencies: the agent stayed sandboxed but wrote files that trusted tools outside the sandbox later executed. Treat a cloned repo's text as untrusted input, not instructions, and do not run unfamiliar code in a permissive mode.
+</Deeper>
+
+## Six parts of a prompt that works
+
+The gap between a disappointing result and a good one is almost never the model. It is what you left out.
+
+<Compare a="What most people type" b="What the agent can act on">
+<div slot="a">
+"fix the signup bug"
+
+It does not know what the bug looks like, which file to open, what "fixed" means, or when to stop. So it guesses all four, confidently, and you review a diff that solves a different problem.
+</div>
+<div slot="b">
+"Users with a `+` in their email get 'invalid address' on submit. Expected: accepted. Likely in `src/lib/validate.ts`. Write a failing test first, then the smallest fix. Run `npm test` and show me the output."
+
+Symptom, location, definition of done, and a check it can run itself.
+</div>
+</Compare>
+
+Six parts, and you rarely need all six at once:
+
+1. **Role** — the standard it judges its own work against. "You are a senior frontend engineer who values boring, readable code."
+2. **Goal** — one sentence with a finish line. "Make it better" has none.
+3. **Context** — files to read first, the existing pattern to copy, the stack. Without it the agent invents a stack that is not yours.
+4. **Constraints** — what not to touch, no new dependencies, what is out of scope. Named before they happen, not after.
+5. **Output shape** — "show me the diff for each file before applying it" decides whether you review the work or merely receive it.
+6. **Stop condition** — "if anything is ambiguous, ask me instead of guessing; stop after the tests pass". The highest-value line in most prompts.
+
+When a result disappoints, walk this list before reaching for a bigger model. It is usually number 3 or number 6.
+
+<Widget name="prompt-lab" />
+
+## The prompt pack you will actually reuse
+
+Six prompts covering most of the work you will actually do. Square brackets are yours to fill in. Nothing here is Claude-specific — they work in Codex, Cursor, Copilot and Kiro too.
+
+<Prompt title="1. PRD prompt — interview me, then write the spec" where="Any agent · fresh session">
+```text
+I want to build: [one or two sentences].
+
+Before writing anything, interview me. Ask one question at a time.
+Skip obvious questions; dig into what I probably have not thought through:
+- who the user is and the single most important job they need done
+- the smallest version that is still useful, and what is explicitly OUT of scope
+- data: what is stored, where, who can see it
+- edge cases, failure states, empty states
+- tech constraints: [stack / hosting / budget / deadline]
+- how we will know it works (checks a script or a person can run)
+
+Stop when you have enough, then write SPEC.md with these sections:
+1. Problem and user  2. Goals / Non-goals  3. User stories with acceptance criteria
+4. Data model  5. Screens or endpoints  6. Tech decisions and why
+7. Out of scope  8. End-to-end verification steps  9. Open questions
+
+Do not write code. I will review SPEC.md and start a fresh session to build it.
+```
+</Prompt>
+
+<Prompt title="2. Plan prompt — read, propose, then wait" where="Claude Code · plan mode">
+```text
+Read SPEC.md and the existing code under [paths]. Do not edit anything yet.
+
+1. Tell me what you found: relevant files, existing patterns to reuse, risks.
+2. Propose an implementation plan as PLAN.md:
+   - ordered steps, each small enough to verify on its own
+   - files to create or change per step
+   - the test or check that proves each step works
+   - what you will NOT touch
+   - questions or assumptions I must confirm
+3. Offer one simpler alternative if there is one, with the trade-off.
+
+Wait for my approval before implementing. If a step turns out wrong while
+implementing, stop and update the plan instead of improvising.
+```
+</Prompt>
+
+<Prompt title="3. Bug-fix prompt — reproduce before you fix" where="Any agent · after a commit">
+```text
+Bug: [what the user sees]. Expected: [what should happen].
+Where: [page / endpoint / file guess]. Since: [commit, date, or "unknown"].
+Evidence: [paste error, log lines, screenshot].
+
+Process:
+1. Reproduce it. Write a failing test (or a script) that shows the bug. Show me the failure.
+2. Find the root cause. Explain it in 3-5 sentences. Do not hide the symptom
+   (no try/catch that swallows it, no skipped or deleted tests).
+3. Fix it with the smallest change. Run the new test and the related suite.
+4. Show evidence: the command you ran and its output.
+5. Tell me if the same mistake likely exists elsewhere; list places, do not fix them yet.
+
+Do not refactor unrelated code. Commit with a message that explains the cause.
+```
+</Prompt>
+
+<Prompt title="4. Refactor prompt — behaviour must not change" where="Any agent · tests passing first">
+```text
+Refactor [file or module] so that [specific goal]. Behaviour must not change.
+
+Before you start: run [test command] and show me it passes. If it does not, stop and tell me.
+
+Rules:
+- No new features, no new dependencies, no change to the public interface
+  unless I approve it first.
+- One kind of change per commit: structural OR behavioural, never both.
+- Never delete, skip or weaken a test to get the suite green.
+- If you need to change behaviour to make this work, stop and explain why.
+
+After: run the same tests, show the output, and give me three bullets on what
+moved where and what is now easier to change.
+```
+</Prompt>
+
+<Prompt title="5. Review prompt — a fresh pair of eyes" where="Fresh session or subagent">
+```text
+You are reviewing a change you did not write. Use a fresh session or subagent.
+Inputs: the diff of [branch or PR], SPEC.md / PLAN.md, and AGENTS.md.
+
+Check, in this order:
+1. Correctness: does it do what the spec says? Which requirement is missing or wrong?
+2. Edge cases from the spec: is each one handled AND tested?
+3. Security: input validation, auth checks, secrets in code, injection, unsafe defaults.
+4. Scope: anything changed that the task did not require?
+5. Tests: would they fail if the feature broke? Any test weakened, skipped or deleted?
+
+Report only findings that affect correctness, security or the stated requirements.
+For each: file and line, what breaks, a concrete failing scenario, suggested fix.
+Put style preferences in a separate, optional list. If you find nothing serious, say so.
+```
+</Prompt>
+
+<Prompt title="6. Test prompt — red, then green" where="Any agent · red/green TDD">
+```text
+Add tests for [function / module / flow] in [path]. Use red/green TDD.
+
+- Read the existing tests first and copy their style and runner ([runner]).
+- Cover: the happy path, [edge case 1], [edge case 2], invalid input, and one
+  regression for [past bug] if relevant. Avoid mocks unless the dependency is
+  external or slow.
+- For new behaviour: write the test, run it, show me it FAILS for the right reason,
+  then implement until it passes.
+- For existing behaviour: if a new test fails, stop and tell me — it may be a real bug.
+  Do not change production code to make a test pass without asking.
+- Run only the relevant tests while iterating, the full suite once at the end.
+  Show the final output.
+Never delete, skip or loosen an existing test to get green.
+```
+</Prompt>
+
+Two borrowed rules are worth naming. The red step in prompt 6 exists because a test you never saw fail may be passing for the wrong reason ([Simon Willison](https://simonwillison.net/guides/agentic-engineering-patterns/red-green-tdd/)). The structural-versus-behavioural split in prompt 4 is [Kent Beck's](https://newsletter.kentbeck.com/p/augmented-coding-beyond-the-vibes), who also lists the three signs an agent is going off the rails: it loops, it adds things nobody asked for, and it cheats by disabling tests.
+
+<ProjectStep n={7} title="Get a plan for the sign-up page that you can argue with">
+Open your project folder and start in plan mode: `claude --permission-mode plan`. Paste prompt 2, pointing it at the CLAUDE.md you wrote in module 6 and at your spec. When the plan arrives, press `Ctrl+G`, open it in your editor, and add one line of your own — a constraint the agent did not think of. Then choose **"Yes, manually approve edits"** and read at least one diff all the way through before accepting it.
+
+Done when: `PLAN.md` is in your repo, it names a verification step for each stage, and you changed something in it before approving.
+</ProjectStep>
+
+<Callout type="tip" title="Where to actually do this">
+Reading about an agent is not running one. [Lab 01](/en/labs/claude-code-first-session/) installs Claude Code and gets you through a first session. [Lab 02](/en/labs/plan-mode-build/) builds the QAIRU Event Sign-up page through plan mode, then breaks it on purpose and rewinds it. [Lab 03](/en/labs/claude-md-and-permissions/) makes the permission rules and CLAUDE.md from this module real on your own machine.
+</Callout>
+
+<Artifact title="The six-prompt pack" kind="prompt-pack">
+PRD, plan, bug fix, refactor, review and test — copy-ready, tool-agnostic, fill in the brackets.
+</Artifact>

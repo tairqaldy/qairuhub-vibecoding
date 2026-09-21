@@ -1,0 +1,147 @@
+---
+// The 9-step vibecoding cycle as an interactive ring. Click a step to see it; each links to its module.
+import type { Lang } from '@/data/curriculum';
+import { cycle, modules } from '@/data/curriculum';
+import { href } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+  compact?: boolean;
+}
+const { lang, compact = false } = Astro.props;
+
+const R = 168;
+const CX = 200;
+const CY = 200;
+const points = cycle.map((c, i) => {
+  const a = (i / cycle.length) * Math.PI * 2 - Math.PI / 2;
+  return { ...c, x: CX + R * Math.cos(a), y: CY + R * Math.sin(a), deg: (i / cycle.length) * 360 };
+});
+const stepModule = (n: number) => modules.find((m) => m.cycleStep === n);
+---
+
+<div class:list={['cycle', { compact }]}>
+  <div class="ring">
+    <svg viewBox="0 0 400 400" role="img" aria-label="The nine-step vibecoding cycle">
+      <defs>
+        <linearGradient id="ringgrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="var(--color-signal)" stop-opacity="0.9" />
+          <stop offset="55%" stop-color="var(--color-ice)" stop-opacity="0.7" />
+          <stop offset="100%" stop-color="var(--color-amber)" stop-opacity="0.8" />
+        </linearGradient>
+      </defs>
+
+      <circle cx={CX} cy={CY} r={R} fill="none" stroke="url(#ringgrad)" stroke-width="1.5" stroke-dasharray="3 7" opacity="0.75"></circle>
+      <circle class="sweep" cx={CX} cy={CY} r={R} fill="none" stroke="var(--color-signal)" stroke-width="2" stroke-linecap="round" stroke-dasharray="90 966" opacity="0.9"></circle>
+
+      {
+        points.map((p) => (
+          <g class="node" data-step={p.n} tabindex="0" role="button" aria-label={`${p.n}. ${p.title[lang]}`}>
+            <circle class="halo" cx={p.x} cy={p.y} r="26" />
+            <circle class="disc" cx={p.x} cy={p.y} r="19" />
+            <text class="num" x={p.x} y={p.y + 5} text-anchor="middle">
+              {p.n}
+            </text>
+          </g>
+        ))
+      }
+
+      <g class="hub">
+        <text x={CX} y={CY - 8} text-anchor="middle" class="hub-k">THE LOOP</text>
+        <text x={CX} y={CY + 18} text-anchor="middle" class="hub-n" data-hub-title>9 steps</text>
+      </g>
+    </svg>
+  </div>
+
+  <ol class="list">
+    {
+      cycle.map((c) => {
+        const mod = stepModule(c.n);
+        const to = mod ? href(lang, `learn/${mod.slug}`) : undefined;
+        const El = to ? 'a' : 'div';
+        return (
+          <li>
+            <El class="item" href={to} data-step-item={c.n}>
+              <span class="n">{String(c.n).padStart(2, '0')}</span>
+              <span class="body">
+                <span class="t">{c.title[lang]}</span>
+                <span class="h">{c.hint[lang]}</span>
+              </span>
+              {to && <span class="go" aria-hidden="true">→</span>}
+            </El>
+          </li>
+        );
+      })
+    }
+  </ol>
+</div>
+
+<style>
+  .cycle { display: grid; gap: 32px; align-items: center; }
+  .ring { max-width: 420px; margin-inline: auto; width: 100%; }
+  svg { width: 100%; height: auto; overflow: visible; }
+  .node { cursor: pointer; }
+  .halo { fill: transparent; transition: fill 0.35s; }
+  .disc { fill: var(--color-surface-2); stroke: rgb(255 255 255 / 0.3); stroke-width: 1; transition: fill 0.3s, stroke 0.3s, r 0.3s var(--ease-out-expo); }
+  .num { font: 500 15px var(--font-mono); fill: #fff; transition: fill 0.3s; }
+  .sweep { transform-origin: 200px 200px; animation: spin 14s linear infinite; filter: drop-shadow(0 0 6px var(--color-signal)); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .sweep { animation: none; opacity: 0.35; } }
+  .node:hover .disc, .node:focus .disc, .node.on .disc { fill: var(--color-signal); stroke: var(--color-signal); r: 21; }
+  .node:hover .num, .node:focus .num, .node.on .num { fill: var(--color-signal-ink); font-weight: 700; }
+  .node:hover .halo, .node.on .halo { fill: rgb(43 127 255 / 0.12); }
+  .node:focus { outline: none; }
+  .node:focus-visible .halo { fill: rgb(43 127 255 / 0.2); }
+  .hub-k { font: 500 10px var(--font-mono); letter-spacing: 0.24em; fill: var(--color-faint); }
+  .hub-n { font: 300 22px var(--font-display); fill: #fff; }
+
+  .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .item { display: flex; align-items: center; gap: 14px; padding: 10px 12px; border-radius: 12px; border: 1px solid transparent; text-decoration: none; color: inherit; transition: border-color 0.25s, background 0.25s; }
+  a.item { cursor: pointer; }
+  .item.on, a.item:hover { border-color: var(--color-line-strong); background: rgb(255 255 255 / 0.05); }
+  .n { font: 500 12px/1 var(--font-mono); color: var(--color-faint); flex: none; }
+  .item.on .n { color: var(--color-signal); }
+  .body { display: grid; gap: 2px; min-width: 0; }
+  .t { font-size: 16px; color: #fff; }
+  .h { font-size: 13.5px; color: var(--color-muted); }
+  .go { margin-left: auto; color: var(--color-faint); transition: transform 0.3s var(--ease-out-expo), color 0.3s; }
+  a.item:hover .go { transform: translateX(4px); color: var(--color-signal); }
+
+  @media (min-width: 900px) { .cycle { grid-template-columns: 1fr 1fr; gap: 48px; } }
+  .compact .list { display: none; }
+</style>
+
+<script>
+  const nodes = document.querySelectorAll<SVGGElement>('.node');
+  const items = document.querySelectorAll<HTMLElement>('[data-step-item]');
+  const hub = document.querySelector<SVGTextElement>('[data-hub-title]');
+  const original = hub?.textContent ?? '';
+
+  function highlight(step: string | null) {
+    nodes.forEach((n) => n.classList.toggle('on', n.dataset.step === step));
+    items.forEach((i) => i.classList.toggle('on', i.dataset.stepItem === step));
+    if (hub) {
+      const item = step ? document.querySelector<HTMLElement>(`[data-step-item="${step}"] .t`) : null;
+      hub.textContent = item?.textContent ?? original;
+    }
+  }
+
+  nodes.forEach((n) => {
+    n.addEventListener('mouseenter', () => highlight(n.dataset.step ?? null));
+    n.addEventListener('focus', () => highlight(n.dataset.step ?? null));
+    n.addEventListener('click', () => {
+      const link = document.querySelector<HTMLAnchorElement>(`a[data-step-item="${n.dataset.step}"]`);
+      link?.click();
+    });
+    n.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        document.querySelector<HTMLAnchorElement>(`a[data-step-item="${n.dataset.step}"]`)?.click();
+      }
+    });
+  });
+  items.forEach((i) => {
+    i.addEventListener('mouseenter', () => highlight(i.dataset.stepItem ?? null));
+  });
+  document.querySelector('.cycle')?.addEventListener('mouseleave', () => highlight(null));
+</script>

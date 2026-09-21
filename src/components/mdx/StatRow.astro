@@ -1,0 +1,6 @@
+<div class="stat-row"><slot /></div>
+
+<style>
+  .stat-row { display: grid; gap: 14px; margin: 36px 0; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .stat-row > :global(*) { margin: 0 !important; }
+</style>

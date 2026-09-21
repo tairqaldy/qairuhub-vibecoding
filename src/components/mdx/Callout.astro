@@ -1,0 +1,30 @@
+---
+interface Props {
+  /** tip = do this · warn = careful · danger = never · info = context · live = note for the live session */
+  type?: 'tip' | 'warn' | 'danger' | 'info' | 'live';
+  title?: string;
+}
+const { type = 'info', title } = Astro.props;
+const icon = { tip: '✦', warn: '!', danger: '✕', info: 'i', live: '●' }[type];
+---
+
+<aside class:list={['callout', type]}>
+  <span class="icon" aria-hidden="true">{icon}</span>
+  <div class="in">
+    {title && <p class="title">{title}</p>}
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout { --c: var(--color-ice); display: flex; gap: 14px; margin: 28px 0; padding: 18px 20px; border-radius: 16px; border: 1px solid color-mix(in oklab, var(--c) 35%, transparent); background: color-mix(in oklab, var(--c) 7%, transparent); font-size: 16px; }
+  .tip { --c: var(--color-signal); }
+  .warn { --c: var(--color-amber); }
+  .danger { --c: var(--color-danger); }
+  .live { --c: #ff78d2; }
+  .icon { flex: none; display: grid; place-items: center; width: 24px; height: 24px; margin-top: 2px; border-radius: 50%; background: var(--c); color: var(--color-ink); font: 700 13px/1 var(--font-mono); }
+  .title { margin: 0 0 4px !important; font-weight: 600; color: #fff; }
+  .in { min-width: 0; }
+  .in > :global(* + *) { margin-top: 0.7em; }
+  .in > :global(:first-child) { margin-top: 0; }
+</style>

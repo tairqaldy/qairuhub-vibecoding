@@ -1,0 +1,168 @@
+import type { Lang } from '@/data/curriculum';
+
+export const languages: Record<Lang, { label: string; short: string; htmlLang: string; ogLocale: string }> = {
+  en: { label: 'English', short: 'EN', htmlLang: 'en', ogLocale: 'en_US' },
+  kk: { label: 'Қазақша', short: 'ҚАЗ', htmlLang: 'kk', ogLocale: 'kk_KZ' },
+};
+
+export const defaultLang: Lang = 'en';
+
+// Every key MUST exist in both locales — scripts/check-i18n.mjs enforces it.
+export const ui = {
+  en: {
+    'site.name': 'Vibecoding',
+    'site.tagline': 'From first prompt to a team of agents',
+    'site.description': 'A free, interactive masterclass by QairuHub: learn vibecoding and agentic engineering hands-on, from your first prompt to multi-agent orchestration. In English and Kazakh.',
+    'nav.try': 'Try it',
+    'nav.learn': 'Learn',
+    'nav.labs': 'Labs',
+    'nav.tools': 'Tools',
+    'nav.materials': 'Materials',
+    'nav.workshop': 'Workshop',
+    'nav.present': 'Slides',
+    'nav.glossary': 'Glossary',
+    'nav.models': 'Models',
+    'nav.menu': 'Menu',
+    'nav.close': 'Close',
+    'nav.skip': 'Skip to content',
+    'nav.search': 'Search',
+    'nav.language': 'Language',
+    'cta.start': 'Start the path',
+    'cta.continue': 'Continue',
+    'cta.openLabs': 'Open the labs',
+    'cta.next': 'Next',
+    'cta.back': 'Back',
+    'cta.copy': 'Copy',
+    'cta.copied': 'Copied',
+    'cta.download': 'Download',
+    'cta.reset': 'Reset',
+    'cta.tryAgain': 'Try again',
+    'cta.check': 'Check',
+    'cta.source': 'Source',
+    'lesson.module': 'Module',
+    'lesson.lab': 'Lab',
+    'lesson.act': 'Act',
+    'lesson.minutes': 'min',
+    'lesson.objective': 'After this module you can',
+    'lesson.step': 'Cycle step',
+    'lesson.onThisPage': 'On this page',
+    'lesson.markComplete': 'Mark complete',
+    'lesson.completed': 'Completed',
+    'lesson.nextUp': 'Next up',
+    'lesson.previous': 'Previous',
+    'lesson.allModules': 'All modules',
+    'lesson.allLabs': 'All labs',
+    'lesson.fallbackNotice': 'This page is not translated yet, so you are seeing the English version.',
+    'lesson.goDeeper': 'Go deeper',
+    'lesson.project': 'Running project',
+    'lesson.artifact': 'Take it with you',
+    'lesson.level': 'Level',
+    'progress.xp': 'XP',
+    'progress.done': 'done',
+    'progress.yourProgress': 'Your progress',
+    'progress.reset': 'Reset progress',
+    'quiz.title': 'Quick check',
+    'quiz.correct': 'Correct.',
+    'quiz.wrong': 'Not quite.',
+    'myth.myth': 'Myth',
+    'myth.reality': 'Reality',
+    'myth.flip': 'Tap to reveal',
+    'footer.madeBy': 'Built overnight by a team of AI agents, directed by a human. That is the point.',
+    'footer.community': 'A QairuHub project',
+    'footer.rights': 'Content is free to use for learning and teaching.',
+    'footer.sourceCode': 'Source code',
+    'notFound.title': 'This page wandered off',
+    'notFound.body': 'The agent could not find it either. Try the path from the start.',
+    'level.1': 'Beginner',
+    'level.2': 'Intermediate',
+    'level.3': 'Advanced',
+  },
+  kk: {
+    'site.name': 'Vibecoding',
+    'site.tagline': 'Алғашқы prompt-тан agent-тер командасына дейін',
+    'site.description': 'QairuHub ұсынатын тегін интерактивті мастер-класс: vibecoding пен agentic engineering-ді алғашқы prompt-тан көп агентті оркестрлеуге дейін тәжірибе жүзінде үйрен. Ағылшын және қазақ тілдерінде.',
+    'nav.try': 'Байқап көр',
+    'nav.learn': 'Оқу',
+    'nav.labs': 'Практика',
+    'nav.tools': 'Құралдар',
+    'nav.materials': 'Материалдар',
+    'nav.workshop': 'Воркшоп',
+    'nav.present': 'Слайдтар',
+    'nav.glossary': 'Глоссарий',
+    'nav.models': 'Модельдер',
+    'nav.menu': 'Мәзір',
+    'nav.close': 'Жабу',
+    'nav.skip': 'Мазмұнға өту',
+    'nav.search': 'Іздеу',
+    'nav.language': 'Тіл',
+    'cta.start': 'Жолды бастау',
+    'cta.continue': 'Жалғастыру',
+    'cta.openLabs': 'Практикаға өту',
+    'cta.next': 'Келесі',
+    'cta.back': 'Артқа',
+    'cta.copy': 'Көшіру',
+    'cta.copied': 'Көшірілді',
+    'cta.download': 'Жүктеп алу',
+    'cta.reset': 'Қайта бастау',
+    'cta.tryAgain': 'Қайталап көру',
+    'cta.check': 'Тексеру',
+    'cta.source': 'Дереккөз',
+    'lesson.module': 'Модуль',
+    'lesson.lab': 'Практика',
+    'lesson.act': 'Бөлім',
+    'lesson.minutes': 'мин',
+    'lesson.objective': 'Осы модульден кейін сен мынаны істей аласың',
+    'lesson.step': 'Цикл қадамы',
+    'lesson.onThisPage': 'Осы бетте',
+    'lesson.markComplete': 'Аяқталды деп белгілеу',
+    'lesson.completed': 'Аяқталды',
+    'lesson.nextUp': 'Келесі',
+    'lesson.previous': 'Алдыңғы',
+    'lesson.allModules': 'Барлық модуль',
+    'lesson.allLabs': 'Барлық практика',
+    'lesson.fallbackNotice': 'Бұл бет әлі аударылмаған, сондықтан ағылшынша нұсқасы көрсетіліп тұр.',
+    'lesson.goDeeper': 'Тереңірек',
+    'lesson.project': 'Ортақ жоба',
+    'lesson.artifact': 'Өзіңмен ала кет',
+    'lesson.level': 'Деңгей',
+    'progress.xp': 'XP',
+    'progress.done': 'дайын',
+    'progress.yourProgress': 'Сенің прогресің',
+    'progress.reset': 'Прогресті тазалау',
+    'quiz.title': 'Жылдам тексеру',
+    'quiz.correct': 'Дұрыс.',
+    'quiz.wrong': 'Дәл емес.',
+    'myth.myth': 'Миф',
+    'myth.reality': 'Шындық',
+    'myth.flip': 'Ашу үшін бас',
+    'footer.madeBy': 'Бұл сайтты адам басқарған ЖИ agent-тер командасы бір түнде құрастырды. Мәні де сонда.',
+    'footer.community': 'QairuHub жобасы',
+    'footer.rights': 'Мазмұнды оқу және оқыту үшін еркін пайдалануға болады.',
+    'footer.sourceCode': 'Бастапқы код',
+    'notFound.title': 'Бұл бет адасып кетті',
+    'notFound.body': 'Оны agent те таба алмады. Жолды басынан бастап көр.',
+    'level.1': 'Бастаушы',
+    'level.2': 'Орта',
+    'level.3': 'Жоғары',
+  },
+} as const;
+
+export type UiKey = keyof (typeof ui)['en'];
+
+export function useT(lang: Lang) {
+  return (key: UiKey): string => ui[lang][key] ?? ui.en[key];
+}
+
+export function isLang(x: string | undefined): x is Lang {
+  return x === 'en' || x === 'kk';
+}
+
+/** Swap the locale prefix of a path, keeping the rest. */
+export function switchLang(pathname: string, to: Lang): string {
+  const rest = pathname.replace(/^\/(en|kk)(?=\/|$)/, '');
+  return `/${to}${rest || '/'}`;
+}
+
+export const langFromUrl = (url: URL): Lang => (url.pathname.startsWith('/kk') ? 'kk' : 'en');
+
+export const href = (lang: Lang, path = '') => `/${lang}/${path}`.replace(/\/+/g, '/').replace(/([^/])$/, '$1/');

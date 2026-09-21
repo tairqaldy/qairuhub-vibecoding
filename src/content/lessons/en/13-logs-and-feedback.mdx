@@ -1,0 +1,206 @@
+---
+title: Logs & Feedback
+subtitle: Your app has been talking since the moment you deployed it — here is how to listen, and how to hand what you hear to an agent.
+objective: read a production log, turn a real error into a fix an agent can verify, and turn user feedback into the next spec
+description: Logs, errors, traces and analytics after deploy — how to read a stack trace, what to measure, and how to feed a real production error back into your agent.
+artifact: Production feedback loop — one page from error to fix to next spec
+---
+
+<Lead>
+Deploy is not the end of the cycle. It is the moment your project starts *sending you evidence* — about what broke, what was slow, and what nobody could figure out how to click.
+</Lead>
+
+Step 8 put your project on a real URL. Step 9 is the one most beginners skip, and skipping it is why so many "finished" side projects quietly serve a blank page for weeks. This module is short on purpose: read the evidence, feed it back, go again.
+
+## Your app started talking the moment you deployed it
+
+On your laptop a crash was a red line in the terminal, right in front of you. In production you cannot attach a debugger to a stranger's phone in Shymkent at 23:40. All you get is what your program wrote down while it ran: timestamped messages — requests received, errors thrown, values you chose to print.
+
+There is a catch buried in the free tier you chose in module 12. Those messages do not wait for you.
+
+<StatRow>
+  <Stat value="1 hour" label="how long Vercel Hobby keeps runtime logs" source="Vercel docs, updated 14 Sep 2026" href="https://vercel.com/docs/plans/hobby" tone="warn" />
+  <Stat value="3 days" label="Cloudflare Workers Logs retention, 200k events/day" source="Cloudflare Workers pricing" href="https://developers.cloudflare.com/workers/platform/pricing/" tone="info" />
+</StatRow>
+
+A user hits an error on Friday night, you open the dashboard on Sunday, and on one of those hosts the evidence is already gone. That is the entire argument for everything below.
+
+## Four streams, four different questions
+
+People say "check the logs" as if there were one thing. There are four, and each answers a question the others cannot.
+
+| Stream | The question it answers | Where it lives |
+| --- | --- | --- |
+| Logs | What happened, in order, at what time? | Your host's dashboard, by default |
+| Errors | What broke, how often, for how many people? | An error tracker you wire up yourself |
+| Traces | Which step inside one request was slow? | A tracing backend, usually the same tool |
+| Analytics | What did people actually do — and give up on? | An analytics tool you add to the page |
+
+Logs are free and already on. The rest you have to turn on. Do the first one today and the others when the project has real users.
+
+## How to read a stack trace in three moves
+
+A stack trace looks like punishment. It is actually the most structured message your program will ever send you. Here is a real-shaped one from the sign-up project.
+
+<Terminal title="production log · POST /api/reserve">
+
+```text
+2026-09-21T18:04:11.382Z  ERROR  POST /api/reserve  500  req_8f2ac1
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at normalizeEmail (/var/task/src/lib/signup.js:42:21)
+    at reserveSeat (/var/task/src/api/reserve.js:17:19)
+    at async handler (/var/task/src/api/reserve.js:8:5)
+```
+
+</Terminal>
+
+Read it in three moves.
+
+1. **The first line is the receipt.** When it happened, which route, which status code, and a request id. `500` means your server broke, not the user. Keep that request id — it is how you find every other log line from the same visit.
+2. **The second line is the actual bug.** `TypeError` is the kind; everything after the colon is the sentence that matters. Something was `undefined` and the code called `.trim()` on it anyway. Not "the app crashed" — "a value I expected to be a string was not there".
+3. **The lines below are the call chain, newest first.** Skip every frame inside `node_modules` or the platform's own runtime. The first frame in a file *you* wrote is where you look: `src/lib/signup.js`, line 42.
+
+Thirty seconds of reading and you already have a hypothesis: a request reached `normalizeEmail` with no email field. Someone submitted an empty field, or a rename broke the form and the handler apart. You have not opened the editor yet.
+
+<Quiz
+  id="m13-stack-trace"
+  question="A production trace has six frames. Frames 1 and 2 are inside node_modules, frames 3 to 6 are in your src/ folder. Where do you start looking?"
+  options={[
+    'Frame 1 — the error was thrown there, so that is the broken code',
+    'Frame 6 — the oldest call is always the root cause',
+    'Frame 3 — the first frame in code you actually wrote',
+    'Nowhere in the trace; line numbers are unreliable in production',
+  ]}
+  answer={2}
+  explain="A library usually throws because you handed it something wrong, so the top frames are the symptom. The first frame in your own code is where the bad value came from — that is the line to read first, and the line to paste to your agent."
+  xp={10}
+/>
+
+## Keep the error where you can find it tomorrow
+
+Your host's log stream is a firehose that forgets. An error tracker is the opposite: your app reports a crash to it, it keeps the trace, groups identical crashes, counts how many people hit each one, and tells you the first time a new one appears. Sentry is one of the tools people use for that. Product analytics tools such as PostHog cover the other half — which pages people opened, which step of the form they abandoned, whether your fix changed behaviour.
+
+Both have a free tier. Check the current limits on their own pricing pages, not on this one: free-tier numbers in this field get rewritten without announcement, and rarely upward. What matters more than the vendor is this — the error must reach somewhere that keeps it, and that somewhere must be able to interrupt you.
+
+<Callout type="tip" title="Before you wire a dashboard into your agent">
+Claude Code can reach an outside service two ways: an MCP server, or that service's own command-line tool. The docs are blunt about which is cheaper. CLI tools such as `gh` and `sentry-cli` are the most context-efficient integrations, and the cost guide's advice is to prefer them over MCP servers and switch off servers you are not using with `/mcp`. Claude Code defers MCP tool definitions by default, but they still cost more context than a CLI. Start with copy-paste; wire something up when you find yourself opening the same dashboard five times a day. ([Claude Code docs on costs](https://code.claude.com/docs/en/costs))
+</Callout>
+
+## Measure four numbers, not forty
+
+Analytics dashboards are built to make you feel something. Resist. At this size there is one honest test for any metric: **if this number moved tomorrow, what would I do differently?** No answer means do not track it.
+
+For QAIRU Event Sign-up, four numbers are enough: how many people opened the page, how many started the form, how many finished and got a seat, and how many errors happened in the same window.
+
+The gap between the second and third number is your whole product problem, stated as one subtraction. Total visits since launch, likes on the announcement, "engagement" — those rise whether or not your app works, which is why they feel nice and teach nothing.
+
+<Callout type="warn" title="Logs are a database you forgot you built">
+Never write an email address, a phone number, an IIN, a password or an API token into a log line or an analytics event. You will paste that log into an AI agent and a support chat; logs get shared with people who never needed that data; and a log store is rarely protected the way your database is. Log the request id and the shape of the failure, not the human it happened to.
+</Callout>
+
+## Paste the whole thing, not your summary
+
+The single most useful sentence in this module: pasting the exact error text and the surrounding log lines into an AI agent is the fastest route to a correct fix. Your summary is not a shortcut — it is lossy compression of your only evidence, performed by the person who does not yet understand the bug.
+
+<Compare a="What most people paste" b="What actually gets fixed">
+<div slot="a">
+
+"the reserve button is broken, it gives an error sometimes, can you fix it"
+
+The agent guesses. It invents a plausible cause, edits three files, and now you have a new bug on top of the old one, with no way to tell whether the original is gone.
+
+</div>
+<div slot="b">
+
+The full stack trace, every frame, unedited. The log lines just before and after it. The files the trace names, pasted whole. What the user saw, and what should have happened.
+
+The agent reasons over evidence instead of over your vocabulary.
+
+</div>
+</Compare>
+
+<Prompt title="Debug from a production error" where="Claude Code · after a real 500">
+
+```text
+Production bug on QAIRU Event Sign-up.
+
+What the user sees: [exact words on screen] and no seat is reserved.
+Expected: the seat is reserved and a confirmation appears.
+Where: [route or page]. First seen: [time]. How often: [count in the last hour].
+
+Full log entry, unedited — assume nothing I have not pasted:
+[paste the WHOLE stack trace, every frame, plus 5 log lines before and after]
+
+The code the trace points at, pasted whole:
+[paste each file the trace names, or the surrounding 40 lines if it is long]
+
+Process, in this order:
+1. Explain what this trace says, line by line, before you change anything.
+   Tell me which frame is the symptom and which is the cause.
+2. Reproduce it. Write a failing test that produces this exact error.
+   Show me the failure output.
+3. Fix it with the smallest change. Do not hide the symptom: no try/catch
+   that swallows it, no skipped, loosened or deleted test.
+4. Run the new test and the related suite. Show me the commands and the output.
+5. Tell me where the same mistake likely exists elsewhere. List the places.
+   Do not fix them yet.
+
+If the log is not enough to be sure of the cause, say so and tell me exactly
+what to log next — then stop. Do not guess.
+```
+
+</Prompt>
+
+That last instruction is not politeness. The failure mode of a confident agent on a thin bug report is a confident fix for a bug you do not have.
+
+<Callout type="danger" title="The three signs the agent is faking green">
+Kent Beck named them in June 2025: it starts looping, it adds functionality nobody asked for, and it cheats — disabling or deleting tests to reach green. On a production bug the cheat is usually a `try/catch` that swallows the error. Your users still fail; you just stop hearing about it. ([Kent Beck, 25 Jun 2025](https://newsletter.kentbeck.com/p/augmented-coding-beyond-the-vibes))
+</Callout>
+
+<Deeper title="What a trace is, and how to watch the agent itself">
+A trace follows one request across every step it touched — handler, database query, external API — with a duration on each. Logs say *what happened*; a trace says *where the four seconds went*. You want one the first time someone tells you "it works, it is just slow".
+
+Claude Code can be watched the same way: `CLAUDE_CODE_ENABLE_TELEMETRY=1` plus OpenTelemetry exporters sends metrics and events — session count, token usage, cost, lines of code, commits, tool decisions, API errors — to any OTel backend. That is team-scale tooling. The zero-setup version for one person is already in the CLI: `/usage`, `/insights`, `/context`, and the transcript. ([Claude Code monitoring docs](https://code.claude.com/docs/en/monitoring-usage))
+</Deeper>
+
+## Every bug becomes a test, every complaint becomes a line in the spec
+
+An error that gets fixed and forgotten comes back. The loop only closes if each incident leaves something behind:
+
+- **A failing test that now passes.** That is step 2 of the prompt above, and it is why the test comes before the fix. It joins the suite from module 10 and guards that line forever.
+- **A line in your context file.** If you had to tell the agent something twice, it belongs in `AGENTS.md`.
+- **A saved case.** Anthropic's guidance on evals is to start from real failures: build a suite of 20 to 50 tasks that actually went wrong, then re-run it after you change a prompt, a skill, your context file or the model. A solo project does not need fifty. Ten real ones in a folder, re-run on purpose, beat remembering. ([Anthropic, 9 Jan 2026](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents))
+
+Then there is the feedback that is not an error at all. Someone messages you: "I could not tell if it worked, so I pressed it four times." No log line contains that sentence, and it is the most valuable input you will get all week. Four duplicate reservations is the data problem; the missing confirmation state is the product problem underneath it.
+
+That goes straight into the PRD as a user story with an acceptance check, and the cycle restarts at step 1: [Idea → Product](/en/learn/idea-to-prd/). Same nine steps, one turn smarter — because this time the requirement came from a real person instead of your imagination.
+
+<Checklist
+  id="m13-after-deploy"
+  title="Before you close the laptop after a deploy"
+  items={[
+    'Open the live URL on a phone, not just your laptop, and complete the main flow once',
+    'Find that request in your host’s logs and read the status code out loud',
+    'Know today how long your host keeps logs — hours or days — before you need them',
+    'Confirm no log line or analytics event contains an email, phone number or token',
+    'Write one sentence somewhere: what you will check in this project a week from now',
+  ]}
+  xp={15}
+/>
+
+<ProjectStep n={13} title="Read your first production log">
+Not a screenshot of someone else's log. Yours.
+
+1. Open your host's dashboard and find the logs view for your deployed sign-up project.
+2. On your phone, open the live URL and submit the form once, normally.
+3. Find that exact request in the logs. Say out loud: the time, the route, the status code.
+4. Break it on purpose — submit with a field empty, or 500 characters in the name box. Find the failure.
+5. Copy the **entire** entry — every frame, plus the lines around it — into `incidents/01.md` in your repo, with one sentence at the top saying what you did to cause it.
+6. Run the debug prompt from this module against that file. Keep the failing test it writes. Ship the fix.
+
+**Done when** you can explain the first two lines of a real error from your own project without guessing, and the test that proves it is fixed is committed.
+</ProjectStep>
+
+<Artifact title="From production error to next spec" kind="cheatsheet">
+The one-page loop: read the trace, paste the whole thing, demand a failing test, keep the case, turn the complaint into a user story.
+</Artifact>

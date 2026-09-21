@@ -1,0 +1,177 @@
+---
+title: AI in Plain Language
+subtitle: Ten words that stop being jargon the moment you watch them work — starting with the one that makes Kazakh cost more than English.
+objective: explain tokens, context windows, hallucination, tool use, agents and MCP in your own words, and pick a model without guessing at the price
+description: Tokens, context windows, temperature, hallucination, tool use, the agent loop, RAG, MCP and reasoning models, plus what the Sep 2026 models actually cost.
+artifact: Plain-language glossary — 10 terms, one analogy each
+---
+
+<Lead>
+You do not need the maths. You need about ten words, because every decision you will make with an agent — which model, how much to paste in, when to start over, why the bill looks like that — is one of these ten words *wearing a costume*.
+</Lead>
+
+Read this once slowly. Then come back to it whenever a tool does something that makes no sense, because the explanation is almost always in here.
+
+## A model is a machine that finishes your sentence
+
+A large language model is a program trained on an enormous amount of text to predict what comes next, one small piece at a time. Everything else — grammar, facts, code, the ability to follow an instruction — fell out of that single skill during training. It does not look answers up in a database; it generates them from patterns stored in billions of numbers called weights. The analogy that holds up: a very well-read person playing "finish my sentence" — fast, fluent, and occasionally confidently wrong.
+
+That last part is not a defect you can patch out. It is the same mechanism working normally.
+
+## Everything you pay for is counted in tokens
+
+A token is the unit the model actually reads and writes: a common word, a fragment of a word, or a punctuation mark. Text gets cut into these pieces from a fixed vocabulary that the tokenizer learned from its training data, so frequent strings become one token and rare strings get chopped into many. Every price, every limit and every "too long" error is measured in tokens, never in characters or words. Think of LEGO: some text snaps together from big pre-moulded pieces, other text has to be assembled from a pile of 1x1 bricks.
+
+English needs roughly 1.2 to 1.8 tokens per word depending on the tokenizer. One thing worth knowing: Claude's newer tokenizer produces about 30% more tokens for the same text than the old one, so 1M tokens is now around 555,000 words rather than the 750,000 the old rule of thumb promised ([Anthropic model overview](https://platform.claude.com/docs/en/about-claude/models/overview)).
+
+<Widget name="tokenizer" />
+
+## Kazakh costs several times more than English, and that changes how you work
+
+This is the part that is specific to you. In the Sherkala paper's Table 1, the Llama-3.1 tokenizer needs **4.73 tokens per Kazakh word**, against 2.56 for Russian and 2.23 for Turkish; adding Kazakh tokens to the vocabulary cut that to 2.04 ([arXiv](https://arxiv.org/html/2503.01493)). A separate 2026 measurement puts English at 1.23 tokens per word averaged across six public tokenizers ([arXiv](https://arxiv.org/html/2605.24718)). Across 17 tokenizers, the gap between the cheapest and most expensive language reaches up to 15x ([Petrov et al., NeurIPS 2023](https://aleksandarpetrov.github.io/tokenization-fairness/)).
+
+<StatRow>
+  <Stat value="4.73" label="tokens per Kazakh word, Llama-3.1 tokenizer" source="Sherkala, Table 1" href="https://arxiv.org/html/2503.01493" tone="warn" />
+  <Stat value="1.23" label="tokens per English word, mean of six tokenizers" source="Tokenizer Tax, 2026" href="https://arxiv.org/html/2605.24718" tone="good" />
+  <Stat value="15x" label="largest gap between languages, 17 tokenizers" source="Petrov et al., NeurIPS 2023" href="https://aleksandarpetrov.github.io/tokenization-fairness/" tone="info" />
+</StatRow>
+
+Three reasons stack up: Cyrillic letters take two bytes each in UTF-8, the Kazakh-specific letters (ә ғ қ ң ө ұ ү һ і) are rare in training data, and Kazakh is agglutinative — one word like "үйлеріміздегілерге" carries a whole English phrase. The working rule: Kazakh costs about 2x English on the best modern tokenizers and 3.5 to 4.7x on Llama-family ones. Same prompt, more money, faster-filling context window, slower generation.
+
+<Compare a="What feels right" b="What actually works">
+<div slot="a">
+The product is for Kazakh speakers, so everything is in Kazakh: the prompts, the CLAUDE.md file, the code comments, the commit messages.
+
+The agent now burns two to five times the tokens on instructions no user will ever read.
+</div>
+<div slot="b">
+Anything the model reads is English: prompts, agent instruction files, code comments, commit messages.
+
+Anything a human reads is Kazakh: the interface, the emails, the error messages users see. The product is still fully Kazakh. The overhead is gone.
+</div>
+</Compare>
+
+<Callout type="live" title="Do this live">
+Ask someone in the room for a sentence in Kazakh. Paste it into the tokenizer above, then paste its English translation. The count on screen ends the argument faster than any slide.
+</Callout>
+
+## The context window is a desk, not a filing cabinet
+
+The context window is everything the model can see in one go: your instructions, the conversation so far, every file it read, every tool result, and the reply it is writing. Anything outside it does not exist for the model — there is no memory of your last session unless something put it back in. A 1M-token window is the normal ceiling now — Anthropic, OpenAI, Google and DeepSeek all reach it, and the price table at the end of this page carries the numbers with their sources. Not everyone does: [Mistral stops at 256k](https://docs.mistral.ai/getting-started/models/models_overview/), and Claude Haiku 4.5 at 200k. It is a desk: only the papers lying on it can be used, and when it overflows something gets filed away.
+
+<Widget name="context-meter" />
+
+## A bigger window does not mean a better answer
+
+<Myth
+  n={3}
+  myth="A bigger context window means you should fill it."
+  source="Chroma, Context Rot, Jul 2025"
+  href="https://www.trychroma.com/research/context-rot"
+>
+Chroma tested 18 models and found that performance becomes **less reliable as the input grows**, across nearly every model, even on tasks that are trivially easy at short length. A single plausible distractor already hurts. Those were 2025 models, so take the principle rather than the numbers — but the principle has not moved: Opus 5 and Sonnet 5 both have 1M windows and Anthropic's own guide still tells you to clear the session between unrelated tasks. One practitioner's target is to keep utilisation around [40 to 60%](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents/blob/main/ace-fca.md).
+</Myth>
+
+The practical version in Claude Code: `/context` shows you what is eating the window, `/clear` starts clean between unrelated tasks, and after two failed corrections on the same problem a fresh session with a better first prompt beats a long polluted one ([Claude Code best practices](https://code.claude.com/docs/en/best-practices)).
+
+<Quiz
+  id="m2-context-cost"
+  question="Your agent instructions are written in Kazakh and the session is 80% full. One change. Which helps most?"
+  options={[
+    'Switch to a model with a bigger context window',
+    'Rewrite the instructions in English and clear the session between tasks',
+    'Set temperature to 0',
+    'Paste the whole repository in so nothing is missing',
+  ]}
+  answer={1}
+  explain="Kazakh costs several times more tokens for the same meaning, and reliability drops as the window fills. A bigger window does not fix either problem — it just lets you make them worse. English instructions plus a clean session attack both at once."
+  xp={15}
+/>
+
+## Temperature decides how surprising the next word is allowed to be
+
+Temperature is the randomness dial used when the model picks each next token. Near 0 it almost always takes the most likely option, so output is repeatable and dull; turn it up and less likely options get through, which buys you variety and risk in the same move. Low for code and data extraction, higher for brainstorming names. A chef at 0 follows the recipe exactly; the higher you turn the dial, the more they improvise. Note that some reasoning models set this themselves and ignore what you ask for.
+
+## Hallucination is the normal failure mode, not a rare bug
+
+A hallucination is output that sounds right and is invented: a library function that does not exist, a citation with a real-looking author, a confident wrong price. It happens because the model generates plausible text rather than checking a source, and it almost never signals that it is unsure. Picture a student who did not study and still writes a fluent, confident exam answer. There are exactly two defences: grounding (give it the docs, let it search, let it run the code) and verification (tests, links, your own eyes). Anthropic's guide now opens with the same idea — give the agent a way to verify its work, and ask for evidence rather than assertions ([Claude Code best practices](https://code.claude.com/docs/en/best-practices)).
+
+<Prompt title="Grounding prompt" where="any agent · paste before your question">
+```text
+Before you answer, follow these rules:
+
+1. List the files you actually opened, with line ranges. Do not answer from memory.
+2. Answer only from what you read. If the answer is not in the repo, say
+   "not in the repo" instead of guessing.
+3. For every claim about how the code behaves, give me the command you ran
+   and its real output. Evidence, not assertions.
+4. If you are unsure, say which part you are unsure about and why.
+
+My question: [your question here]
+```
+</Prompt>
+
+## Tools are what let a model touch the real world
+
+On its own a model can only produce text. Tool use (also called function calling) means you describe functions it is allowed to call — read a file, run a command, query an API — and the model replies with a structured request instead of prose. Your program executes that request and hands the result back, and the loop continues. It is a head chef who never touches the stove: precise orders out, tasted results back in.
+
+## An agent is a model running in a loop
+
+An agent is the model plus tools plus a loop: look at the goal and the current state, choose an action, observe the result, repeat until done or until it needs you. Claude Code is exactly this — read files, edit, run the tests, read the error, fix, run again. The power comes from feedback, because the model is reacting to real results instead of guessing. The risk is that errors compound across turns, which is precisely why permission prompts, tests and git commits exist. A mechanic, not an oracle: try something, listen to the engine, adjust.
+
+## RAG is an open-book exam
+
+RAG (retrieval-augmented generation) means searching your own documents first for passages relevant to the question, then pasting those passages into the prompt so the model answers from them. It gives the model fresh or private knowledge without retraining it, and lets it point at where an answer came from. The quality lives almost entirely in the search step: retrieve the wrong passage and you get a fluent wrong answer with a citation attached. Same student, same brain, but now the right page is open in front of them.
+
+## MCP is one connector instead of ten
+
+The Model Context Protocol is an open standard for plugging external tools and data into AI apps: one server for GitHub, Figma or your database works in Claude Code, in Cursor, in other clients, without rewriting it each time. A server exposes tools (actions), resources (data) and prompts (templates); the AI app is the client. Think USB-C: one connector standard instead of a separate cable for every pair of devices. It started at Anthropic in November 2024, was adopted by OpenAI and Google DeepMind during 2025, and was donated in December 2025 to the Agentic AI Foundation under the Linux Foundation. The current spec version is **2026-07-28**, which made the protocol stateless and deprecated the old HTTP+SSE transport ([MCP specification](https://modelcontextprotocol.io/specification/latest)).
+
+<Callout type="warn" title="Treat every MCP server as untrusted code">
+Tool descriptions and tool results are input your model will act on, and the specification itself describes tools as "arbitrary code execution". Install servers only from vendors you actually trust, and read what permissions they ask for. The official directory is the [MCP Registry](https://registry.modelcontextprotocol.io/).
+</Callout>
+
+## Reasoning models think on scratch paper first
+
+A reasoning model spends extra tokens working through a problem — planning, trying an approach, checking itself — before it writes the answer you see. That makes it much stronger at maths, debugging and multi-step planning, and slower and more expensive, because those thinking tokens are billed as output. In 2026 this is a dial rather than a separate product: Claude's adaptive thinking with an effort setting, GPT's reasoning levels, Gemini's thinking budget. In Claude Code the dial is `/effort`, and the levels are `low`, `medium`, `high` (the default on most models), `xhigh` and `max` ([model config docs](https://code.claude.com/docs/en/model-config)).
+
+<Deeper title="Why your effort setting shows up on the bill">
+Thinking tokens are charged at the output rate, and output costs four to six times input almost everywhere. An agent also re-sends its whole conversation on every single turn, so a long session is dominated by input that keeps being re-read (cached, but still billed). That is the real reason `/clear` between unrelated tasks is a cost lever and not just hygiene — and why lowering effort on simple tasks is the second one ([Claude Code costs](https://code.claude.com/docs/en/costs)).
+</Deeper>
+
+## What the models cost in September 2026
+
+Prices below are US dollars per million tokens, input/output, checked 21 September 2026. **They move, and some are explicitly temporary** — Gemini 3.8 Flash's price is promotional through 31 December 2026, after which it doubles. Open the pricing page the week you need a number; do not trust this table or any other one that is more than a month old.
+
+| Model | Context | Approx. in / out |
+|---|---|---|
+| Claude Fable 5.1 | 1M | $10 / $50 |
+| Claude Opus 5 | 1M | $5 / $25 |
+| Claude Sonnet 5 | 1M | $2 / $10 |
+| Claude Haiku 4.5 | 200k | $1 / $5 |
+| GPT-6 Astra | ~1.05M | $10 / $50 |
+| GPT-5.6 Luna | ~1.05M | $0.20 / $1.20 |
+| Gemini 3.8 Flash | 1M | $0.75 / $3.75 (promo) |
+| DeepSeek V4.1-Flash | 1M | $0.30 / $1.20 peak |
+
+Sources: [Anthropic](https://platform.claude.com/docs/en/about-claude/pricing), [OpenAI](https://developers.openai.com/api/docs/pricing), [Google](https://ai.google.dev/gemini-api/docs/pricing), [DeepSeek](https://api-docs.deepseek.com/quick_start/pricing).
+
+Abstract numbers mean nothing, so here is one job priced across all of them: roughly 100,000 input tokens plus 10,000 output tokens, which is about "read a mid-size codebase and write a feature". Fable 5.1 costs about $1.50, Opus 5 about $0.75, Sonnet 5 about $0.30, Haiku 4.5 about $0.15, Gemini 3.8 Flash about $0.11, DeepSeek V4.1-Flash about $0.042 at peak rate, GPT-5.6 Luna about $0.032. That is roughly a 47x spread for one identical job. Gemini's API still has a free tier, which makes it the realistic starting point if you have no card.
+
+<Callout type="tip" title="The honest version of 'which model'">
+Use the cheap fast model for everything simple and the expensive one when the approach is genuinely uncertain. On a flat subscription you get a usage bar instead of a surprise invoice, which for a student is worth more than shaving cents off a token.
+</Callout>
+
+<ProjectStep n={3} title="Write the language split for QAIRU Event Sign-up">
+Open a file called `NOTES.md` in a new folder and write three things, in English, in under fifteen lines total.
+
+1. **What the product is**, in two sentences. A page that lists a QAIRU event and lets someone reserve a seat.
+2. **The language split.** Interface, confirmation messages and emails: Kazakh. Prompts, agent instruction files, code comments and commit messages: English. Write that down as a rule, because you will be tempted to break it in module 6.
+3. **Your model choice**, with a number next to it. Pick one from the table above and write what one "read the code, add a feature" turn costs you. If that number surprises you later, you will know why.
+
+This file becomes the seed of your PRD in module 4. It does not need to be good yet. It needs to exist.
+</ProjectStep>
+
+<Artifact title="Ten terms, one analogy each" kind="cheatsheet">
+The printable version of this module: every word above with its plain-language definition, its analogy and where it breaks.
+</Artifact>

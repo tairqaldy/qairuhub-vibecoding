@@ -1,0 +1,9 @@
+---
+import QuizIsland, { type QuizProps } from '@/components/widgets/Quiz';
+import { langFromUrl } from '@/i18n/ui';
+
+type Props = Omit<QuizProps, 'lang'>;
+const lang = langFromUrl(Astro.url);
+---
+
+<QuizIsland client:visible lang={lang} {...Astro.props} />

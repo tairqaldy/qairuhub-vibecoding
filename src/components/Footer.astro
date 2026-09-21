@@ -1,0 +1,48 @@
+---
+import type { Lang } from '@/data/curriculum';
+import { href, useT } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+---
+
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div class="lead">
+      <p class="mark">vibecoding</p>
+      <p class="note">{t('footer.madeBy')}</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href={href(lang, 'learn')}>{t('nav.learn')}</a>
+      <a href={href(lang, 'labs')}>{t('nav.labs')}</a>
+      <a href={href(lang, 'materials')}>{t('nav.materials')}</a>
+      <a href={href(lang, 'workshop')}>{t('nav.workshop')}</a>
+      <a href={href(lang, 'present')}>{t('nav.present')}</a>
+      <a href={href(lang, 'glossary')}>{t('nav.glossary')}</a>
+    </nav>
+    <nav aria-label="QairuHub">
+      <a href="https://qairuhub.com" rel="noopener">qairuhub.com</a>
+      <a href="https://t.me/qairuhub" rel="noopener">Telegram</a>
+      <a href="https://github.com/tairqaldy/qairuhub-vibecoding" rel="noopener">{t('footer.sourceCode')}</a>
+    </nav>
+  </div>
+  <div class="wrap base">
+    <span>{t('footer.community')} · {new Date().getFullYear()}</span>
+    <span>{t('footer.rights')}</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer { margin-top: 120px; border-top: 1px solid var(--color-line); padding: 56px 0 32px; background: linear-gradient(180deg, transparent, rgb(6 10 36 / 0.7)); }
+  .grid { display: grid; gap: 36px; }
+  .mark { font-family: var(--font-script); font-weight: 700; font-size: 44px; line-height: 1; margin: 0 0 12px; }
+  .note { max-width: 40ch; margin: 0; color: var(--color-muted); font-size: 15px; }
+  nav { display: grid; gap: 10px; align-content: start; }
+  nav a { text-decoration: none; color: var(--color-muted); font-size: 15px; width: fit-content; transition: color 0.2s; }
+  nav a:hover { color: #fff; }
+  .base { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--color-line); font: 400 12px/1.5 var(--font-mono); color: var(--color-faint); }
+  @media (min-width: 760px) { .grid { grid-template-columns: 2fr 1fr 1fr; } }
+</style>

@@ -1,0 +1,301 @@
+---
+title: Two Agents, Two Worktrees, One Merge
+subtitle: Build two features at the same time, in two folders, with two agents — then put them back together.
+objective: run two agents in two worktrees at once, merge both branches, and resolve the conflict that follows
+description: "The advanced payoff lab: git worktrees, two parallel Claude Code sessions, a real merge conflict, and an honest look at what the token bill actually is."
+prerequisites:
+  - Your project in git with a clean status and everything pushed (Lab 06)
+  - Claude Code run at least once in that folder, so the workspace is trusted (Lab 01)
+  - A CLAUDE.md in the repo (Lab 03)
+  - Three terminal windows — two to work, one to watch
+  - A paid Claude plan. Two sessions burn roughly double.
+doneWhen: Both features work together on your main branch, `git worktree list` shows only the main checkout, and you can explain out loud why the two agents never overwrote each other's files.
+artifact: The parallel-run card — pre-flight, split rules, merge, cleanup
+---
+
+<Lead>
+A git worktree is a second folder of the same repository, checked out on its own branch. Two folders means two agents can edit *at the same time* and never see each other's files. The merge afterwards is where you find out whether that was a good idea.
+</Lead>
+
+Two features in parallel, one deliberate conflict, and an answer to the only question that matters here: was it faster, or just twice as expensive?
+
+## Before you open a second terminal, look at the bill
+
+Parallelism is not a speed setting. Anthropic's January 2026 guidance puts a multi-agent setup at [three to ten times the tokens of one agent](https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them) for the same task, and says to exhaust single-agent options first. The earlier research-system post measured its own stack at [about fifteen times the tokens of chat](https://www.anthropic.com/engineering/multi-agent-research-system), and noted that most coding work has fewer genuinely parallel parts than research does.
+
+<StatRow>
+  <Stat value="3–10x" label="tokens of one agent, same task" source="Anthropic, 23 Jan 2026" href="https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them" tone="warn" />
+  <Stat value="16" label="parallel Claudes that built a C compiler" source="Anthropic, 5 Feb 2026" href="https://www.anthropic.com/engineering/building-c-compiler" tone="info" />
+  <Stat value="~$20,000" label="what that two-week run cost" source="Anthropic, 5 Feb 2026" href="https://www.anthropic.com/engineering/building-c-compiler" tone="warn" />
+</StatRow>
+
+That C compiler is the ceiling: sixteen instances in containers, roughly 2,000 sessions, about 100,000 lines of Rust. It worked because the test suite was near-perfect. Parallel agents without an automated check only multiply code nobody verified.
+
+<Compare a="Two agents earn their keep" b="Two agents are just expensive">
+  <div slot="a">
+Two features that touch different files. A build plus a separate review with fresh eyes. Work you can test half at a time, in a browser, before the halves ever meet.
+  </div>
+  <div slot="b">
+Anything sequential. Anything where both halves depend on one design decision. Anything a better prompt or a `/clear` would have fixed. Anything you cannot test automatically.
+  </div>
+</Compare>
+
+## Six things that must be true first
+
+<Checklist
+  id="lab7-preflight"
+  title="Pre-flight"
+  items={[
+    "git status is clean in the main folder — nothing uncommitted",
+    "Your latest work is pushed. Worktrees branch from the remote default branch, not from your local HEAD",
+    ".gitignore contains the line .claude/worktrees/",
+    "You have run plain claude in this folder before, so the workspace is trusted",
+    "CLAUDE.md exists and says something useful about this project",
+    "You have opened /usage once today and know where your limits are",
+  ]}
+  xp={15}
+/>
+
+<Callout type="warn" title="The pushed-work trap">
+By default `--worktree` branches from the remote default branch, not from whatever you have locally. Commit without pushing and both agents start from older code. Push first; the alternative is in the Deeper box below.
+</Callout>
+
+## Run both agents, then merge them
+
+<Steps>
+
+<Step title="Pick two features that do not share a decision">
+For QAIRU Event Sign-up: a **dark mode toggle**, and a **seats-left counter** that disables the form when the event is full. One is presentation, one is logic. Neither needs to know what the other decided.
+
+Write both down as one sentence each first. If you cannot, they are not two tasks — they are one, and you should stay in a single session.
+</Step>
+
+<Step title="Clear the deck">
+In the main folder:
+
+<Terminal title="bash">
+```bash
+git status
+git log --oneline
+```
+</Terminal>
+
+Status must be clean. You are about to have three copies of this repo on disk; do not leave yourself guessing which one holds uncommitted work.
+</Step>
+
+<Step title="Terminal A — start the first agent in its own worktree">
+<Terminal title="bash">
+```bash
+claude --worktree dark-mode
+```
+</Terminal>
+
+That one flag does the whole setup: a new folder at `.claude/worktrees/dark-mode/` on a new branch, `worktree-dark-mode`. You never run `git worktree add` yourself. Then give it a scoped prompt:
+
+<Prompt title="Agent A" where="Claude Code · worktree dark-mode">
+```text
+Add a dark mode toggle to the sign-up page.
+
+Scope — you may edit ONLY these files:
+  index.html, styles.css
+Do not touch CLAUDE.md, README.md, or anything under .github/.
+
+Requirements:
+- A visible toggle in the header.
+- The choice is remembered in localStorage and applied before first paint.
+- Form labels and the submit button stay readable in both themes.
+
+Follow CLAUDE.md. When it works, commit on this branch with a one-line message.
+Then stop and tell me what you changed, file by file.
+```
+</Prompt>
+</Step>
+
+<Step title="Terminal B — start the second agent from the same main folder">
+Open a second terminal window in the **same** project folder. Do not open it inside the first worktree.
+
+<Terminal title="bash">
+```bash
+claude --worktree seats-left
+```
+</Terminal>
+
+<Prompt title="Agent B" where="Claude Code · worktree seats-left">
+```text
+Add a seats-left counter to the sign-up page.
+
+Scope — you may edit ONLY these files:
+  index.html, seats.js
+Do not touch styles.css, CLAUDE.md, or README.md.
+
+Requirements:
+- Show "N seats left" next to the form, read from one capacity constant.
+- When N reaches 0, disable the submit button and show a short "full" message.
+- All logic lives in seats.js. index.html gets one script tag and one container div.
+
+Follow CLAUDE.md. When it works, commit on this branch with a one-line message.
+Then stop and tell me what you changed, file by file.
+```
+</Prompt>
+
+Notice what both prompts share: an explicit file list. That is the most useful line in this lab.
+</Step>
+
+<Step title="Terminal C — watch from outside while they work">
+<Terminal title="bash">
+```bash
+git worktree list
+```
+</Terminal>
+
+Three entries: your main checkout and the two worktrees. Open each worktree's `index.html` in a browser and test the features separately, now, while the agents still run. This is the part that pays for itself — each half is tested before it meets the other.
+
+If your project has dependencies, run your install command inside each worktree. A worktree is a fresh checkout; `node_modules` does not travel.
+</Step>
+
+<Step title="Review each branch with a context that did not write it">
+After agent A commits, in Terminal A:
+
+<Prompt title="Fresh-eyes review" where="Claude Code · either worktree, after the commit">
+```text
+Use a subagent to review this branch's diff against the main branch.
+Report only correctness problems and violations of CLAUDE.md — not style, not naming.
+For each finding give me: the file, what breaks, and the smallest fix.
+If you find nothing real, say so and stop.
+```
+</Prompt>
+
+A subagent gets its own context window, so it is not attached to code it just wrote; [the best-practices page](https://code.claude.com/docs/en/best-practices) recommends exactly this split. Fix what is real, ignore the rest, repeat in Terminal B.
+</Step>
+
+<Step title="Exit both sessions and keep the worktrees">
+Leave each session. A worktree with no changes is removed automatically on exit; one with commits asks whether to keep or remove it. **Choose keep** — you still need those branches.
+</Step>
+
+<Step title="Merge the first branch">
+Back in the main folder:
+
+<Terminal title="bash">
+```bash
+git merge worktree-dark-mode
+```
+</Terminal>
+
+This one lands clean: nothing on main has moved since the branch started.
+</Step>
+
+<Step title="Merge the second branch and meet the conflict">
+<Terminal title="bash">
+```bash
+git merge worktree-seats-left
+```
+</Terminal>
+
+Both agents edited `index.html`, so git stops and leaves conflict markers in the file. Expected outcome, not a mistake. Hand it to an agent in the main folder:
+
+<Prompt title="Conflict resolution" where="Claude Code · main folder, mid-merge">
+```text
+git merge left conflict markers in index.html.
+Resolve them so BOTH features survive: the dark mode toggle and the seats-left counter.
+Do not delete either feature to make the conflict go away.
+When the file is clean, show me the resolved section, then give me the exact steps
+to test both features in the browser before I commit the merge.
+```
+</Prompt>
+
+Read the resolved section yourself before committing. An agent resolving a conflict is guessing at intent, and the cheapest way to lose a feature is to accept a resolution that quietly dropped half of it.
+</Step>
+
+<Step title="Verify on main, then clean up">
+Open the page from the main folder. Both features must work together: toggle the theme, and watch the seats counter still update.
+
+<Terminal title="bash">
+```bash
+git worktree remove .claude/worktrees/dark-mode
+git worktree remove .claude/worktrees/seats-left
+git branch -d worktree-dark-mode worktree-seats-left
+git worktree list
+```
+</Terminal>
+
+Remove the worktrees before deleting the branches — git refuses to delete a branch that is still checked out somewhere. The last command should show only your main checkout.
+
+Optional finish, from a normal shell:
+
+<Terminal title="bash">
+```bash
+claude -p "Summarize what changed in the last 3 commits in 5 bullets" --output-format json
+```
+</Terminal>
+
+Find `result`, `session_id` and `total_cost_usd` in the JSON. That last field is what this lab is really about.
+</Step>
+
+</Steps>
+
+## The conflict was the lesson, not the accident
+
+Worktrees isolate **files**. They do not isolate **decisions**. Both agents wrote good code for `index.html` and still collided, because neither knew the other was rearranging the same header. Claude Code enforces the file half: inside a worktree session it blocks edits, commands and git redirects aimed at the main checkout. Nothing enforces the decision half. You do.
+
+So the real skill is not typing `--worktree`. It is splitting work along file lines before anything starts:
+
+- **One owner per file.** Name the files in each prompt, as you did above.
+- **Give the second agent its own file** where you can. `seats.js` exists so that only one line of `index.html` has to change.
+- **Never let two agents edit CLAUDE.md, the README or the config** in the same run.
+- **Merge the same day.** Stale branches turn a small conflict into an afternoon.
+
+## When two agents is an expensive way to get one result
+
+[Cognition's June 2025 argument](https://cognition.com/blog/dont-build-multi-agents) against multi-agent systems holds where it matters: actions carry implicit decisions, and conflicting decisions produce bad results. Their example is two subagents building a game — one makes a Mario-style background, the other a bird that does not match it, and a human reconciles the mess. Your `index.html` conflict, scaled up.
+
+So skip the second agent when the work is sequential, when both halves share a decision, when a sharper prompt or a `/clear` would have done it, or when you have no automated check. The default that survives real work is modest: one agent, subagents for research, a fresh context to review.
+
+<Deeper title="Where the branch actually starts from, and how to bring your .env along">
+By default worktrees use `worktree.baseRef: "fresh"` — they branch from the remote default branch (`origin/HEAD`), falling back to local HEAD when there is no remote. To include unpushed work instead, set `{"worktree": {"baseRef": "head"}}` in your Claude Code settings.
+
+A fresh checkout also carries no ignored files and no dependencies. List the ignored files you need — `.env`, for example — in a `.worktreeinclude` file using gitignore syntax, and they are copied into each new worktree. Dependencies you reinstall. Source: [the worktrees docs](https://code.claude.com/docs/en/worktrees).
+</Deeper>
+
+<Deeper title="The manual route, which works in any tool">
+`--worktree` is Claude Code's wrapper around plain git, so the same isolation works with Cursor, Codex, Gemini CLI or a bare editor:
+
+<Terminal title="bash">
+```bash
+git worktree add ../qairu-dark-mode -b dark-mode
+git worktree list
+git worktree remove ../qairu-dark-mode
+```
+</Terminal>
+
+Then `cd` into that folder and start whichever agent you like.
+</Deeper>
+
+<Deeper title="Bigger than two: /batch, agent teams and workflows">
+`/batch` followed by one instruction splits a large change across 5–30 worktree-isolated subagents, each opening its own pull request. Agent teams — a lead plus teammates sharing a task list — are experimental and off by default; the docs state that "teammates are not isolated in worktrees", so you partition files by hand, and the costs page puts them at roughly seven times a standard session's tokens when teammates run in plan mode. Dynamic workflows run up to 16 concurrent agents by default. Read [the agents overview](https://code.claude.com/docs/en/agents) first — all three multiply the bill you just measured.
+</Deeper>
+
+<Quiz
+  id="lab7-worktrees"
+  question="Your two worktree sessions finish. Both agents edited index.html. You merge the first branch cleanly, then the second one conflicts. What does that tell you?"
+  options={[
+    'The worktrees failed — one agent overwrote the other',
+    'The worktrees worked; they isolate files, not the design decisions inside a shared file',
+    'You should have used agent teams instead, which merge automatically',
+    'The second agent ignored CLAUDE.md',
+  ]}
+  answer={1}
+  explain="Neither agent ever saw the other's folder, which is exactly what a worktree guarantees. Git only compares them at merge time, and two independent edits to the same region of the same file conflict by definition. Fix it upstream: give each agent its own files before the run, not after."
+  xp={10}
+/>
+
+<Callout type="live" title="If you are teaching this page">
+Start both agents in the first minute and let them work while you talk through the cost numbers — the wait is the demo. Then merge live and let the conflict happen in front of the room. Resist picking a conflict-free pair of features; the conflict is the part nobody forgets.
+</Callout>
+
+<Callout type="tip" title="Check what it cost you">
+Run `/usage` and compare it with what you saw at pre-flight. Two sessions burn roughly double. Decide, with that number in front of you, whether the next feature deserves two terminals or one.
+</Callout>
+
+<Artifact title="The parallel-run card" kind="checklist">
+Pre-flight, the file-ownership rules that prevent most conflicts, the merge and cleanup commands in order, and the questions that send you back to a single session instead.
+</Artifact>

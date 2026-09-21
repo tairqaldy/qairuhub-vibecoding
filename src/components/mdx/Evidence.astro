@@ -1,0 +1,32 @@
+---
+// A real screenshot of a public post or page, always with a link to the original.
+interface Props {
+  src: string;
+  alt: string;
+  href: string;
+  source: string;
+  date?: string;
+  width?: number;
+  height?: number;
+}
+const { src, alt, href, source, date, width, height } = Astro.props;
+---
+
+<figure class="evidence" data-reveal>
+  <a href={href} target="_blank" rel="noopener noreferrer" class="shot">
+    <img src={src} alt={alt} loading="lazy" decoding="async" width={width} height={height} />
+  </a>
+  <figcaption>
+    <span class="cap"><slot /></span>
+    <a href={href} target="_blank" rel="noopener noreferrer" class="src">{source}{date && ` · ${date}`} ↗</a>
+  </figcaption>
+</figure>
+
+<style>
+  .evidence { margin: 40px 0; }
+  .shot { display: block; border-radius: 18px; overflow: hidden; border: 1px solid var(--color-line-strong); background: #000; box-shadow: 0 40px 90px -50px rgb(0 0 0); transition: transform 0.6s var(--ease-out-expo), border-color 0.3s; }
+  .shot:hover { transform: translateY(-4px) rotate(-0.3deg); border-color: var(--act); }
+  img { display: block; width: 100%; height: auto; border-radius: 0 !important; }
+  figcaption { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; margin-top: 12px; font-size: 14px; color: var(--color-muted); }
+  .src { font: 500 12px/1.6 var(--font-mono); color: var(--act) !important; text-decoration: none !important; white-space: nowrap; }
+</style>
