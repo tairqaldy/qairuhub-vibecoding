@@ -240,6 +240,9 @@ export default function ClaudeCodeSim({ lang }: { lang: Lang }) {
     if (!playing) return;
     if (shownLines >= playing.lines.length) {
       const id = setTimeout(() => {
+        // Commit the played lines to history before clearing `playing`, otherwise
+        // the terminal would blank out everything it just typed.
+        setHistory((h) => [...h, ...playing.lines]);
         setLesson(playing);
         setPlaying(null);
         setShownLines(0);
@@ -263,7 +266,6 @@ export default function ClaudeCodeSim({ lang }: { lang: Lang }) {
 
   function advance() {
     if (!lesson) return;
-    setHistory((h) => [...h, ...lesson.lines]);
     const wasCorrect = lesson.correct;
     setLesson(null);
     if (wasCorrect) {
