@@ -33,36 +33,54 @@ const componentsIn = (src) => {
 };
 
 // ---------------------------------------------------------------- Russian check
-// Words and spellings that only occur in Russian, or Russian-flavoured loans that
-// the Kazakh style guide rejects. Matched on whole words, case-insensitive.
-const RUSSIAN = [
-  'который', 'которая', 'которые', 'этот', 'эта', 'это', 'эти', 'если', 'чтобы', 'потому',
-  'нужно', 'можно', 'может', 'быть', 'есть', 'очень', 'также', 'после', 'перед', 'между',
-  'когда', 'где', 'всё', 'все', 'уже', 'ещё', 'здесь', 'сейчас', 'сначала', 'затем',
-  'например', 'таким', 'образом', 'вместо', 'вместе', 'работает', 'делать', 'сделать',
-  'использовать', 'настроить', 'запустить', 'открыть', 'создать', 'написать', 'добавить',
-  'файл', 'папка', 'кнопка', 'ошибка', 'пример', 'задача', 'проект', 'страница', 'данные',
-  'разработчик', 'программист', 'пользователь', 'приложение', 'сайт', 'сервер', 'запрос',
-  // Russian-flavoured loan spellings the kk style guide rejects
-  'бэкенд', 'деплой', 'задеплоить', 'фича', 'юзер', 'коммитить', 'запушить', 'фронтенд',
-  'фреймворк', 'дебаг', 'баг', 'релиз', 'билд', 'хостинг',
+//
+// Two different things are being caught here, and neither is "Cyrillic".
+// Kazakh is written in Cyrillic and has a large, accepted set of technical
+// loanwords (файл, сервер, сайт, модель, код, токен, агент, терминал,
+// браузер, компьютер...). Those are correct Kazakh and must NOT be flagged.
+//
+// What is flagged:
+//   1. Russian function words and verbs — they have no place in a Kazakh sentence.
+//   2. Russian-flavoured spellings of loans that the Kazakh style guide rejects
+//      in favour of a Kazakh form (research/kk-glossary.md, decisions 2 and 9).
+//
+// Letter-based detection is deliberately not used: щ, ъ, ь, ы and э are all in
+// the Kazakh Cyrillic alphabet, so they prove nothing on their own.
+const RUSSIAN_FUNCTION_WORDS = [
+  'который', 'которая', 'которое', 'которые', 'которых', 'которым',
+  'этот', 'эта', 'это', 'эти', 'этого', 'этом', 'этим',
+  'если', 'чтобы', 'потому', 'поэтому', 'тогда', 'когда', 'где', 'здесь', 'там',
+  'нужно', 'можно', 'нельзя', 'должен', 'должна', 'должны',
+  'очень', 'также', 'тоже', 'после', 'перед', 'между', 'через', 'около',
+  'уже', 'ещё', 'еще', 'сейчас', 'сначала', 'затем', 'потом', 'всегда', 'никогда',
+  'например', 'вместо', 'вместе', 'кроме', 'чтоб', 'ведь', 'даже', 'лишь',
+  'работает', 'работать', 'делать', 'сделать', 'использовать', 'настроить',
+  'запустить', 'открыть', 'создать', 'написать', 'добавить', 'удалить',
+  'получить', 'проверить', 'нажмите', 'введите', 'выберите', 'смотрите',
+  'ваш', 'ваша', 'ваше', 'ваши', 'наш', 'наша', 'наши', 'свой', 'своя',
 ];
-// Letters that exist in Russian but not in Kazakh Cyrillic.
-const RU_ONLY_LETTERS = /[щЩъЪыЫэЭ]/;
-const ruWord = new RegExp(`(^|[^\\p{L}])(${RUSSIAN.join('|')})([^\\p{L}]|$)`, 'iu');
+// Russian-flavoured spellings the style guide rejects (a Kazakh form exists).
+const REJECTED_SPELLINGS = [
+  'бэкенд', 'фронтенд', 'деплой', 'задеплоить', 'задеплой', 'фича', 'фичи',
+  'юзер', 'юзера', 'коммитить', 'закоммитить', 'запушить', 'пушить',
+  'дебажить', 'ребейз', 'мержить', 'смержить', 'хардкод', 'фиксить', 'пофиксить',
+];
+const ruWord = new RegExp(
+  `(^|[^\\p{L}])(${[...RUSSIAN_FUNCTION_WORDS, ...REJECTED_SPELLINGS].join('|')})([^\\p{L}]|$)`,
+  'giu',
+);
 
 function checkRussian(text, file) {
   const stripped = text
     .replace(/```[\s\S]*?```/g, ' ') // code fences
     .replace(/`[^`]*`/g, ' ') // inline code
-    .replace(/https?:\/\/\S+/g, ' '); // urls
+    .replace(/https?:\/\/\S+/g, ' ') // urls
+    .replace(/"[A-Za-z][^"]*"/g, ' '); // quoted English (we keep original quotes)
   const hits = [];
   for (const line of stripped.split('\n')) {
-    const m = line.match(ruWord);
-    if (m) hits.push(`"${m[2]}" — ${line.trim().slice(0, 70)}`);
-    const l = line.match(RU_ONLY_LETTERS);
-    // ы and э appear in a few accepted Kazakh loans, so only flag щ/ъ which never do
-    if (l && /[щЩъЪ]/.test(line)) hits.push(`"${l[0]}" (Russian-only letter) — ${line.trim().slice(0, 70)}`);
+    for (const m of line.matchAll(ruWord)) {
+      hits.push(`"${m[2]}" — ${line.trim().slice(0, 70)}`);
+    }
   }
   if (hits.length) fail.push(`RUSSIAN in ${file}:\n    ` + [...new Set(hits)].slice(0, 6).join('\n    '));
 }

@@ -47,8 +47,10 @@ const stepModule = (n: number) => modules.find((m) => m.cycleStep === n);
       }
 
       <g class="hub">
-        <text x={CX} y={CY - 8} text-anchor="middle" class="hub-k">THE LOOP</text>
-        <text x={CX} y={CY + 18} text-anchor="middle" class="hub-n" data-hub-title>9 steps</text>
+        <text x={CX} y={CY - 8} text-anchor="middle" class="hub-k">{lang === 'kk' ? 'ЦИКЛ' : 'THE LOOP'}</text>
+        <text x={CX} y={CY + 18} text-anchor="middle" class="hub-n" data-hub-title>
+          {lang === 'kk' ? '9 қадам' : '9 steps'}
+        </text>
       </g>
     </svg>
   </div>
