@@ -53,15 +53,28 @@ qairuhub.com and put it in `.env` as `CLOUDFLARE_API_TOKEN`.
 - `/tools/` — 32 AI coding environments and 31 models compared, with free tiers and honest weaknesses
 - `/materials/` — 167 curated resources in 18 categories, plus 4 reading paths
 - `/glossary/` — 473 EN↔KK terms with definitions and usage rules
-- `/workshop/` — the presenter's run-of-show: 27 segments, minute by minute, with fallbacks
+- `/workshop/` — the presenter's pack: a 27-segment run-of-show, 8 things to send attendees,
+  a 14-item presenter kit, 14 audience moments, 3 live demo scripts with offline fallbacks,
+  10 build-together projects, a 25-question Q&A bank, and a 7-day follow-up plan. It prints cleanly.
 - `/present/` — keyboard-driven slide mode (arrows, F for fullscreen)
 
-**12 interactive widgets**, all working offline with no API keys:
+**13 interactive widgets**, all working offline with no API keys:
 token counter, context-window filler, Claude Code simulator, prompt lab, fake terminal,
 git simulator, spot-the-security-bug, deploy simulator, PRD wizard, AGENTS.md builder,
-orchestration comparison, guess-the-number.
+orchestration comparison, guess-the-number, and a downloadable progress card.
+
+All of them were clicked through in a real browser, not just built.
 
 **Progress and XP** are saved in `localStorage`. No accounts, no server, nothing leaves the browser.
+The share card at the bottom of `/learn/` is drawn on a canvas from that local progress, so
+anyone can download a PNG of where they got to.
+
+**20 real community voices** — Andrew Ng, Boris Cherny, Karpathy, Willison, Mitchell Hashimoto,
+the "guys, I'm under attack" founder, and the joke accounts — quoted short and linked to the
+original, placed where they support *or complicate* the argument around them.
+
+**7 real screenshots** of the sources: METR's study with its own out-of-date banner, the Collins
+announcement, Willison's two posts, Karpathy's Sequoia write-up, The Register on Replit, agents.md.
 
 ---
 
@@ -98,9 +111,9 @@ orchestration comparison, guess-the-number.
 | | |
 |---|---|
 | DNS record for the custom domain | **you, 2 minutes** — steps above |
-| `src/data/workshop.ts` | run-of-show is complete; the Q&A bank, demo scripts and 10 project ideas were still generating when the run ended. The page renders only the sections that exist, so it is not broken — it will just grow when those land. |
-| Kazakh review pass | ~30 minutes, you |
+| Kazakh review pass | ~30 minutes, you. Start with `/kk/try/` and `/kk/learn/the-tweet/` — they set the tone |
 | OWASP LLM Top 10 screenshot | their site returns 403 to automated requests; the link is there, the image is not |
+| X/Twitter screenshots | X blocks automated requests and needs a session, so those posts are `<Post>` cards with links rather than images. If you want the real thing, screenshot a few by hand into `public/img/evidence/` and add an `<Evidence>` block — `scripts/insert-evidence.mjs` keeps both locales in sync for you |
 
 ---
 

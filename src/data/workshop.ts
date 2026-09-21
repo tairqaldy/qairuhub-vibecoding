@@ -1465,5 +1465,440 @@ Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 
       kk: '5 қонақтан тұратын мысалдың жалпы сомасы қолмен тексергеніңмен дәл келеді; RSVP бойынша сүзгі тек тізімді емес, жалпы соманы да өзгертеді; басып шығару көрінісі бір бетке сыяды, оң жақ шеті кесілмейді; бетті қайта жүктегенде деректер орнында тұр.',
     },
   },
+  {
+    level: 1,
+    title: { en: 'Kazakhstan quiz', kk: 'Қазақстан туралы тест' },
+    brief: {
+      en: 'A timed ten-question quiz about the regions and cities of Kazakhstan. The point of this card is not the quiz, it is the fact-checking: if you ask the agent to draft the questions it will write confident, plausible, occasionally wrong answers about your own country, and you will catch them because you know the country better than it does.',
+      kk: 'Қазақстанның өңірлері мен қалалары туралы уақыт шектеулі он сұрақтан тұратын тест. Бұл картаның мәні — тестте емес, фактіні тексеруде: сұрақтарды жазуды agent-тен сұрасаң, ол өз еліңнің өзі туралы сенімді, орынды көрінетін, кейде қате жауаптар жазады, ал сен оларды ұстайсың, себебі елді одан жақсы білесің.',
+    },
+    stack: {
+      en: 'One page plus a JSON file of questions. No network calls at all once it is open.',
+      kk: 'Бір бет және сұрақтары бар JSON файлы. Ашылғаннан кейін желіге мүлде шықпайды.',
+    },
+    starterPrompt: `Build a timed 10-question quiz about the regions and cities of Kazakhstan, reading the questions from a JSON file. Draft the questions and answers yourself into that file, but mark clearly which facts you are less sure about, because I am going to check them. Show a score and a streak, let me review the questions I got wrong at the end, and produce a short share-my-score text I can paste into Telegram. One page, mobile-first.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'The questions come up in a different order each round; the timer actually ends the round rather than just turning red; wrong answers are reviewable at the end with the correct answer next to them; and you personally verified at least 5 of the facts, because the agent can be confidently wrong about your own country.',
+      kk: 'Әр раундта сұрақтар басқа ретпен шығады; таймер қызарып қана қоймай, раундты шынымен аяқтайды; соңында қате жауаптарды дұрысымен қатар қарап шығуға болады; әрі кемінде 5 фактіні өзің тексердің, себебі agent өз елің туралы да сеніммен қателесе алады.',
+    },
+  },
+  {
+    level: 2,
+    title: { en: 'Habit heatmap', kk: 'Әдеттер картасы' },
+    brief: {
+      en: 'Up to five habits, one tap to mark today done, and a heatmap of the last twelve weeks with a current and a best streak. Streak logic is deceptively hard — it is the place where almost every pair discovers that plausible code and correct code are different things, which is exactly why this card is on the list.',
+      kk: 'Бесіке дейін әдет, бүгінгіні белгілеу үшін бір рет басу және соңғы он екі аптаның картасы, қазіргі әрі ең ұзақ сериямен. Серия логикасы көрінгеннен қиын: дәл сол жерде жұптардың барлығы дерлік «сенімді көрінетін код» пен «дұрыс кодтың» екі бөлек нәрсе екенін ашады, ал бұл карта тізімде дәл сол үшін тұр.',
+    },
+    stack: {
+      en: 'One page, browser storage, a grid you draw with CSS. No library needed for the heatmap and you should not let it add one.',
+      kk: 'Бір бет, браузердегі сақтау, CSS-пен салынған тор. Карта үшін кітапхана қажет емес, оны қосуға жол берме.',
+    },
+    starterPrompt: `Build a habit tracker for up to 5 habits. Tapping today marks a habit as done. Show a GitHub-style heatmap of the last 12 weeks for each habit, plus the current streak and the best streak ever. All data in the browser, one page, mobile-first, no login.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'Marking today updates both the heatmap square and the streak number; the streak logic survives the case of three days on, one day off, two days on — write that test before you believe anything; the data is still there tomorrow.',
+      kk: 'Бүгінгіні белгілегенде картадағы шаршы да, серия саны да жаңарады; серия логикасы «үш күн орындалды, бір күн жоқ, екі күн орындалды» жағдайынан аман өтеді — бірдеңеге сенбес бұрын дәл сол тестті жаз; деректер ертең де орнында тұрады.',
+    },
+  },
+  {
+    level: 3,
+    title: { en: 'Expense lens', kk: 'Шығын талдағыш' },
+    brief: {
+      en: 'Drop a CSV of expenses on the page and get totals per category, a monthly chart and the top five expenses. The real lesson here is the one you can prove on screen: nothing is uploaded anywhere. Open the network tab in front of your partner and show that the file never leaves the browser. Use fake data only.',
+      kk: 'Бетке шығындар тізімі бар CSV файлын тастайсың да, санат бойынша жалпы сома, айлық диаграмма және ең үлкен бес шығынды аласың. Мұндағы нағыз сабақ — экранда дәлелдей алатын нәрсе: ештеңе еш жерге жіберілмейді. Желі қойындысын серіктесіңнің көзінше ашып, файлдың браузерден шықпағанын көрсет. Тек ойдан құрастырылған деректерді қолдан.',
+    },
+    stack: {
+      en: 'One page, file read in the browser, a chart drawn by hand, zero network requests after load. Fake data only, never a real bank export.',
+      kk: 'Бір бет, файл браузерде оқылады, диаграмма қолмен салынады, жүктелгеннен кейін желіге бірде-бір сұрау жоқ. Тек ойдан құрастырылған деректер, нақты банк үзіндісі ешқашан емес.',
+    },
+    starterPrompt: `Build a page where I drop a CSV file of expenses with the columns date, category and amount in tenge. Here is a fake sample [paste 15 rows]. Show totals per category, a chart of spending per month, and my top 5 individual expenses. Everything must stay in my browser: no uploads, no network requests, no analytics. A malformed row should produce a friendly message naming the row number, not a crash.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'The sample file produces totals of which you checked two by hand; a deliberately broken row gives a readable message that names the row instead of a blank screen; the network tab shows no upload after the page has loaded; and you only ever fed it invented data.',
+      kk: 'Мысал файлы беретін сомалардың екеуін қолмен тексердің; әдейі бұзылған жол бос экранның орнына жол нөмірін атаған, оқуға болатын хабар береді; бет жүктелгеннен кейін желі қойындысында бірде-бір жіберу көрінбейді; әрі оған тек ойдан құрастырылған деректерді бердің.',
+    },
+  },
+  {
+    level: 3,
+    title: { en: 'Asyk toss', kk: 'Асық ату' },
+    brief: {
+      en: 'A small canvas game inspired by asyk atu: drag to aim, flick to throw, five throws a round. Physics and touch controls are where agents produce something that runs and feels wrong, so this card teaches you to describe a feeling in numbers — how fast, how heavy, how much it slows down.',
+      kk: 'Асық атудан шабыт алған шағын canvas ойыны: көздеу үшін сүйрейсің, лақтыру үшін сілтейсің, раундта бес лақтыру. Физика мен сенсорлық басқару — agent-тің жүріп тұрған, бірақ сезінуге жағымсыз нәрсе шығаратын жері, сондықтан бұл карта сезімді сандармен сипаттауға үйретеді: қаншалықты жылдам, қаншалықты ауыр, қаншалықты баяулайды.',
+    },
+    stack: {
+      en: 'One HTML file with a canvas, plain JavaScript, no game engine. Touch first, mouse second.',
+      kk: 'Canvas-ы бар бір HTML файл, қарапайым JavaScript, ойын қозғалтқышы жоқ. Алдымен сенсор, сосын тінтуір.',
+    },
+    starterPrompt: `Build a small browser game inspired by the Kazakh game asyk atu. Drag to aim and flick to throw an asyk at a row of targets. Five throws per round, then a score. Simple physics with friction so a throw slows down, touch controls that work on a phone, and a sound toggle that is off by default. One HTML file with a canvas, plain JavaScript, no game engine.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'It is playable with a finger on a real phone, not only with a mouse; the score and the round both reset properly when you start again; a full round of five throws produces no errors in the console; and it feels like a throw rather than a teleport, which you can only judge by playing it.',
+      kk: 'Тінтуірмен ғана емес, нақты телефонда саусақпен ойнауға келеді; қайта бастағанда есеп те, раунд та дұрыс тазарады; бес лақтырудан тұратын толық раундта консольде қате шықпайды; әрі ол телепорт емес, лақтыру сияқты сезіледі, ал мұны тек ойнап көріп бағалай аласың.',
+    },
+  },
+  {
+    level: 3,
+    title: { en: 'Downloads tidy', kk: 'Жүктемелер қалтасын жинау' },
+    brief: {
+      en: 'A script that sorts a folder by file type and month. This card exists to teach one thing that no web app can: what it feels like to hand an agent a command that touches real files. The dry run is not a feature, it is the lesson. For pairs with Claude Code or Codex only.',
+      kk: 'Қалтаны файл түрі мен айы бойынша сұрыптайтын скрипт. Бұл карта бірде-бір веб қолданба үйрете алмайтын нәрсені үйрету үшін бар: agent-ке нақты файлдарға тиетін пәрменді тапсыру қандай екенін. Мұнда `--dry-run` — мүмкіндік емес, сабақтың өзі. Тек Claude Code немесе Codex бар жұптарға.',
+    },
+    stack: {
+      en: 'One Python script, standard library only, run against a test folder you created for this and nothing else.',
+      kk: 'Бір Python скрипті, тек стандартты кітапхана, әрі ол тек осы үшін жасалған сынақ қалтасында орындалады, басқа еш жерде емес.',
+    },
+    starterPrompt: `Write a Python script that organises a folder by file type and by month into subfolders. Requirements: a --dry-run mode that prints exactly what it would do and changes nothing, and that mode is the default; real moves happen only with --apply; the script never deletes anything; every real move is written to an undo log. First create a test folder with 20 fake files of different types and dates, and run everything there only. Standard library only.
+
+Ask me up to 3 questions first. Then show a short plan. Then build. Then list 3 test cases with expected results, run or walk through them, and tell me honestly which pass.`,
+    done: {
+      en: 'The dry run prints a plan and provably changes nothing — you checked the folder afterwards; --apply works on the test folder and only there; the undo log is enough to put the original layout back; and you denied at least one permission request on purpose and can explain to your partner why you denied it.',
+      kk: '`--dry-run` жоспарды басып шығарады және ештеңе өзгертпейді — мұны қалтаны кейін тексеру арқылы дәлелдедің; `--apply` тек сынақ қалтасында жұмыс істейді; өзгерістер журналы бастапқы күйді қайтаруға жетеді; әрі кем дегенде бір рұқсат сұрауынан әдейі бас тарттың және серіктесіңе неге олай істегеніңді түсіндіре аласың.',
+    },
+  },
+];
+
+// ------------------------------------------------------------------ the Q&A bank
+// Twenty-five questions this room actually asks, including the ones that are
+// uncomfortable to answer honestly. Rule for every answer here: no overselling.
+// If the honest answer is "nobody knows" or "not really", say that first.
+
+export const qa: { q: L; a: L; tag: string }[] = [
+  {
+    tag: 'learning',
+    q: {
+      en: 'Do I need to know how to code to start?',
+      kk: 'Бастау үшін код жаза білу керек пе?',
+    },
+    a: {
+      en: 'To start, no. The Keep Thinking Prize in the Built with Opus 4.7 hackathon went to a 20-year-old from Chiloe with no programming experience at all; the other winners were a physician who became a software engineer, a builder who spent years repairing electronics, and a university lecturer. What they had was a problem they understood better than anyone else in the room. To go beyond toys, yes, gradually: you have to be able to read a diff, an error and a test, because that is where all the value sits. Start without it, and learn it because you want to check the thing you just built, not because a syllabus told you to.',
+      kk: 'Бастау үшін — жоқ. Built with Opus 4.7 хакатонындағы Keep Thinking жүлдесін бағдарламалау тәжірибесі мүлде жоқ, Чилоэден келген 20 жасар жас алды; қалған жеңімпаздар — бағдарламашы болған дәрігер, ұзақ жыл электроника жөндеген маман және университет оқытушысы. Олардың артықшылығы — өздері залдағы кез келген адамнан жақсы түсінетін мәселе болғаны. Ал ойыншықтан әріге өту үшін — иә, бірте-бірте: өзгерісті, қатені және тестті оқи білу керек, себебі бүкіл құндылық сол жерде. Кодсыз баста, ал үйренуін жаңа жасаған нәрсеңді тексергің келгендіктен үйрен, оқу жоспары айтқандықтан емес.',
+    },
+  },
+  {
+    tag: 'jobs',
+    q: {
+      en: 'Will this take my job? Is it still worth learning to code?',
+      kk: 'Бұл менің жұмысымды тартып алып кете ме? Код жазуды үйрену әлі де маңызды ма?',
+    },
+    a: {
+      en: 'Nobody knows the end state, and anyone who tells you they do is selling something, including people who sell workshops. What can be observed today: 84 per cent of developers use or plan to use AI, but only 33 per cent trust its accuracy against 46 per cent who distrust it, and 66 per cent are frustrated by answers that are almost right. That gap is a job description. Somebody has to say what should be built, check that it was built, and carry the consequences when it was not — and that somebody has to be able to read code. So yes, learn to code, but learn it in the order that now makes sense: build something first, then learn enough to verify it, then learn the fundamentals because you have finally met a problem that needs them.',
+      kk: 'Түпкі нәтижені ешкім білмейді, ал білемін дегеннің бәрі бірдеңе сатып тұр, оның ішінде сабақ сатып жүргендер де бар. Бүгін көрініп тұрғаны мынау: әзірлеушілердің 84 пайызы ЖИ-ді қолданады немесе қолданбақ, бірақ дәлдігіне тек 33 пайызы сенеді, ал 46 пайызы сенбейді, әрі 66 пайызын «дәлге жақын, бірақ дәл емес» жауаптар ашуландырады. Осы алшақтықтың өзі — жұмыс сипаттамасы. Біреу не жасау керегін айтуы, жасалғанын тексеруі және жасалмағанда жауап беруі керек, ал ол адам кодты оқи білуі тиіс. Сондықтан иә, код жазуды үйрен, бірақ енді мағынасы бар ретпен үйрен: алдымен бірдеңе жаса, сосын оны тексеретіндей үйрен, ал негіздерді соларды талап ететін мәселеге тап болғанда үйрен.',
+    },
+  },
+  {
+    tag: 'cost',
+    q: {
+      en: 'Is Claude Code free?',
+      kk: 'Claude Code тегін бе?',
+    },
+    a: {
+      en: 'No. Claude Code needs Pro at 20 dollars a month, or 17 a month if you pay for a year up front, or Max from 100 dollars, or Team, Enterprise, or pay-per-token Console billing. The free claude.ai plan gives you chat and artifacts and explicitly does not include Claude Code. That is not a downside for tonight: artifacts are Track A, and Demo 1 runs entirely there. Anyone who tells you Claude Code works on the free plan is repeating something that was never true.',
+      kk: 'Жоқ. Claude Code-қа айына 20 доллар тұратын Pro керек, жылдық төлемде айына 17 доллар, немесе 100 доллардан басталатын Max, немесе Team, Enterprise не токен бойынша төленетін Console. Тегін claude.ai жоспары чат пен artifact береді және Claude Code-ты қамтымайтыны анық жазылған. Бүгінгі кешке бұл кедергі емес: artifact-тар — A жолы, ал Demo 1 толығымен сонда өтеді. «Claude Code тегін жоспарда жұмыс істейді» дейтіндер ешқашан рас болмаған нәрсені қайталап жүр.',
+    },
+  },
+  {
+    tag: 'cost',
+    q: {
+      en: 'Is the free tier actually enough — for tonight and for the week after?',
+      kk: 'Тегін жоспар шынымен жете ме — бүгінге және келесі аптаға?',
+    },
+    a: {
+      en: 'For tonight, yes, if you stay in Track A or Track C. For the week after, honestly, not comfortably. Copilot Free is 2 000 completions and 50 chat requests a month, and 50 goes in one evening. Lovable Free is 5 build credits a day and up to 30 a month; Bolt Free is 300 000 tokens a day and a million a month — forty minutes of building can exhaust either. The Antigravity Individual plan is 0 dollars with basic weekly rate limits that are not published, and users report burning through them in minutes. And free tiers die without warning: Gemini CLI stopped serving free users on 18 June 2026, which is why half the blog posts you will find about it are wrong. The honest plan is to learn the loop on the free tiers, then pay for exactly one month when you have something you genuinely want to finish.',
+      kk: 'Бүгінгі кешке — иә, A немесе C жолында қалсаң. Ал келесі аптаға, шынын айтқанда, жайлы емес. Copilot Free айына 2 000 толықтыру мен 50 чат сұрауын береді, ал 50-і бір кеште бітеді. Lovable Free күніне 5 build кредиті, айына 30-ға дейін; Bolt Free күніне 300 000 токен, айына бір миллион — қырық минуттық жұмыс екеуін де таусып тастай алады. Antigravity-дің Individual жоспары 0 доллар, жарияланбаған апталық негізгі шектеулерімен, ал пайдаланушылар оны бірнеше минутта жағып бітіретінін айтады. Әрі тегін жоспарлар ескертусіз жоғалады: Gemini CLI 2026 ж. 18 маусымда тегін пайдаланушыларға қызмет көрсетуді тоқтатты, сондықтан ол туралы табатын жазбаларыңның жартысы қате. Шыншыл жоспар: циклды тегін жоспарларда үйрен, сосын шынымен аяқтағың келетін нәрсе шыққанда дәл бір айға төле.',
+    },
+  },
+  {
+    tag: 'kazakhstan',
+    q: {
+      en: 'Does it work in Kazakhstan? Do I need a VPN or a foreign card?',
+      kk: 'Бұл Қазақстанда жұмыс істей ме? VPN немесе шетелдік карта керек пе?',
+    },
+    a: {
+      en: 'Kazakhstan is on the official supported-countries list for both claude.ai and the API, so no VPN. The same list has Kyrgyzstan, Uzbekistan, Tajikistan and Turkmenistan. The VPN and virtual-card guides circulating in chat groups were written for residents of countries that are not on the list, and those same guides describe Kazakhstan-issued cards as the route that works. On payment specifically: local cards such as Kaspi, Freedom and Bereke are reported to work, but that comes from a secondary source we have not verified ourselves, so treat it as probably right rather than certain. If a card is declined there is a support article about it. Do not buy a virtual-card service on the strength of a post in a Telegram channel.',
+      kk: 'Қазақстан claude.ai үшін де, API үшін де қолдау көрсетілетін елдердің ресми тізімінде, сондықтан VPN керек емес. Сол тізімде Қырғызстан, Өзбекстан, Тәжікстан және Түрікменстан да бар. Чат топтарында тарап жүрген VPN мен виртуалды карта туралы нұсқаулар тізімде жоқ елдердің тұрғындарына жазылған, әрі сол нұсқаулардың өзі жұмыс істейтін жол ретінде Қазақстанда шығарылған карталарды атайды. Төлем туралы нақты айтсақ: Kaspi, Freedom, Bereke сияқты жергілікті карталар жұмыс істейді деген хабар бар, бірақ бұл — өзіміз тексермеген, екінші дәрежелі дереккөз, сондықтан оны «сенімді» емес, «дұрыс шығар» деп қабылда. Карта қабылданбаса, бұл туралы қолдау мақаласы бар. Telegram арнасындағы жазбаға сеніп, виртуалды карта қызметін сатып алма.',
+    },
+  },
+  {
+    tag: 'cost',
+    q: {
+      en: 'Subscription or API — what does a month actually cost?',
+      kk: 'Жазылым ба, API ма — бір ай шынымен қанша тұрады?',
+    },
+    a: {
+      en: 'A subscription is a flat fee with usage that resets on a rolling five-hour window and a weekly one: Pro is 20 dollars a month, 17 if billed annually at 200 dollars up front, and Max starts at 100 dollars. The API is per token, with no flat ceiling: Anthropic reports an enterprise average of around 13 dollars per developer per active day, or 150 to 250 dollars per developer per month. For a student that comparison is not close. Take one month of Pro, use it hard, and decide at the end of the month with your own numbers instead of anyone forecast.',
+      kk: 'Жазылым — тұрақты төлем, ал шектеу жылжымалы бес сағаттық және апталық терезе бойынша жаңарады: Pro айына 20 доллар, жылдық төлемде алдын ала 200 доллар төлеп, айына 17 доллар, ал Max 100 доллардан басталады. API токен бойынша, жоғарғы шегі жоқ: Anthropic компаниялар бойынша орташа есеппен бір әзірлеушіге жұмыс күніне шамамен 13 доллар, айына 150-250 доллар деп хабарлайды. Студент үшін бұл салыстыру тең емес. Бір айға Pro ал, оны қатты пайдалан да, ай соңында біреудің болжамымен емес, өз сандарыңмен шеш.',
+    },
+  },
+  {
+    tag: 'cost',
+    q: {
+      en: 'I hit my usage limit in the middle of building. Now what?',
+      kk: 'Жасап отырғанда шектеуге тап болдым. Енді не істеймін?',
+    },
+    a: {
+      en: 'Run /usage and read the reset time in the message — limits reset on a rolling five-hour window plus a weekly one, and they are shared across models inside a window, so switching model does not rescue you. What actually helps next time: use a smaller and faster model for routine edits and keep the big one for planning and hard bugs, run /clear between unrelated tasks so you are not paying to re-read an old conversation, and write one specific prompt instead of five vague corrections. Tonight, the practical answer is the room: pair with somebody whose window is fresh, and swap the keyboard rather than the project.',
+      kk: '`/usage` пәрменін орында да, хабардағы жаңару уақытын оқы: шектеу жылжымалы бес сағаттық және апталық терезе бойынша жаңарады, әрі бір терезе ішінде модельдер арасында ортақ, сондықтан модель ауыстыру құтқармайды. Келесі жолы шынымен көмектесетіні: күнделікті ұсақ өзгеріске кішірек әрі жылдам модельді қолдан, үлкенін жоспарлау мен қиын қатеге қалдыр; байланысы жоқ тапсырмалар арасында `/clear` жаса, сонда ескі әңгімені қайта оқығаны үшін төлемейсің; бес бұлдыр түзетудің орнына бір нақты prompt жаз. Ал бүгін кешке нақты жауап — залдың өзі: терезесі жаңарған адаммен жұптас та, жобаны емес, пернетақтаны ауыстыр.',
+    },
+  },
+  {
+    tag: 'tools',
+    q: {
+      en: 'My laptop is old, or I only have a phone.',
+      kk: 'Ноутбугым ескі, немесе тек телефоным бар.',
+    },
+    a: {
+      en: 'The model does not run on your machine, so the requirements are small: 4 GB of RAM, Windows 10 1809 or newer, macOS 13 or newer, Ubuntu 20.04 or newer. An old laptop is genuinely fine. With only a phone, Track A works in any browser — claude.ai artifacts and Google AI Studio Build both build and preview on a phone screen. There are also cloud sessions at claude.ai/code and in the Code tab of the mobile app, which run on Anthropic machines rather than yours; that is a research preview for Pro, Max and Team and it needs GitHub connected. Nothing about tonight requires a powerful computer, and the pair rule is there so that a weak machine never means you sit and watch.',
+      kk: 'Модель сенің құрылғыңда жұмыс істемейді, сондықтан талаптар шағын: 4 ГБ жад, Windows 10 1809 немесе жаңасы, macOS 13 немесе жаңасы, Ubuntu 20.04 немесе жаңасы. Ескі ноутбук шынымен жарайды. Тек телефон болса, A жолы кез келген браузерде жүреді: claude.ai artifact-тары да, Google AI Studio Build те телефон экранында жасайды әрі көрсетеді. Сондай-ақ claude.ai/code бетінде және мобильді қолданбаның Code қойындысында бұлттық сеанстар бар, олар сенің емес, Anthropic құрылғыларында жүреді; бұл — Pro, Max және Team үшін зерттеу нұсқасы, әрі GitHub қосулы болуы керек. Бүгінгі кеште қуатты компьютерді талап ететін ештеңе жоқ, ал жұптасу ережесі әлсіз құрылғы «отырып қарау» дегенді білдірмеуі үшін бар.',
+    },
+  },
+  {
+    tag: 'tools',
+    q: {
+      en: 'Claude Code, Cursor, Copilot, Codex, Antigravity — which one should I learn?',
+      kk: 'Claude Code, Cursor, Copilot, Codex, Antigravity — қайсысын үйренейін?',
+    },
+    a: {
+      en: 'They are the same loop in different shells: an agent in a terminal or desktop app (Claude Code, Codex), an AI-first editor (Cursor, Antigravity), an assistant inside VS Code (Copilot). Pick by what you can pay for and what the people around you use, because being able to ask the person next to you is worth more than any feature comparison. The skills transfer — describing, planning, verifying, rewinding are identical everywhere, and the vocabulary is nearly identical too. The reason not to marry one product is on the record: Gemini CLI stopped serving free users on 18 June 2026 and a lot of people had to move that week. Learn the loop; the logo is rented.',
+      kk: 'Бұлар — әртүрлі қабықтағы бір цикл: терминалдағы немесе үстелдік қолданбадағы agent (Claude Code, Codex), ЖИ-ге негізделген редактор (Cursor, Antigravity), VS Code ішіндегі көмекші (Copilot). Не төлей алатыныңа және айналаңдағылар нені қолданатынына қарап таңда, себебі қасыңдағыдан сұрай алу кез келген мүмкіндіктер салыстыруынан қымбат. Дағдылар тасымалданады: сипаттау, жоспарлау, тексеру, кері қайтару бәрінде бірдей, ал сөздігі де дерлік бірдей. Бір өнімге байланып қалмаудың себебі жазулы тұр: Gemini CLI 2026 ж. 18 маусымда тегін пайдаланушыларға қызмет көрсетуді тоқтатты да, көп адам сол аптада көшуге мәжбүр болды. Циклды үйрен, логотип — жалға алынған нәрсе.',
+    },
+  },
+  {
+    tag: 'tools',
+    q: {
+      en: 'The terminal scares me. Do I have to use it?',
+      kk: 'Терминалдан қорқамын. Оны қолдану міндет пе?',
+    },
+    a: {
+      en: 'No. The Desktop app has a Code tab that gives you diffs, a preview and the permission prompts with no terminal at all, and you do not need to install Node.js or the CLI separately for it. If you do want the terminal later, the Windows installer needs no administrator rights and no WSL, and Git for Windows is optional. The fear is reasonable and it is also temporary: what makes the terminal frightening is that nothing tells you what went wrong, and an agent sitting in it is the first thing in computing history that reads the error for you.',
+      kk: 'Жоқ. Desktop қолданбасында Code қойындысы бар: ол өзгерістерді, алдын ала көріністі және рұқсат сұрауларын терминалсыз береді, әрі ол үшін Node.js-ті де, CLI-ды да бөлек орнатудың қажеті жоқ. Кейін терминалды қалайтын болсаң, Windows орнатқышына әкімші құқығы да, WSL де керек емес, ал Git for Windows міндетті емес. Бұл қорқыныш заңды әрі уақытша: терминалды үрейлі ететін нәрсе — не бұзылғанын ешкім айтпайтыны, ал оның ішінде отырған agent — есептеу тарихында қатені сенің орныңа оқитын алғашқы нәрсе.',
+    },
+  },
+  {
+    tag: 'tools',
+    q: {
+      en: 'What is plan mode and when should I use it?',
+      kk: 'Plan mode деген не және оны қашан қолданамын?',
+    },
+    a: {
+      en: 'In plan mode the agent reads and proposes but changes nothing on disk. Press Shift+Tab until the status line says so. Use it when a change touches several files, when you are not sure of the approach, or when you are about to let it work for a while unattended. Skip it when you could describe the whole diff in one sentence — plan mode for a one-line change is a ceremony, not a safeguard. The part that people skip and should not: read the plan and change one thing in it before approving. A plan you approve without reading is not a plan, it is a longer way of saying yes.',
+      kk: 'Plan mode режимінде agent оқиды әрі ұсыныс жасайды, бірақ дискіде ештеңе өзгертпейді. Күй жолында осы жазылғанша Shift+Tab бас. Өзгеріс бірнеше файлға тиетін болса, әдіске сенімді болмасаң немесе оны біраз уақыт қараусыз жұмыс істетпек болсаң, осыны қолдан. Ал бүкіл өзгерісті бір сөйлеммен айта алатын болсаң, қажеті жоқ: бір жолдық өзгеріске plan mode — қорғаныс емес, рәсім. Адамдар аттап кететін, бірақ аттауға болмайтын бөлігі: жоспарды оқы да, мақұлдамас бұрын бір нәрсесін өзгерт. Оқымай мақұлдаған жоспар — жоспар емес, «иә» деудің ұзағырақ түрі.',
+    },
+  },
+  {
+    tag: 'tools',
+    q: {
+      en: 'What is CLAUDE.md and do I need one?',
+      kk: '`CLAUDE.md` деген не, ол маған керек пе?',
+    },
+    a: {
+      en: 'It is a short human-readable file that is read at the start of every session: your commands, your style rules, the gotchas that are specific to your project. Generate it with /init and then add the lines it could never guess — for example, this app must keep working by opening index.html directly, never add a build step. Do you need one? Not on your first evening. You need one the second time an agent confidently does the thing you already told it not to do. Keep it short and prune it: a bloated memory file is an ignored memory file.',
+      kk: 'Бұл — әр сеанстың басында оқылатын, адам оқитындай қысқа файл: пәрмендерің, стиль ережелерің, жобаңа ғана тән қателік көздері. Оны `/init` арқылы жасат та, өзі ешқашан таба алмайтын жолдарды қос — мысалы, «бұл қолданба `index.html` файлын тікелей ашқанда жұмыс істеуі керек, құрастыру қадамын қоспа». Керек пе? Бірінші кеште — жоқ. Ол агент бұрын айтқан нәрсеңді сеніммен екінші рет бұзғанда керек болады. Қысқа ұста және қысқартып отыр: ісініп кеткен жад файлы — еленбейтін жад файлы.',
+    },
+  },
+  {
+    tag: 'tools',
+    q: {
+      en: 'MCP, skills, subagents, hooks — do I need any of this on day one?',
+      kk: 'MCP, skill, субагент, hook — бірінші күні осының бірі керек пе?',
+    },
+    a: {
+      en: 'No, and starting there is the most common way to spend a weekend configuring instead of building. Briefly, so the words stop being scary: MCP connects the agent to external tools, skills are reusable instructions loaded when they are relevant, subagents keep a long research task out of your main context, and hooks are scripts that run whether the model feels like it or not. Learn each one at the moment you feel the specific pain it removes. If you cannot name the pain, you do not need the feature yet.',
+      kk: 'Жоқ, әрі сол жерден бастау — жасаудың орнына бүкіл демалысты баптауға жұмсаудың ең жиі жолы. Сөздер үрейлі болмауы үшін қысқаша: MCP agent-ті сыртқы құралдарға қосады, skill — керек кезде жүктелетін, қайта қолданылатын нұсқаулар, субагент ұзақ зерттеу жұмысын негізгі контекстіңнен тыс ұстайды, ал hook — модельдің көңіліне қарамай орындалатын скрипт. Әрқайсысын жоятын нақты ауыртпалығын сезінген сәтте үйрен. Ауыртпалықты атай алмасаң, ол мүмкіндік саған әлі керек емес.',
+    },
+  },
+  {
+    tag: 'kazakhstan',
+    q: {
+      en: 'Can I write my prompts in Kazakh? Will it be as good as English?',
+      kk: 'Prompt-ты қазақша жазуға бола ма? Ағылшыншадай жақсы бола ма?',
+    },
+    a: {
+      en: 'You can, and you should write in Cyrillic rather than transliteration. As good as English — no, and here is the honest version of why. The published multilingual benchmark covers English plus 14 other languages and has no Kazakh row in it at all, so nobody can give you a number for Kazakh. What that table does show is that lower-resource languages score lower: Yoruba comes out at about 80 per cent of English on one model. Practical approach: write the prompt in whichever language gets your thinking out fastest, keep the tool words in English so you can search the documentation afterwards, and always have a native speaker read the Kazakh text in your interface before you ship it. Tonight you will watch exactly that happen on stage.',
+      kk: 'Болады, әрі транслитерациямен емес, кирилл жазуымен жаз. Ағылшыншадай жақсы ма — жоқ, ал міне, оның шыншыл себебі. Жарияланған көптілді бенчмарк ағылшын тілі мен тағы 14 тілді қамтиды, ал онда қазақ тілі жолы мүлде жоқ, сондықтан қазақша туралы нақты сан ешкімде жоқ. Ол кесте көрсететін нәрсе — деректері азырақ тілдер төмен нәтиже береді: йоруба тілі бір модельде ағылшыншаның шамамен 80 пайызын көрсетеді. Тәжірибелік жол: ойыңды ең тез шығаратын тілде prompt жаз, құрал сөздерін ағылшынша қалдыр — сонда кейін құжаттамадан іздей аласың — әрі интерфейсіңдегі қазақша мәтінді шығармас бұрын ана тілінде сөйлейтін адамға міндетті түрде оқыт. Бүгін дәл осының сахнада болғанын көресің.',
+    },
+  },
+  {
+    tag: 'quality',
+    q: {
+      en: 'Why did it lie to me? It said the code works and it does not.',
+      kk: 'Неге ол мені алдады? «Код жұмыс істейді» деді, ал істемейді.',
+    },
+    a: {
+      en: 'It did not lie, because lying requires knowing the truth. Unless something actually ran, the model has no idea whether the code works — it produces the most plausible continuation, and the sentence all tests pass is extremely plausible after a block of code. This is the single most common complaint in the field: 66 per cent of developers in the Stack Overflow 2025 survey are frustrated by answers that are almost right but not quite. The fix is structural, not moral. Never accept it works as a sentence. Ask for a check that runs, then read the output yourself — not the summary of the output, the output. That is the entire VERIFY step, and it is the part of tonight that is actually worth your three hours.',
+      kk: 'Ол алдаған жоқ, себебі өтірік айту үшін шындықты білу керек. Шынымен бірдеңе орындалмаса, модель кодтың жұмыс істейтінін білмейді: ол ең орынды көрінетін жалғасты жазады, ал код блогынан кейін «барлық тест өтті» деген сөйлем өте орынды көрінеді. Бұл — саладағы ең жиі шағым: Stack Overflow-дың 2025 жылғы сауалнамасында әзірлеушілердің 66 пайызын «дәлге жақын, бірақ дәл емес» жауаптар ашуландырады. Шешімі — адамгершілікте емес, құрылымда. «Жұмыс істейді» деген сөйлемді ешқашан қабылдама. Орындалатын тексеру сұра, сосын нәтижені өзің оқы — нәтиженің қысқаша мазмұнын емес, нәтиженің өзін. Бұл — түгелдей VERIFY қадамы, әрі бүгінгі үш сағатыңды шынымен ақтайтын бөлік — осы.',
+    },
+  },
+  {
+    tag: 'security',
+    q: {
+      en: 'Is my code sent anywhere? Does Anthropic train on it?',
+      kk: 'Менің кодым бір жерге жіберіле ме? Anthropic оны оқытуға пайдалана ма?',
+    },
+    a: {
+      en: 'Your code goes to the model to be processed — that is how it works, and any tool in this category is the same. Whether it is then used for training is a setting you control on Free, Pro and Max, at claude.ai/settings/data-privacy-controls. If you allow it, retention is 5 years; if you do not, 30 days. On Team, Enterprise and API it is not used for training by default. Set it once, tonight, knowing what you chose. And the rule that matters more than any setting: other people personal data and your employer secrets do not go into any AI tool, whatever the toggle says, because the risk there is not the vendor, it is you pasting something you had no right to paste.',
+      kk: 'Кодың өңделу үшін модельге барады — жұмыс принципі осындай, әрі бұл санаттағы кез келген құрал солай. Одан кейін оның оқытуға пайдаланылатын-пайдаланылмайтыны — Free, Pro және Max жоспарларында өзің басқаратын параметр, ол claude.ai/settings/data-privacy-controls бетінде. Рұқсат берсең, сақтау мерзімі 5 жыл; бермесең, 30 күн. Team, Enterprise және API-де ол әдепкіде оқытуға пайдаланылмайды. Оны бүгін, не таңдағаныңды біліп тұрып, бір рет орнат. Ал кез келген параметрден маңыздырақ ереже: бөгде адамдардың дербес деректері мен жұмыс орныңның құпиялары ешқандай ЖИ құралына бармайды, ауыстырғыш не тұрса да, себебі мұндағы қауіп жеткізушіде емес, қою құқығың жоқ нәрсені қойып отырған сенде.',
+    },
+  },
+  {
+    tag: 'security',
+    q: {
+      en: 'Is AI-written code safe to put in front of real users — with a login, a database, payments?',
+      kk: 'ЖИ жазған кодты нақты пайдаланушыларға шығаруға бола ма — кіру жүйесімен, дерекқормен, төлеммен?',
+    },
+    a: {
+      en: 'Not by default, and the numbers are not subtle. In May 2025, of 1 645 scanned Lovable apps, 170 let anyone read user names, email addresses, financial data and API keys. A December 2025 analysis of 470 pull requests found that AI co-authored ones carried about 1.7 times more issues — 10,83 against 6,45 per pull request — and up to 2,74 times more security issues specifically. A separate October 2025 report saw no real improvement in AI-generated code security over time. So: never let an agent invent authentication or payment logic. Use a managed service for login and data, keep every key on the server side, put no secret in client code, validate input, and get a human review before there are real users or real money. Tonight is deliberately low stakes for exactly this reason — no login, no paid API, no secrets on any project card.',
+      kk: 'Әдепкіде — жоқ, әрі сандар анық. 2025 жылдың мамырында тексерілген 1 645 Lovable қолданбасының 170-і кез келген адамға пайдаланушы аттарын, электрондық пошта мекенжайларын, қаржы деректерін және API кілттерін оқуға мүмкіндік берген. 2025 жылдың желтоқсанындағы 470 pull request талдауы бойынша ЖИ қатысқандарында мәселе шамамен 1,7 есе көп болған — біреуіне 10,83, адамдікінде 6,45 — ал қауіпсіздік мәселелері 2,74 есеге дейін көп. Тағы бір, 2025 жылдың қазанындағы есеп ЖИ жазған кодтың қауіпсіздігі уақыт өте жақсарғанын көрмеген. Сондықтан: agent-ке кіру жүйесін де, төлем логикасын да ойлап таптырма. Кіру мен деректерге дайын қызметті қолдан, әр кілтті сервер жағында ұста, клиент кодында құпия қалдырма, енгізілген деректерді тексер, ал нақты пайдаланушы не нақты ақша пайда болмас бұрын адамнан тексерту ал. Бүгінгі кеш дәл осы себеппен әдейі тәуекелі аз: бірде-бір тапсырма картасында кіру жүйесі де, ақылы API да, құпия дерек те жоқ.',
+    },
+  },
+  {
+    tag: 'security',
+    q: {
+      en: 'Can the agent delete my files or wreck my computer?',
+      kk: 'Agent файлдарымды жойып, компьютерімді бүлдіре ала ма?',
+    },
+    a: {
+      en: 'It runs commands, so yes, if you let it. The controls are real and you should know all four: Manual mode asks before every edit and every command, Plan mode edits nothing at all, Accept edits stops asking about file changes, and Auto mode uses a classifier that blocks the risky ones. Worth knowing because it surprises people: on Pro, Max and Team, Auto is the starting mode for terminal sessions, which is why you see so few prompts and why you should switch to Manual while you are still learning what it does. Checkpoints rewind file edits but not what a shell command already did to your disk — that is what git is for. The cautionary tale is real: in July 2025 the Replit agent deleted a production database during a code freeze and generated about 4 000 fictional records. Keep the stakes low, keep backups, and read the command before you approve it.',
+      kk: 'Ол пәрмен орындайды, сондықтан рұқсат берсең — иә. Бақылау құралдары нақты, төртеуін де біліп ал: Manual режимі әр өзгеріс пен әр пәрменнің алдында сұрайды, Plan режимі мүлде ештеңе өзгертпейді, Accept edits файл өзгерістері туралы сұрауды қояды, ал Auto режимінде жіктеуіш қауіптілерін бөгейді. Адамдарды таңғалдыратындықтан айта кетейік: Pro, Max және Team жоспарларында терминал сеансы Auto режимінен басталады, сондықтан рұқсат сұраулары сирек көрінеді, әрі оның не істейтінін үйреніп жүргенде Manual режимге ауысқан дұрыс. Сақтау нүктелері файл өзгерістерін қайтарады, бірақ орындалып кеткен пәрменнің дискіге жасағанын қайтармайды — ол үшін git бар. Сақтандыратын оқиға шын: 2025 жылдың шілдесінде Replit agent-і код мұздатылған кезде жұмыс дерекқорын жойып, шамамен 4 000 жалған жазба жасаған. Тәуекелді аз ұста, сақтық көшірме жаса және мақұлдамас бұрын пәрменді оқы.',
+    },
+  },
+  {
+    tag: 'quality',
+    q: {
+      en: 'It keeps failing on the same bug. What do I do?',
+      kk: 'Ол бір қатеге келгенде тоқтап қалады. Не істеймін?',
+    },
+    a: {
+      en: 'Stop after the second failed correction. By then the conversation is full of wrong attempts and the agent is pattern-matching against its own mistakes, so a third try usually produces a fourth variation of the same wrong idea. Run /clear and write a better first prompt using what you just learned: the symptom, the expected result, the exact error text, and ask for a failing test before the fix. If that also fails, the other honest option is the one beginner instructors keep repeating — kill it and rebuild smaller. Building three small things that work teaches you more than rescuing one broken thing, and it costs less of your evening.',
+      kk: 'Екінші сәтсіз түзетуден кейін тоқта. Ол кезде әңгіме қате әрекеттерге толып кетеді де, agent өз қателеріне қарап үлгі іздейді, сондықтан үшінші әрекет әдетте сол бұрыс ойдың төртінші нұсқасын береді. `/clear` жаса да, жаңа білгеніңді пайдаланып, жақсырақ бірінші prompt жаз: белгі, күтілген нәтиже, қатенің дәл мәтіні, әрі түзетудің алдында құлайтын тест сұра. Ол да болмаса, екінші шыншыл жол бар, оны бастаушыларға сабақ беретіндер қайталап айтып жүр: тастап кет те, кішірегін қайта жаса. Жұмыс істейтін үш шағын нәрсе жасау бір бұзылған нәрсені құтқарудан көп үйретеді, әрі кешіңнің азырақ бөлігін алады.',
+    },
+  },
+  {
+    tag: 'learning',
+    q: {
+      en: 'How do I write a good prompt?',
+      kk: 'Жақсы prompt-ты қалай жазамын?',
+    },
+    a: {
+      en: 'Five parts: the goal in one sentence, the must-haves as a list, the constraints (one file, no libraries, works on a phone), an example or two with real values, and a check the agent can run. The last one is the part almost nobody writes and the one that changes the result the most — list three test cases with exact expected numbers, then check them and tell me which pass. For anything bigger than an evening, invert it: tell the agent to interview you and write a SPEC.md, read that document properly, then start a fresh session to implement it. The prompt is not magic words. It is you being specific about something you were previously vague about, which is also why it gets easier as you understand your own problem better.',
+      kk: 'Бес бөлік: мақсат — бір сөйлеммен, міндетті талаптар — тізіммен, шектеулер (бір файл, кітапханасыз, телефонда жүреді), нақты мәндері бар бір-екі мысал және agent орындай алатын тексеру. Соңғысы — ешкім дерлік жазбайтын, бірақ нәтижені ең қатты өзгертетін бөлік: «нақты күтілетін сандары бар үш тест жағдайын жаз, сосын оларды тексеріп, қайсысы өткенін айт». Бір кештен үлкен нәрсеге керісінше жаса: agent-ке сенен сұхбат алып, `SPEC.md` жазуды тапсыр, ол құжатты мұқият оқы, сосын жаңа сеанс бастап жүзеге асыр. Prompt — сиқырлы сөздер емес. Бұл — бұрын бұлдыр айтқан нәрсеңді нақты айтуың, әрі өз мәселеңді жақсырақ түсінген сайын оның жеңілдейтіні де содан.',
+    },
+  },
+  {
+    tag: 'quality',
+    q: {
+      en: 'Does AI really make developers faster?',
+      kk: 'ЖИ әзірлеушілерді шынымен жылдамдата ма?',
+    },
+    a: {
+      en: 'The honest answer is that nobody has shown a clean speed-up for experienced people working on code they already know. METR measured 16 experienced open-source developers on their own repositories in early 2025: they took 19 per cent longer with AI, while expecting to be 24 per cent faster — note the gap between the feeling and the measurement. The February 2026 update believes developers are likely more sped up now than then, but its new measurements still show slowdowns, minus 18 per cent and minus 4 per cent, with confidence intervals that cross zero, and METR itself calls this only very weak evidence because 30 to 50 per cent of developers declined tasks they did not want to do without AI. So do not quote a speed number at anybody, in either direction. For a beginner the comparison is different anyway: it is not slower versus faster, it is exists versus does not exist.',
+      kk: 'Шыншыл жауап: өзі жақсы білетін кодпен жұмыс істейтін тәжірибелі адамдар үшін таза жылдамдауды әлі ешкім көрсете алған жоқ. METR 2025 жылдың басында өз репозиторийлерінде істеген 16 тәжірибелі әзірлеушіні өлшеді: олар ЖИ-мен 19 пайызға ұзақ істеген, ал өздері 24 пайызға жылдам боламыз деп күткен — сезім мен өлшем арасындағы осы алшақтыққа назар аудар. 2026 жылдың ақпанындағы жаңарту бүгінгі әзірлеушілер бұрынғыдан көбірек жылдамдаған шығар дейді, бірақ жаңа өлшемдері бәрібір баяулауды көрсетеді: минус 18 пайыз және минус 4 пайыз, сенім аралықтары нөлден өтеді, ал METR-дің өзі мұны «өте әлсіз дәлел» деп атайды, себебі әзірлеушілердің 30-50 пайызы ЖИ-сіз істегісі келмеген тапсырмалардан бас тартқан. Сондықтан ешкімге ешқандай жылдамдық санын келтірме, қай бағытта болса да. Бастаушы үшін салыстыру бәрібір басқа: мәселе «баяу ма, жылдам ба» емес, «бар ма, жоқ па» дегенде.',
+    },
+  },
+  {
+    tag: 'quality',
+    q: {
+      en: 'Is vibecoding real engineering, or is it a toy?',
+      kk: 'Vibecoding нағыз инженерия ма, әлде ойыншық па?',
+    },
+    a: {
+      en: 'Both, depending on which one you are doing, and the useful thing is that the line is clear. Willison draws it: vibe coding means building with a model without reviewing the code it writes, which is genuinely fine for a throwaway weekend tool. Responsible AI-assisted programming means you could explain every line you ship to another person. Same tools, different amount of stakes and different amount of reading. The numbers say most professionals are on the second side: in the 2025 Stack Overflow survey 72 per cent said they are not vibe coding, and another 5 per cent were emphatic that it is not part of their workflow. Even Karpathy, who coined the term on 2 February 2025, called the original post a shower of thoughts throwaway tweet in his one-year retrospective on 4 February 2026. Tonight most of this room is in the vibe column. That is the right place to start and the wrong place to stay.',
+      kk: 'Қайсысын істеп жатқаныңа қарай — екеуі де, ал пайдалысы сол: арасындағы сызық анық. Willison оны былай сызады: vibe coding — модельмен жасау, бірақ оның жазған кодын тексермеу, ал бұл бір реттік шағын құралға шынымен жарайды. Жауапты ЖИ-көмекші бағдарламалау — шығарған әр жолыңды басқа адамға түсіндіре алу. Құралдар бір, бірақ тәуекел де, оқу көлемі де әртүрлі. Сандар кәсіби мамандардың көбі екінші жақта екенін айтады: 2025 жылғы Stack Overflow сауалнамасында 72 пайызы vibe coding жасамайтынын айтқан, тағы 5 пайызы оның өз жұмысына мүлде қатысы жоқ екенін атап өткен. Тіпті бұл сөзді 2025 ж. 2 ақпанда енгізген Karpathy өзі де бір жылдан кейінгі, 2026 ж. 4 ақпандағы жазбасында алғашқы постын «shower of thoughts throwaway tweet» деп атады. Бүгін бұл залдың көбі vibe бағанында тұр. Бастауға дұрыс жер, бірақ сол жерде қалып қоюға болмайды.',
+    },
+  },
+  {
+    tag: 'learning',
+    q: {
+      en: 'Can I use this for my university assignments?',
+      kk: 'Мұны университет тапсырмаларына қолдануға бола ма?',
+    },
+    a: {
+      en: 'Follow your course policy, and read it properly rather than assuming — policies differ between departments and some of them are stricter than you expect. Where it is allowed, the way to use it that actually makes you better is as a tutor rather than a ghostwriter: ask for a line-by-line explanation of code you did not write, then ask it to quiz you with five questions about it, and try the Learning output style, which deliberately leaves TODO(human) markers for you to fill in yourself. The rule of thumb that survives every policy: never submit something you cannot explain out loud when a lecturer asks. If you cannot, that is not a discipline problem, it is a signal that you skipped the only part of this that was going to teach you anything.',
+      kk: 'Курсыңның ережесін ұста, әрі болжамай, мұқият оқы: ережелер кафедра сайын әртүрлі, кейбірі күткеніңнен қатал. Рұқсат етілген жерде оны сені шынымен күшейтетіндей қолдану жолы — көлеңкедегі жазушы емес, ұстаз ретінде: өзің жазбаған кодты жолма-жол түсіндіруін сұра, сосын сол бойынша бес сұрақ қойып, тексеруін сұра, әрі Learning шығару стилін байқап көр — ол өзің толтыруың үшін `TODO(human)` белгілерін әдейі қалдырады. Кез келген ережеден аман қалатын қағида: оқытушы сұрағанда дауыстап түсіндіре алмайтын нәрсені ешқашан тапсырма. Түсіндіре алмасаң, бұл тәртіп мәселесі емес — бұл саған бірдеңе үйрететін жалғыз бөлікті аттап кеткеніңнің белгісі.',
+    },
+  },
+  {
+    tag: 'tools',
+    q: {
+      en: 'How do I put my app online for free?',
+      kk: 'Қолданбамды тегін қалай интернетке шығарамын?',
+    },
+    a: {
+      en: 'For a static page, drag the folder onto Netlify Drop and you have a URL in about thirty seconds, or push to GitHub and switch on Pages. The fine print on Netlify Drop, because it catches people: an unclaimed URL is password-protected until you claim it, anything that needs a build step requires a login, deploys under 50 MB work best, and a single file over 10 MB may get stuck. For a framework project, Vercel Hobby is free but for personal, non-commercial use. If you built in AI Studio it deploys to Cloud Run from there. Pick the one that gets a link into the Telegram group tonight; you can always move it later, and a link you can send is what turns this from homework into something real.',
+      kk: 'Статикалық бет болса, қалтаны Netlify Drop бетіне сүйреп апар — отыз секундтай уақытта сілтеме дайын, немесе GitHub-қа push жасап, Pages-ті қос. Netlify Drop-тың адамдарды жиі шатастыратын ұсақ жазуы: иеленбеген сілтеме сен оны өзіңе бекітпейінше құпиясөзбен қорғалады, құрастыру қадамы керек жобаға аккаунтқа кіру қажет, 50 МБ-тан кіші жариялау ең жақсы жүреді, ал 10 МБ-тан үлкен жалғыз файл кептеліп қалуы мүмкін. Фреймворк жобасы үшін Vercel Hobby тегін, бірақ жеке, коммерциялық емес қолданысқа арналған. AI Studio ішінде жасаған болсаң, ол сол жерден Cloud Run-ға жарияланады. Бүгін кешке Telegram тобына сілтеме түсіретінін таңда; кейін кез келген уақытта көшіруге болады, ал жібере алатын сілтеме — бұл істі үй тапсырмасынан нақты нәрсеге айналдыратын дүние.',
+    },
+  },
+  {
+    tag: 'jobs',
+    q: {
+      en: 'Can I build a mobile app? Can I earn money with this?',
+      kk: 'Мобильді қолданба жасай аламын ба? Бұнымен ақша табуға бола ма?',
+    },
+    a: {
+      en: 'Start with a responsive web app: it runs on every phone in this room tonight, and it is the fastest way to find out whether anyone wants the thing. If you do need a native Android app, AI Studio Build can generate Kotlin and Compose apps. On money, the honest order is the opposite of what people try: find a real user with a real problem first, then build. Nobody pays for an app because it was built quickly. Locally, the shortest path to real users and prize money is the event calendar: Astana Hub currently lists regional bootcamps and hackathons, including a vibe coding event at SKO Hub in Petropavlovsk on 23 to 25 September 2026, and September 2026 hackathons at the Oskemen, Aqmola, Zhambyl, Mangystau and Semey hubs with prize funds of 600 000 to 1 000 000 tenge. HackNU at Nazarbayev University is a 24-hour student hackathon. Go to one with the thing you built tonight.',
+      kk: 'Адаптивті веб қолданбадан баста: ол бүгін осы залдағы әр телефонда жүреді, әрі оны біреудің қалайтын-қаламайтынын білудің ең жылдам жолы. Шынымен Android қолданбасы керек болса, AI Studio Build Kotlin мен Compose қолданбаларын жасай алады. Ақша туралы шыншыл рет адамдар байқап көретіннің керісінше: алдымен нақты мәселесі бар нақты пайдаланушы тап, сосын жаса. Тез жасалғаны үшін қолданбаға ешкім төлемейді. Жергілікті жерде нақты пайдаланушы мен жүлде ақшасына ең қысқа жол — іс-шара күнтізбесі: Astana Hub қазір өңірлік bootcamp-тар мен хакатондарды жариялап отыр, олардың ішінде 2026 ж. 23-25 қыркүйекте Петропавлдағы SKO Hub-та өтетін vibe coding іс-шарасы және 2026 жылдың қыркүйегінде Өскемен, Ақмола, Жамбыл, Маңғыстау мен Семей хабтарында өтетін, жүлде қоры 600 000-нан 1 000 000 теңгеге дейінгі хакатондар бар. Назарбаев Университетіндегі HackNU — 24 сағаттық студенттік хакатон. Бүгін жасаған нәрсеңмен солардың біріне бар.',
+    },
+  },
+];
+
+// ------------------------------------------------------------- the seven days after
+// 30 to 45 minutes a day, one deliverable a day, posted in the group. Each day
+// exercises one word of the loop. Reading about this changes nothing; the point
+// of the week is that you type something seven times.
+
+export const afterEvent: { day: L; task: L }[] = [
+  {
+    day: { en: 'Day 1 — DESCRIBE', kk: '1-күн — DESCRIBE' },
+    task: {
+      en: 'Rebuild last night project from zero with a better prompt. Do not copy the old one: tell the agent to interview you instead, write the answers into a SPEC.md, read that document properly and fix what it got wrong about your idea, then start a fresh session and implement from the spec. Post the SPEC.md and a before-and-after screenshot. Also, if you have not done it yet, set your training-data choice at claude.ai/settings/data-privacy-controls, because today is the day you start pasting real things.',
+      kk: 'Кешегі жобаңды нөлден, жақсырақ prompt-пен қайта жаса. Ескісін көшірме: agent-ке сенен сұхбат алуды тапсыр, жауаптарын `SPEC.md` файлына жазғыз, ол құжатты мұқият оқы да, идеяң туралы қате түсінген жерін түзет, сосын жаңа сеанс бастап, сол spec бойынша жүзеге асыр. `SPEC.md` файлын және «бұрын-кейін» скриншотын жарияла. Сондай-ақ әлі істемесең, claude.ai/settings/data-privacy-controls бетінде деректер таңдауыңды орнат, себебі бүгін нақты нәрселерді қоя бастайсың.',
+    },
+  },
+  {
+    day: { en: 'Day 2 — SHIP', kk: '2-күн — SHIP' },
+    task: {
+      en: 'Do git with the agent, not instead of it. Init the repo, commit after every step that works, push to GitHub, enable Pages. The instruction that makes this a lesson rather than copy-paste: tell it to explain each git command in one sentence before it runs it, and do not approve one you did not understand. Post the repo URL with at least five commits whose messages say what actually changed.',
+      kk: 'Git-ті agent-пен бірге жаса, оның орнына емес. Репозиторийді бастат, істеп тұрған әр қадамнан кейін commit жаса, GitHub-қа push жаса, Pages-ті қос. Мұны көшіріп қоюдан сабаққа айналдыратын нұсқау: әр git пәрменін орындар алдында бір сөйлеммен түсіндіруді тапсыр, әрі түсінбегеніңді мақұлдама. Хабарлары шынымен не өзгергенін айтатын кемінде бес commit-і бар репозиторий сілтемесін жарияла.',
+    },
+  },
+  {
+    day: { en: 'Day 3 — VERIFY, by understanding', kk: '3-күн — VERIFY, түсіну арқылы' },
+    task: {
+      en: 'Pick one file you did not write and make it yours. Ask for a line-by-line explanation, then say quiz me with 5 questions about this file and answer them without looking. Switch to the Learning output style and complete one TODO(human) yourself. Post one thing you now understand that you did not understand on Monday, written in your own words — not a screenshot, your words.',
+      kk: 'Өзің жазбаған бір файлды таңда да, оны өзіңдікі қыл. Жолма-жол түсіндіруін сұра, сосын «осы файл бойынша маған бес сұрақ қой» де де, қарамай жауап бер. Learning шығару стиліне ауысып, бір `TODO(human)` бөлігін өзің толтыр. Дүйсенбіде түсінбейтін, ал енді түсінетін бір нәрсені өз сөзіңмен жаз да жарияла — скриншот емес, өз сөзің.',
+    },
+  },
+  {
+    day: { en: 'Day 4 — VERIFY and REWIND', kk: '4-күн — VERIFY және REWIND' },
+    task: {
+      en: 'Bug day, and it is deliberate. Break three things in your own app on purpose: a wrong number, a crash on empty input, a layout that falls apart on a narrow phone. Fix each one with the full sentence — symptom, expected result, exact error — and make it write a failing test before the fix every single time. Practise /rewind once and the two-strikes /clear rule once. Post the best bug story: what you expected, what actually happened, and what the cause turned out to be.',
+      kk: 'Бүгін — қате күні, әрі ол әдейі. Өз қолданбаңда үш нәрсені әдейі бұз: қате сан, бос енгізуде құлап қалу, тар телефонда шашылып кететін орналасу. Әрқайсысын толық сөйлеммен түзет — белгі, күтілген нәтиже, дәл қате мәтіні — әрі әр жолы түзетудің алдында құлайтын тест жазғыз. `/rewind` пәрменін бір рет, «екі соққы — `/clear`» ережесін бір рет жаттықтыр. Қате туралы ең жақсы әңгімеңді жарияла: нені күттің, шынында не болды және себебі не болып шықты.',
+    },
+  },
+  {
+    day: { en: 'Day 5 — BUILD', kk: '5-күн — BUILD' },
+    task: {
+      en: 'A new mini-project from the ten cards, and this time with real data instead of a sample: a CSV or JSON file you prepared yourself, or a public API that needs no key. Start it fresh, do not extend yesterday project — building several small things beats polishing one, which is the advice every beginner instructor keeps repeating for a reason. Post the second live link.',
+      kk: 'Он картаның ішінен жаңа шағын жоба, әрі бұл жолы мысал деректің орнына нақты дерекпен: өзің дайындаған CSV не JSON файлы, немесе кілт қажет етпейтін ашық API. Жаңадан баста, кешегі жобаңды кеңейтпе: бірнеше шағын нәрсе жасау біреуін жылтыратудан артық, ал бастаушыларға сабақ беретіндердің мұны қайталап айтуының себебі бар. Екінші тірі сілтемеңді жарияла.',
+    },
+  },
+  {
+    day: { en: 'Day 6 — VERIFY, for safety', kk: '6-күн — VERIFY, қауіпсіздік үшін' },
+    task: {
+      en: 'Security and polish pass on both projects. Run the review prompt: check this for secrets in client code, unsanitised HTML, and type bugs; report only issues that affect correctness or safety, then fix them and show me the diff. Open both on a real phone and use them as a stranger would. Write a README with a screenshot and one honest sentence about what does not work yet. Make sure no key of any kind is in the repo. Post the README link.',
+      kk: 'Екі жобаң бойынша қауіпсіздік пен жылтырату кезеңі. Тексеру prompt-ын орында: клиент кодындағы құпия деректерді, тазаланбаған HTML-ді және дерек типіндегі қателерді қара; тек дұрыстыққа немесе қауіпсіздікке әсер ететін мәселелерді айт, сосын түзет те, өзгерісті көрсет. Екеуін де нақты телефонда ашып, бөтен адам сияқты қолданып көр. Скриншоты бар `README` жаз, ішінде әлі не істемейтіні туралы бір шыншыл сөйлем болсын. Репозиторийде ешқандай кілт қалмағанына көз жеткіз. `README` сілтемесін жарияла.',
+    },
+  },
+  {
+    day: { en: 'Day 7 — SHIP and share', kk: '7-күн — SHIP және бөлісу' },
+    task: {
+      en: 'Record a two-minute demo with the same three questions we used in the gallery: what I asked for, what broke, how I fixed it. Then choose the next step and say it out loud in the group so somebody can hold you to it — a course on Anthropic Academy such as Claude Code 101, Claude Code in Action or AI Fluency, or an event from the Astana Hub calendar. Post the video or the write-up plus the one thing you are going to build next.',
+      kk: 'Галереядағы сол үш сұрақпен екі минуттық демо жазып ал: нені сұрадым, не бұзылды, оны қалай түзеттім. Сосын келесі қадамыңды таңда да, біреу сені сөзіңе жауапты қыла алуы үшін топта дауыстап айт — Anthropic Academy-дегі курс (мысалы, Claude Code 101, Claude Code in Action немесе AI Fluency) немесе Astana Hub күнтізбесіндегі іс-шара. Видеоңды не жазбаңды және келесі жасайтын бір нәрсеңді жарияла.',
+    },
+  },
 ];
 
