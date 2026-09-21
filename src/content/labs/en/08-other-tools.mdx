@@ -6,16 +6,16 @@ description: Hands-on quickstarts for Cursor, OpenAI Codex CLI and the terminal 
 artifact: One AGENTS.md that works in every tool on this page
 prerequisites:
   - Git installed and an empty folder you can throw away (Lab 00)
-  - Node 20+ if you want the npm install route for Codex CLI
+  - Node installed if you want the npm route for Codex CLI
   - A GitHub account, a personal Google account and a ChatGPT account — all free, none needs a card
 doneWhen: The same converter opens in your browser twice, built by two different tools from one AGENTS.md, and you can say which tool you are keeping and why.
 ---
 
 <Lead>
-You are about to build the same small thing two or three times. Not to burn twenty-five minutes — to prove that the loop you learned in Claude Code is *not the tool*. Explore, plan, approve, review, commit works the same everywhere. Only the keyboard shortcut changes.
+You are about to build the same small thing twice, maybe three times. The point is to prove that the loop you learned in Claude Code is *not the tool*. Explore, plan, approve, review, commit works the same everywhere. Only the shortcut changes.
 </Lead>
 
-In one year Gemini CLI stopped serving free users, Windsurf became Devin Desktop, Roo Code's repo was archived, Cursor was acquired by SpaceX, and GitHub swapped Copilot's premium requests for token-metered credits. If your skill is "I know where the buttons are", a product decision deletes it in thirty days. The loop plus one instructions file moves with you.
+In one year Gemini CLI stopped serving free users, Windsurf became Devin Desktop, Roo Code's repo was archived, Cursor was acquired by SpaceX, and GitHub replaced Copilot's premium requests with token-metered credits. If your skill is knowing where the buttons are, one product decision deletes it. The loop and one instructions file move with you.
 
 ## Before you start: one folder, one commit, one task
 
@@ -36,7 +36,7 @@ Commit before every big prompt. Three agents in one folder in one afternoon is e
 
 ## Cursor: the plan step is a keyboard shortcut
 
-A VS Code fork with the agent inside. Hobby needs no card; Pro is $20, and Cursor's own pricing docs warn that daily agent users typically land at $60–$100 a month of total usage. It has belonged to SpaceX since 14 August 2026, which is why its pricing page now advertises Grok access next to Claude and GPT.
+A VS Code fork with the agent inside. Hobby needs no card; Pro is $20, and [Cursor's own pricing docs](https://cursor.com/docs/account/pricing) put daily agent users at $60–$100 a month of total usage. It has belonged to SpaceX [since 14 August 2026](https://cursor.com/blog), and its [pricing page](https://cursor.com/pricing) now lists Grok access next to Claude and GPT.
 
 <Steps>
 <Step title="Install and open the folder">
@@ -73,12 +73,12 @@ Cursor ships a CLI whose binary is `agent`. Install with `curl https://cursor.co
 </Steps>
 
 <Callout type="info" title="If you came for the free student year">
-It is gone. Cursor's students page now promises only promotions at on-campus and online events. Plan on Hobby, or on a free option below.
+It is gone. Cursor's [students page](https://cursor.com/students) now promises only promotions at on-campus and online events. Plan on Hobby, or on a free option below.
 </Callout>
 
 ## Codex CLI: the plan step is something you ask for
 
-OpenAI's agent across terminal, IDE extension and cloud on one account. The CLI is Apache-2.0 with 125.7k stars as of 21 September 2026. Included in ChatGPT Free as a small allowance, in Go at $8, in Plus at $20 — where limits are published as ranges per five hours that shift with the model, not as one number.
+OpenAI's agent across terminal, IDE extension and cloud on one account. The CLI is [Apache-2.0, 125.7k stars](https://github.com/openai/codex) on 21 September 2026. Codex is included in ChatGPT Free as a small allowance, in Go at $8 and in [Plus at $20](https://learn.chatgpt.com/docs/pricing) — where the limits are published as ranges per five hours that move with the model, not as one number.
 
 <Steps>
 <Step title="Install it">
@@ -97,7 +97,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1
 ```
 </Terminal>
 
-The package is `@openai/codex`, not `codex`. Installing the wrong one is the most common failure in a room of forty people.
+The package is `@openai/codex`, not `codex`. Copy that line, do not type it from memory.
 </Step>
 
 <Step title="Sign in, then look at the dials before you prompt">
@@ -135,7 +135,7 @@ The Codex README's sign-in paragraph names Plus, Pro, Business, Edu and Enterpri
 
 Most tutorials still get this wrong. On 19 May 2026 the maintainers announced that from 18 June, "Gemini CLI will stop serving requests for Google AI Pro and Ultra" — and for people using it free of charge. Consumers were moved to Antigravity CLI. That post drew [301 thumbs-down against 6 thumbs-up](https://github.com/google-gemini/gemini-cli/discussions/27274). It was the second cut: an [update](https://github.com/google-gemini/gemini-cli/discussions/22970) posted 18 March 2026 had already put Gemini Pro models behind paid subscriptions.
 
-It is still Apache-2.0, still installs with `npm install -g @google/gemini-cli`, and is still right **if your university or employer has Gemini Code Assist Standard or Enterprise, or you hold a paid key**. Then the old flow is unchanged: run `gemini`, pick API key or Vertex auth, keep context in `GEMINI.md`. Whether an unpaid AI Studio key still works is contradictory between Google's own pages — test it the day before you need it, not during a class.
+It is still Apache-2.0 and still installs with `npm install -g @google/gemini-cli`. It is still the right tool **if your university or employer has Gemini Code Assist Standard or Enterprise, or you hold a paid key**: run `gemini`, pick API key or Vertex auth, keep context in `GEMINI.md`. Whether an unpaid AI Studio key still works is contradictory between Google's own pages, so test it the day before you need it.
 
 <Callout type="danger" title="A README is not documentation">
 The Gemini CLI README still advertises 1,000 free requests a day, months after the [docs site](https://geminicli.com/docs/resources/quota-and-pricing/) states the tool was replaced for consumers on 18 June 2026. When a README and a docs page disagree, believe the one with a date on it.
@@ -143,7 +143,7 @@ The Gemini CLI README still advertises 1,000 free requests a day, months after t
 
 ### The free terminal agent that took its place
 
-Antigravity CLI is the replacement and its binary is `agy`. The Individual plan is $0 with weekly rate limits, and it serves non-Google models too: the pricing page lists Gemini 3.8, 3.7 and 3.6 Flash, Gemini 3.1 Pro, Claude Sonnet and Opus 4.6, and gpt-oss-120b. Kazakhstan is supported. Two hard limits: personal Google accounts only, and nobody under 18.
+Antigravity CLI is the replacement and its binary is `agy`. The Individual plan is $0 with weekly rate limits, and it serves non-Google models too: the [pricing page](https://antigravity.google/pricing) lists Gemini 3.8, 3.7 and 3.6 Flash, Gemini 3.1 Pro, Claude Sonnet and Opus 4.6, and gpt-oss-120b. Kazakhstan is on the [supported list](https://antigravity.google/docs/faq/). Two hard limits: personal Google accounts only, and nobody under 18.
 
 <Steps>
 <Step title="Install and launch">
@@ -169,11 +169,22 @@ Colour scheme, rendering mode, trust this workspace, then Google sign-in. On uni
 </Step>
 
 <Step title="Look at your quota before you spend it">
-`/usage` shows what is left per model this week. Do this first on any metered tool — it is the difference between knowing your budget and discovering it.
+`/usage` shows what is left per model this week. Do this first on any metered tool: knowing your budget beats discovering it.
 </Step>
 
 <Step title="Make it interrogate you, then build">
-`/grill-me` makes the agent ask clarifying questions before building. Give it the converter task and answer honestly. This is the closest thing here to a free requirements review.
+`/grill-me` makes the agent ask clarifying questions before it writes anything — the closest thing on this page to a free requirements review.
+
+<Prompt title="Grill prompt" where="Antigravity CLI · agy">
+```text
+/grill-me Build a single-page tenge/USD converter with a hardcoded rate,
+plain HTML/CSS/JS, no build step, one file.
+
+Ask me every question you need before you write any code.
+```
+</Prompt>
+
+Answer honestly, let it build, then open the file in your browser yourself.
 </Step>
 
 <Step title="Feel the autonomy dial, then commit">
@@ -181,14 +192,14 @@ Colour scheme, rendering mode, trust this workspace, then Google sign-in. On uni
 </Step>
 </Steps>
 
-## The same task, four tools, four kinds of friction
+## The same task, five tools, five kinds of friction
 
 | Tool | Where the plan step lives | What you approve | What $0 gets you |
 |---|---|---|---|
-| **Claude Code** | `Shift+Tab` into plan mode | the plan, then edits by permission mode | nothing — not in the free claude.ai plan |
+| **Claude Code** | `Shift+Tab` into plan mode | the plan, then edits by permission mode | no $0 route here; this course assumes Claude Pro |
 | **Cursor** | `Shift+Tab` in the agent input | Accept/Reject per file diff, in a GUI | Hobby, limited agent requests, no card |
 | **Codex CLI** | you ask for it in the prompt; `/permissions` sets the rest | each edit and command as it appears | a small allowance inside ChatGPT Free |
-| **Gemini CLI** | you ask for it in the prompt | per-tool approval in the terminal | nothing for consumers since 18 Jun 2026 |
+| **Gemini CLI** | the same terminal flow as before | only on an enterprise licence or a paid key | nothing for consumers since 18 Jun 2026 |
 | **Antigravity `agy`** | `/grill-me` to be questioned; `/goal` to remove the stops | step by step, unless you chose `/goal` | Individual plan, weekly limits, **18+ only** |
 
 The shape of the review is the real difference. A GUI diff is easy to skim and easy to fake-read; a terminal agent shows one edit at a time, slower and harder to ignore. Neither is better. Know which one you are more likely to lie to yourself in.
@@ -211,7 +222,7 @@ Three accounts cost nothing and need no card: GitHub with an Education applicati
 | `.github/copilot-instructions.md` | Copilot chat, review and agents | VS Code merges every instruction file it finds, in no guaranteed order |
 | `.agents/rules/` | Antigravity IDE, desktop and `agy` | `agy` also still reads `GEMINI.md` |
 
-The recipe is short. Shared facts go in `AGENTS.md`: the exact build, test and lint commands, the style, the do-not-touch areas, the commit convention. For Claude Code, either delete `CLAUDE.md` or make it two lines — `@AGENTS.md` plus a heading for Claude-specific notes. Anthropic's docs recommend that import over a symlink when anyone on the team is on Windows, because symlinks need admin or Developer Mode and git may check the link out as plain text. Then stop: do not copy the same text into `.github/copilot-instructions.md` as well, because VS Code merges both and you pay for those tokens twice.
+The recipe is short. Shared facts go in `AGENTS.md`: exact build, test and lint commands, the style, the do-not-touch areas, the commit convention. For Claude Code, either delete `CLAUDE.md` or make it two lines — `@AGENTS.md` plus a heading for Claude-specific notes. [Anthropic's docs](https://code.claude.com/docs/en/memory) recommend that import over a symlink when anyone on the team is on Windows, because symlinks need admin or Developer Mode and git may check the link out as plain text. Then stop: copy the same text into `.github/copilot-instructions.md` too and VS Code merges both, so you pay for those tokens twice.
 
 <StatRow>
   <Stat value="60k+" label="open-source repos with an AGENTS.md" source="agents.md, Sep 2026" href="https://agents.md/" tone="good" />
@@ -219,7 +230,7 @@ The recipe is short. Shared facts go in `AGENTS.md`: the exact build, test and l
   <Stat value="+20%" label="inference cost a context file adds, for no general gain" source="ETH Zurich / LogicStar, Jun 2026" href="https://arxiv.org/abs/2602.11988" tone="warn" />
 </StatRow>
 
-Keep it short and non-obvious. Researchers at ETH Zurich and LogicStar.ai found context files did not generally improve task success rates while adding over 20% to inference cost — repository overviews least of all, though written instructions were followed well. Vercel's counter-example points the same way: an 8 KB compressed docs index in `AGENTS.md` took their Next.js evals from 53% to 100%. Facts the model cannot guess earn their tokens. A generated tour of your folders does not.
+Keep it short and non-obvious. Researchers at ETH Zurich and LogicStar.ai found context files did not generally improve task success rates while adding over 20% to inference cost — repository overviews least of all, though written instructions were followed well. [Vercel's counter-example](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals) points the same way: an 8 KB compressed docs index in `AGENTS.md` took their Next.js evals from 53% to 100%. Facts the model cannot guess earn their tokens. A generated tour of your folders does not.
 
 <Prompt title="Write the file that earns its tokens" where="Any agent · in your repo, after the first build">
 ```text
@@ -254,7 +265,7 @@ If you are unsure about a command, ask me instead of guessing.
 ## Keep the habit, drop the tool
 
 <Callout type="danger" title="A sandbox is not permission to stop looking">
-In July 2026 Pillar Security demonstrated sandbox escapes across Cursor, Codex, Gemini CLI and Antigravity: the agent stayed sandboxed but wrote files that trusted tools outside the sandbox later executed, triggered by prompt injection hidden in README files and dependencies. Cursor fixed it in 3.0.0 (CVE-2026-48124), Codex CLI in v0.95.0 ([report](https://www.bleepingcomputer.com/news/security/cursor-codex-gemini-cli-antigravity-hit-by-sandbox-escapes/)). Text inside a repo you cloned is untrusted input, never instructions — and auto-approve belongs nowhere near it.
+In July 2026 Pillar Security demonstrated sandbox escapes across Cursor, Codex, Gemini CLI and Antigravity. The agent stayed sandboxed, but wrote files that trusted tools outside the sandbox later executed; the trigger was prompt injection hidden in README files and dependencies. Cursor fixed it in 3.0.0 (CVE-2026-48124), Codex CLI in v0.95.0 ([report](https://www.bleepingcomputer.com/news/security/cursor-codex-gemini-cli-antigravity-hit-by-sandbox-escapes/)). Text inside a repo you cloned is untrusted input, never instructions — and auto-approve belongs nowhere near it.
 </Callout>
 
 <Checklist

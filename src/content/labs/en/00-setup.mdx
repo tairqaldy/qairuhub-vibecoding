@@ -1,6 +1,6 @@
 ---
 title: Set Up Your Machine
-subtitle: Four installs, three commands that prove them, twenty minutes. Do it tonight, not in the room while fifty laptops fight over one router.
+subtitle: Three installs, one account, three commands that prove them. Do it tonight, not in the room while fifty laptops fight over one router.
 objective: install Node, git and an editor, prove each one works with a command, and open a project folder you own
 description: Node, git, VS Code and a GitHub account on Windows, macOS and Linux — the exact command that proves each install worked, and the Windows mistakes that eat the first hour.
 artifact: Setup verification card
@@ -9,16 +9,16 @@ doneWhen: You can run node -v and git --version in a freshly opened terminal, ge
 ---
 
 <Lead>
-Nothing in this lab is clever. It is the twenty minutes that decides whether the next three hours are about building software or about *why is nothing working*.
+Nothing in this lab is clever. It is the twenty minutes that decides whether the next three hours are about building software or about *why nothing works*.
 </Lead>
 
 Every step below ends with a command that prints something. If it prints, that install is real. If it does not print, you have a specific problem with a specific fix, and this page has it.
 
-## Four installs, and your agent is not one of them
+## Three installs, one account, and your agent is not on the list
 
-You are installing **Node**, **git**, **VS Code**, and making a **GitHub account**. That is the bench. The agent comes in Lab 01.
+You are installing **Node**, **git** and **VS Code**, and creating a **GitHub account**. That is the whole bench. The agent comes in Lab 01, and it is deliberately not here.
 
-Notice that the agent is not on the list. Claude Code's own setup docs are blunt about it: the native installer works on Windows 10 1809 or newer with 4 GB of RAM, and needs no admin rights, no WSL and no Node.js at all ([setup](https://code.claude.com/docs/en/setup)). There is even a desktop app whose Code tab needs no terminal ([desktop quickstart](https://code.claude.com/docs/en/desktop-quickstart)).
+Claude Code's own setup docs are blunt about why: the native installer works on Windows 10 1809 or newer with 4 GB of RAM, and needs no admin rights, no WSL and no Node.js at all ([setup](https://code.claude.com/docs/en/setup)). There is even a desktop app whose Code tab needs no terminal ([desktop quickstart](https://code.claude.com/docs/en/desktop-quickstart)).
 
 So none of this is for the agent. It is for your project. The QAIRU Event Sign-up app you build across this course needs Node to run, git to remember what changed, and an editor so you can read what the agent wrote.
 
@@ -26,11 +26,11 @@ So none of this is for the agent. It is for your project. The QAIRU Event Sign-u
 
 A terminal is a window that runs commands. You need one open before anything else.
 
-- **Windows** — press Start, type `terminal`, open Windows Terminal; if you do not have it, type `powershell` instead. Windows Terminal is free and open source ([microsoft/terminal](https://github.com/microsoft/terminal)), and later you will want its split panes: `Alt+Shift+D` puts the agent on the left and the dev server on the right.
+- **Windows** — press Start, type `terminal`, open Windows Terminal. Do not have it? Type `powershell` instead, or install it with `winget install Microsoft.WindowsTerminal`. It is free and open source ([microsoft/terminal](https://github.com/microsoft/terminal)), and later you will want its split panes: `Alt+Shift+D` puts the agent on the left and the logs on the right.
 - **macOS** — `Cmd+Space`, type `terminal`, Enter.
 - **Linux** — `Ctrl+Alt+T` on most desktops.
 
-Now read the line where your cursor sits. On Windows it tells you which shell you are in, and half the install failures in this room come from pasting a command into the wrong one.
+Now read the line where your cursor sits. On Windows it tells you which shell you are in, and pasting a command into the wrong one is a standard first-hour failure — Anthropic's own docs list the two error messages it produces ([setup](https://code.claude.com/docs/en/setup)).
 
 | The line looks like | You are in | So |
 |---|---|---|
@@ -84,7 +84,7 @@ Again: the exact number is not the point. The words `git version` followed by di
 </Step>
 
 <Step title="Install VS Code and open a folder with it">
-VS Code is a free editor, open source at its core ([microsoft/vscode](https://github.com/microsoft/vscode)). Download the build for your operating system from Microsoft and install it.
+VS Code is a free editor, open source at its core ([microsoft/vscode](https://github.com/microsoft/vscode)). Download the build for your operating system from Microsoft and install it, or on Windows run `winget install Microsoft.VisualStudioCode`.
 
 Then do the one thing that actually matters: **File → Open Folder**, and pick a folder. Not a file — a folder. Everything in this course, and everything an agent does, is scoped to a folder. If you open loose files instead, nothing else in the course will line up.
 
@@ -164,15 +164,15 @@ All four of these cost zero and none of them asks for a card.
 | Account | Where | Why you want it |
 |---|---|---|
 | GitHub | [github.com](https://github.com) | your code's home and your public portfolio from Lab 02 onward |
-| GitHub Education | [education.github.com/pack](https://education.github.com/pack) | if you have a university email: Copilot Student, Codespaces at the Pro level (180 hours of compute a month), and a free domain for a year from Namecheap, .TECH or Name.com |
-| Claude | [claude.ai](https://claude.ai) | the free plan gives you chat and artifacts, which is enough to follow along from a browser |
-| A spare Google account and a free ChatGPT account | — | free agents live behind them: Antigravity's Individual plan at $0 ([pricing](https://antigravity.google/pricing), 18+ only per its [FAQ](https://antigravity.google/docs/faq/)) and Codex, which is included on the free ChatGPT tier ([plans](https://learn.chatgpt.com/docs/pricing)) |
+| GitHub Education | [education.github.com/pack](https://education.github.com/pack) | if you have a university email: Copilot Student, Codespaces at the Pro level (180 hours of compute a month), and a free domain from Namecheap, .TECH or Name.com |
+| Claude | [claude.ai](https://claude.ai) | a free account is enough to follow this course in a browser; Claude Code itself needs a paid plan, see below |
+| A spare Google account and a free ChatGPT account | — | free agents live behind them: Antigravity's Individual plan at $0 ([pricing](https://antigravity.google/pricing), 18+ only per its [FAQ](https://antigravity.google/docs/faq/)) and Codex, included on the free ChatGPT tier with a small allowance ([plans](https://learn.chatgpt.com/docs/pricing)) |
 
 Two honest notes before you budget anything.
 
 Kazakhstan is on Anthropic's supported-countries list for both Claude.ai and the API ([supported countries](https://www.anthropic.com/supported-countries)), so no VPN is needed. But the free Claude plan does **not** include Claude Code — that needs Pro, Max, Team, Enterprise or Console billing ([setup](https://code.claude.com/docs/en/setup)). Pro is $20 a month, or $17 a month billed annually ([pricing](https://claude.com/pricing)). One month covers this masterclass.
 
-And "student plan" does not mean "the same product, free". GitHub's pack gives Copilot Student, not Copilot Pro. Since a change effective 12 March 2026, students can no longer pick GPT-5.3-Codex, GPT-5.4, Claude Opus or Claude Sonnet by hand — those are reachable only through Auto mode — and the plan carries an allowance of 200 AI credits a month. The announcement collected 6,796 thumbs-down reactions ([GitHub community discussion](https://github.com/orgs/community/discussions/189268), [Copilot plans](https://github.com/features/copilot/plans)). Free is still free; it is just smaller than the marketing implies.
+And "student plan" does not mean "the same product, free". GitHub's pack gives Copilot Student, not Copilot Pro. Students can no longer pick GPT-5.3-Codex, GPT-5.4, Claude Opus or Claude Sonnet by hand — those models are reachable only through Auto mode — and the plan's allowance is 200 AI credits a month, where one credit is one cent of usage. The announcement collected 6,796 thumbs-down reactions ([GitHub community discussion](https://github.com/orgs/community/discussions/189268), [Copilot plans](https://github.com/features/copilot/plans)). Free is still free; it is just smaller than the marketing implies.
 
 <Deeper title="Free hosting tiers: which ones to open now, which ones to avoid">
 You deploy in Module 12. Open the right account now rather than reading pricing pages at midnight.
@@ -192,7 +192,8 @@ You do not have an agent yet — that is Lab 01 — but you have a chat window. 
 <Prompt title="Setup doctor" where="claude.ai · or any AI chat, free plan is fine">
 
 ```text
-I am setting up a laptop for a JavaScript course. My operating system is: [Windows 11 / macOS / Ubuntu].
+I am setting up a laptop for a web development course that needs Node, npm and git.
+My operating system is: [Windows 11 / macOS / Ubuntu].
 
 Here is exactly what my terminal printed, pasted unedited:
 

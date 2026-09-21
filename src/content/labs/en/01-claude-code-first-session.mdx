@@ -5,7 +5,7 @@ objective: install Claude Code, run a first session in Manual mode, make it expl
 description: "Install Claude Code, log in, and run a real first session: /help, explore before edit, /clear versus /compact, and how to exit. Honest pricing, plus a free alternative."
 prerequisites:
   - A terminal you can open and 20 uninterrupted minutes (Lab 00)
-  - Git installed — on Windows that is Git for Windows
+  - Git installed (Lab 00) — on Windows that is Git for Windows
   - A paid Claude plan, a Console API key, or a guest pass — read the first section if you have none
 doneWhen: A fresh session has read your project and explained it back to you correctly without editing anything, and `claude -c` reopens that same conversation.
 artifact: The explore-before-edit prompt and the four-point rubric for judging what comes back
@@ -37,11 +37,12 @@ Install **Antigravity CLI** instead. Its Individual plan is $0 with weekly rate 
 ```powershell
 irm https://antigravity.google/cli/install.ps1 | iex
 ```
+
 ```bash
 curl -fsSL https://antigravity.google/cli/install.sh | bash
 ```
 
-Then `cd` into your project and run `agy`. One warning so nobody wastes an evening: Gemini CLI stopped serving free and Google AI Pro/Ultra users on 18 June 2026 ([the announcement](https://github.com/google-gemini/gemini-cli/discussions/27274)), so every tutorial calling it the free option is out of date. GitHub Copilot also has a Free plan and a student plan with 200 AI credits a month, auto model selection only ([plans](https://github.com/features/copilot/plans)).
+Then `cd` into your project and run `agy`. One warning so nobody wastes an evening: Gemini CLI stopped serving free users and Google AI Pro/Ultra subscribers on 18 June 2026 ([the announcement](https://github.com/google-gemini/gemini-cli/discussions/27274)), so every tutorial calling it the free option is out of date. GitHub Copilot has a Free plan — 2,000 completions a month with limited chat and agent use ([plans](https://github.com/features/copilot/plans)) — and a student plan through GitHub Education with 200 AI credits a month and no model choice ([GitHub discussion](https://github.com/orgs/community/discussions/189268)).
 
 Every lab after this one works on those tools. The commands differ — `agy` reads `AGENTS.md` where Claude Code reads `CLAUDE.md` — but the thinking is identical, and the thinking is what you are here for.
 </Callout>
@@ -93,6 +94,7 @@ The binary installed fine; your shell just cannot see it. It lives at `%USERPROF
 $currentPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
 [Environment]::SetEnvironmentVariable('PATH', "$currentPath;$env:USERPROFILE\.local\bin", 'User')
 ```
+
 ```bash
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc    # macOS zsh
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc   # Linux bash
@@ -103,7 +105,7 @@ Two more errors with one-line causes: `The token '&&' is not a valid statement s
 </Step>
 
 <Step title="Give it something real to read">
-Never run `claude` in your home folder or on your Desktop — from there it can see and index everything you own. Always `cd` into a project first. Have a small project already? Use it. Otherwise build this one; it takes three minutes and every later lab reuses it.
+Never run `claude` in your home folder or on your Desktop — from there it can see and index everything you own. Always `cd` into a project first. Have a small project already? Use it. Otherwise build this one; it takes three minutes, and it is small enough that you can check the agent's answer against the code yourself.
 
 <Terminal title="PowerShell">
 ```powershell
@@ -196,7 +198,7 @@ Do these in order, inside the session, before you ask it anything real.
 
 Two keys to memorise rather than try: **`Esc`** interrupts Claude mid-action and keeps the work so far, and **`Ctrl+O`** opens the transcript viewer, which shows every tool call in detail. Everything in this list is from the [interactive mode docs](https://code.claude.com/docs/en/interactive-mode).
 
-Finally run `/usage`. It shows your plan bars. For a subscriber the dollar figure is not a bill — it is an estimate of what the same work would have cost on the API.
+Finally run `/usage`. It shows your plan bars and where the tokens went. If you are on a subscription, ignore the dollar figure — the docs are clear that it only means something for API users ([costs](https://code.claude.com/docs/en/costs)).
 </Step>
 
 <Step title="Make it explore before it edits">
@@ -223,7 +225,7 @@ You will see it search and read files. It gathers context on demand — you neve
 <Step title="Judge the answer with a rubric, not a feeling">
 A good answer does four things. Check them off:
 
-1. **Names all three files**, and says `words.js` is data while `index.html` is markup, style and behaviour in one file.
+1. **Names all three files**, and says `words.js` holds the data while `index.html` holds the markup and the behaviour in one file.
 2. **Finds the README mismatch.** The README promises a Next button. There is no button in the code — only the Right Arrow key. If it missed this, it skimmed.
 3. **Answers question 5 with a mechanism**, not a vibe: all pairs load at once, there is no shuffle, no progress is stored, nothing is paginated.
 4. **Ends with a question**, because you asked it to.
@@ -237,7 +239,7 @@ you read to decide it? Give me the file name and the lines you relied on.
 ```
 </Prompt>
 
-This is the habit the [best practices docs](https://code.claude.com/docs/en/best-practices) call closing the trust-then-verify gap: plausible output that misses the real case is the normal failure mode, not a rare one. If you cannot verify something, do not ship it.
+The docs have a name for this failure: the trust-then-verify gap — plausible code that misses the edge cases. Their fix is to give the agent a check it can run, a test or a script or a screenshot, and their rule is one line: cannot verify it, do not ship it ([best practices](https://code.claude.com/docs/en/best-practices)).
 </Step>
 
 <Step title="/clear versus /compact — the difference that saves your session">
@@ -271,7 +273,7 @@ claude -c
 
 It is the actual skill. Three of the five failure patterns the [Claude Code docs](https://code.claude.com/docs/en/best-practices) name are failures of context, not of code: unrelated tasks piled into one conversation, correcting the same mistake until the window is full of failed attempts, and unscoped exploration that reads hundreds of files to answer a question you could have scoped in one sentence.
 
-An agent that has read your project answers differently from one that is guessing, and the difference is invisible in the prose. That is the whole reason step 7 exists. Asking "what did you read to decide that" costs eight seconds and catches the most expensive class of mistake in this course.
+An agent that has read your project answers differently from one that is guessing, and the difference is invisible in the prose. That is the whole reason step 7 exists. Asking "what did you read to decide that" costs you one extra prompt and catches the most expensive class of mistake in this course.
 
 One last thing beginners forget: the tool documents itself. Typing `how do I do X in Claude Code?` inside the session works, and it beats searching.
 

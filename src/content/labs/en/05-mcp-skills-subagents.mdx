@@ -1,14 +1,14 @@
 ---
-title: MCP, Skills & Subagents
+title: "MCP, Skills & Subagents"
 subtitle: Three ways to extend the agent, one question that tells you which one you need, and the exact commands for all three.
 objective: add a working MCP server, write a project skill, delegate a review to a subagent, and prove what each one changed
-description: Extend Claude Code with one real MCP server, one small Skill and one subagent. Exact commands for Windows, macOS and Linux, with the before and after in each case.
+description: "Extend Claude Code with one real MCP server, one small skill and one subagent. Exact commands for Windows, macOS and Linux, with the before and after in each case."
 artifact: Extend-the-agent cheatsheet — which of the three to reach for, and the command
 prerequisites:
   - Lab 02 finished — a QAIRU Event Sign-up folder that is a git repo with at least one commit
   - Lab 03 finished — a CLAUDE.md in that folder
   - Claude Code installed and logged in (Pro, Max, Team, Enterprise or Console account)
-doneWhen: "`claude mcp list` prints Connected, `/explain-diff` explains your real uncommitted changes, and a subagent hands you a review summary without filling your main context."
+doneWhen: "`claude mcp list` prints Connected, `/cc-docs` answers from the documentation instead of from memory, and a subagent hands you a review summary without filling your main context."
 ---
 
 <Lead>
@@ -31,13 +31,13 @@ The question that sorts almost every case: **is the missing thing outside your m
 
 <StatRow>
   <Stat value="~100" label="tokens a skill costs until you call it" source="Anthropic, 16 Oct 2025" href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills" tone="good" />
-  <Stat value="20" label="subagents at once, then spawning fails" source="Claude Code docs, Sep 2026" href="https://code.claude.com/docs/en/sub-agents" tone="info" />
+  <Stat value="200" label="lines: the size to keep CLAUDE.md under" source="Claude Code docs · memory" href="https://code.claude.com/docs/en/memory" tone="info" />
   <Stat value="3–10x" label="the tokens a multi-agent run costs" source="Anthropic, 23 Jan 2026" href="https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them" tone="warn" />
 </StatRow>
 
 ## Add one MCP server: the Claude Code docs
 
-One sentence first: an MCP server gives the agent a tool it did not have — here, a searchable copy of the current Claude Code documentation, so it stops answering from memory. Hosted, no account, no cost.
+One sentence first: an MCP server gives the agent a tool it did not have — here, a searchable copy of the current Claude Code documentation, so it stops answering from memory. Hosted over HTTP, no authentication, nothing to install.
 
 <Steps>
 <Step title="Add it from your normal shell, not from inside a session">
@@ -97,59 +97,62 @@ The first start downloads packages and can time out. PowerShell: `$env:MCP_TIMEO
 A repo's `.mcp.json` servers run when you run `claude -p` in that repo, with no trust dialog. Do not run `claude -p` in a repository you do not trust ([headless mode](https://code.claude.com/docs/en/headless)).
 </Callout>
 
-## Write one skill: `/explain-diff`
+## Write one skill: `/cc-docs`
 
 One sentence: a skill is a folder with a `SKILL.md` that teaches the agent a procedure once, so you stop re-typing it — and it stays out of your context window until you call it.
+
+In Lab 03 you wrote `/preflight`, a skill that takes no input. This one takes an argument and drives the server you just added, so the two halves of this lab wire together.
 
 <Steps>
 <Step title="Make the folder">
 <Terminal title="PowerShell">
 ```powershell
-New-Item -ItemType Directory -Force .claude\skills\explain-diff
+New-Item -ItemType Directory -Force .claude\skills\cc-docs
 ```
 </Terminal>
 
 <Terminal title="macOS / Linux">
 ```bash
-mkdir -p .claude/skills/explain-diff
+mkdir -p .claude/skills/cc-docs
 ```
 </Terminal>
 </Step>
 
 <Step title="Write SKILL.md">
-Create `.claude/skills/explain-diff/SKILL.md` with exactly this:
+Create `.claude/skills/cc-docs/SKILL.md` with exactly this:
 
 ```markdown
 ---
-name: explain-diff
-description: Explain my uncommitted changes in plain language and flag risks
-disable-model-invocation: true
+name: cc-docs
+description: Look up a Claude Code command or setting in the official docs and answer with a quote. Use whenever I ask how something in Claude Code works.
+argument-hint: what to look up
 ---
-## Current changes
-!`git diff HEAD`
+Look up "$ARGUMENTS" using the claude-code-docs MCP server.
 
-## Instructions
-Explain these changes to a beginner in 3 bullets, then list risks
-(missing error handling, hardcoded values, secrets).
+Answer in exactly this shape:
+1. One sentence: what it is.
+2. The exact command or setting, in a code block.
+3. One sentence: when it does not apply, or how it breaks.
+
+Quote the docs. If the server does not answer, say so instead of
+answering from memory.
 ```
 
-The line starting with `!` is the trick worth remembering: a backticked shell command there is executed and its output injected into the skill. The agent never has to decide to run `git diff` — the diff is already in front of it.
+`$ARGUMENTS` is whatever you type after the command name, so `/cc-docs plan mode` and `/cc-docs Ctrl+B` both run out of one file. `argument-hint` records what to type after the name. There is no `disable-model-invocation` line here on purpose: this skill only reads, so it is safe to let the agent reach for it on its own.
 </Step>
 
 <Step title="Restart and confirm it loaded">
-Skills are picked up at start, so exit and run `claude` again. Type `/` and find `explain-diff` in the list, or run `/skills` to see everything currently loaded.
+Skills are picked up at start, so exit and run `claude` again. Type `/` and find `cc-docs` in the list, or run `/skills` to see everything currently loaded.
 </Step>
 
-<Step title="Run it on a real change">
-Open `index.html` in your editor — not through the agent — and change one visible string, say the event title. Save. Then type:
-
+<Step title="Run it, then ask the same thing in plain English">
 <Terminal title="in the Claude Code session">
 ```text
-/explain-diff
+/cc-docs plan mode
 ```
 </Terminal>
 
-You get three bullets and a risk list about the change you just made, with no prompt typed. Run it again after the agent edits something, and you have a review habit that costs one word.
+You get three parts, in that order, pulled through the server you added ten minutes ago. Now type `how does plan mode work?` as a normal question and compare. The skill did not make the model smarter. It made the output the same shape every time, which is what lets you skim an answer instead of reading it.
 </Step>
 
 <Step title="Or let the agent write the next one">
@@ -180,7 +183,7 @@ A skill is executable instruction: install only from sources you trust, and read
 
 One sentence: a subagent is a second Claude with its own context window, system prompt, tool list and permissions — it does the noisy work and returns a summary, so your main conversation stays clean.
 
-You already have three built-in ones: Explore (read-only search), Plan (research during plan mode) and general-purpose. Now define your own.
+Built-in ones are already there: Explore (read-only search), Plan (research during plan mode) and general-purpose. Now define your own.
 
 <Steps>
 <Step title="Commit first — this one matters">
@@ -271,7 +274,7 @@ Default: one agent, subagents for research, a fresh-context reviewer. Parallel w
   items={[
     'claude mcp list shows claude-code-docs as Connected',
     'An answer arrived through a tool call labelled with the server name',
-    '/skills lists explain-diff and running it explained a change you made by hand',
+    '/skills lists cc-docs, and running it returned a docs answer in the shape you specified',
     'A subagent returned a review summary and /context barely moved',
     'You committed before delegating, because /rewind does not cover subagent edits',
     'You can say in one sentence which of the three solves which problem',
@@ -284,7 +287,7 @@ Run the MCP step twice on screen. First ask "what does MCP_TIMEOUT do" with no s
 </Callout>
 
 <Callout type="info" title="Cleanup, so your next lab starts clean">
-Keep the skill and the subagent — you will use both in Lab 06 and Lab 07. If you added the Playwright server just to try it, remove it: `claude mcp remove playwright`. Unused MCP servers are a listed cost lever, not a decoration.
+Keep the skill and the subagent. Lab 07 puts a fresh-context reviewer to work on two branches at once, and you will want one already written. If you added the Playwright server just to try it, remove it: `claude mcp remove playwright`. Unused MCP servers are a listed cost lever, not a decoration.
 </Callout>
 
 <Artifact title="Extend-the-agent cheatsheet" kind="cheatsheet">

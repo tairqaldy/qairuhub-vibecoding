@@ -16,9 +16,9 @@ doneWhen: git log --oneline shows your commit, the page opens in a browser, and 
 In the next twenty-five minutes you go from an empty folder to a working sign-up page. The most valuable thing you do will not be typing. It will be *reading a plan* — and changing one line of it before a single file exists.
 </Lead>
 
-Anthropic's guide gives the order in four words: explore, plan, implement, commit — plan mode does the first two ([best practices](https://code.claude.com/docs/en/best-practices)). The reason is arithmetic: one wrong line of exploration becomes several wrong lines of plan, and one wrong line of plan becomes hundreds of wrong lines of code. Hence HumanLayer's rule — review the research and the plan, not only the diff ([advanced context engineering](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents/blob/main/ace-fca.md)).
+Anthropic's guide gives the order in four words: explore, plan, implement, commit — plan mode does the first two ([best practices](https://code.claude.com/docs/en/best-practices)). The reason is arithmetic: one bad line of research becomes many bad lines of plan, and one bad line of plan becomes hundreds of bad lines of code. Hence HumanLayer's rule — review the research and the plan, not only the diff ([advanced context engineering](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents/blob/main/ace-fca.md)).
 
-A plan is two hundred lines you read in four minutes. Its diff is two thousand you will skim. Read the cheap one.
+A plan is short enough to read end to end. Its diff is long enough that you will skim it. Read the cheap one.
 
 You are building the first real version of **QAIRU Event Sign-up**: one page, one event, a form that reserves a seat, a counter that runs down. One file, no framework, no build step.
 
@@ -49,7 +49,7 @@ claude --permission-mode plan
 
 The first run in a new folder shows a workspace-trust dialog; accept it. Then read the status bar under the input box. It must say `plan mode on`.
 
-Already in a session? Press `Shift+Tab` until it does. The count varies: on Pro, Max and Team plans a terminal session now starts in **auto** mode, so the first press goes to Manual, then accept edits, then plan — three presses. A session that started in Manual needs two ([which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in)). On some Windows setups the shortcut is `Alt+M`.
+Already in a session? Press `Shift+Tab` until it does. The count varies: on Pro, Max and Team plans a terminal session now starts in **auto** mode, so the first press goes to Manual, then accept edits, then plan — three presses. A session that started in Manual needs two presses ([which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in)). On some Windows setups the shortcut is `Alt+M`.
 </Step>
 
 <Step title="Hand it the whole job in one prompt">
@@ -109,7 +109,7 @@ That constraint is the one thing this project has that a generic sign-up form do
 <Step title="Approve it the slow way">
 Claude offers three answers: use auto mode, approve edits manually, or keep planning. Where auto mode is unavailable the first reads "Yes, auto-accept edits".
 
-Pick **"Yes, manually approve edits"**. Read **one** diff end to end — the JavaScript that handles the form submit, because that is where the rules you wrote either exist or do not. Approve the rest at whatever speed you like. Simon Willison's first anti-pattern for agent work is this rule at larger scale: never hand anyone code you have not read yourself ([anti-patterns](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/)).
+Pick **"Yes, manually approve edits"**. Read **one** diff end to end — the JavaScript that handles the form submit, because that is where the rules you wrote either exist or do not. Approve the rest at whatever speed you like. Simon Willison's main anti-pattern for agent work is this same rule one size up: never open a pull request with code you have not reviewed yourself ([anti-patterns](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/)).
 
 Expected: `PLAN.md` written first, then `index.html`, and nothing else in the folder.
 </Step>
@@ -154,8 +154,9 @@ Type `!` at the start of an empty line for shell mode, so the output lands in th
 
 <Prompt title="Commit prompt" where="Claude Code · manual approve mode">
 ```text
-Commit everything in this folder with one conventional-commit message that says
-what this page does. Then show me git log --oneline and git status.
+Commit everything in this folder. Write one descriptive message in the form
+type(scope): summary, saying what this page does.
+Then show me git log --oneline and git status.
 ```
 </Prompt>
 

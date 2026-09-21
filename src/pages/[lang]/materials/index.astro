@@ -1,0 +1,207 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import { materials, paths } from '@/data/materials';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+
+const c = {
+  en: {
+    title: 'Materials',
+    desc: 'The documentation, research, incidents and people worth your time — sorted by what you are trying to do.',
+    kicker: 'The library',
+    h1: 'Everything worth reading',
+    lead: 'Not a link dump. Every entry says what you get from it and when it is worth opening. Start with a path if you do not know where to begin, or use the filter and go hunting.',
+    pathsK: 'Reading paths',
+    pathsP: 'Four routes through the library, depending on where you are starting from.',
+    allK: 'The library',
+    search: 'Filter by name, author or topic',
+    essentialOnly: 'Essentials only',
+    all: 'All',
+    levels: ['', 'Beginner', 'Intermediate', 'Deep'],
+    kinds: { docs: 'Docs', post: 'Post', paper: 'Paper', video: 'Video', course: 'Course', repo: 'Repo', tool: 'Tool', book: 'Book', community: 'Community' },
+    count: 'resources',
+    none: 'Nothing matches that. Try a shorter word.',
+    forWho: 'For',
+  },
+  kk: {
+    title: 'Материалдар',
+    desc: 'Уақытыңа тұрарлық құжаттама, зерттеулер, оқиғалар мен адамдар — не істегің келетініне қарай сұрыпталған.',
+    kicker: 'Кітапхана',
+    h1: 'Оқуға тұрарлықтың бәрі',
+    lead: 'Бұл жай сілтемелер тізімі емес. Әр жазбада одан не алатының және оны қашан ашқан дұрыс екені айтылған. Неден бастарыңды білмесең, дайын жолдың бірін ал, әйтпесе сүзгіні қолданып өзің ізде.',
+    pathsK: 'Оқу жолдары',
+    pathsP: 'Кітапхана арқылы өтетін төрт бағыт — қай жерден бастағаныңа қарай.',
+    allK: 'Кітапхана',
+    search: 'Атауы, авторы немесе тақырыбы бойынша сүзу',
+    essentialOnly: 'Тек ең маңыздысы',
+    all: 'Бәрі',
+    levels: ['', 'Бастаушы', 'Орта', 'Терең'],
+    kinds: { docs: 'Құжаттама', post: 'Мақала', paper: 'Зерттеу', video: 'Видео', course: 'Курс', repo: 'Репозиторий', tool: 'Құрал', book: 'Кітап', community: 'Қауымдастық' },
+    count: 'ресурс',
+    none: 'Ештеңе табылмады. Қысқарақ сөз жазып көр.',
+    forWho: 'Кімге',
+  },
+}[lang];
+
+const total = materials.reduce((s, m) => s + m.items.length, 0);
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc} image="/og/materials.png" act="scale">
+  <section class="hero wrap">
+    <p class="kicker">{c.kicker} · {total} {c.count}</p>
+    <h1>{c.h1}</h1>
+    <p class="lead">{c.lead}</p>
+  </section>
+
+  <section class="wrap band" data-reveal>
+    <p class="eyebrow"><b>01</b> {c.pathsK}</p>
+    <p class="band-lead">{c.pathsP}</p>
+    <div class="paths">
+      {
+        paths.map((p, i) => (
+          <article class="path" data-reveal style={`--i:${i}`}>
+            <h3>{p.title[lang]}</h3>
+            <p class="for"><span>{c.forWho}</span> {p.forWho[lang]}</p>
+            <ol>
+              {p.steps.map((s) => (
+                <li>
+                  <a href={s.url} {...(s.url.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+                    {s.label[lang]}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wrap band" data-reveal>
+    <p class="eyebrow"><b>02</b> {c.allK}</p>
+    <div class="controls">
+      <input class="input" type="search" placeholder={c.search} data-search aria-label={c.search} />
+      <label class="toggle">
+        <input type="checkbox" data-essential />
+        <span>{c.essentialOnly}</span>
+      </label>
+    </div>
+    <nav class="jump" aria-label={c.allK}>
+      {materials.map((cat) => <a href={`#${cat.id}`}>{cat.title[lang]}</a>)}
+    </nav>
+    <p class="noresult" data-noresult hidden>{c.none}</p>
+  </section>
+
+  {
+    materials.map((cat) => (
+      <section class="wrap band-sm cat" id={cat.id} data-cat>
+        <header>
+          <h2>{cat.title[lang]}</h2>
+          <p>{cat.blurb[lang]}</p>
+        </header>
+        <ul class="items">
+          {cat.items.map((r) => (
+            <li
+              data-item
+              data-essential={r.essential ? '1' : '0'}
+              data-text={`${r.title} ${r.by} ${r.why.en} ${r.why.kk}`.toLowerCase()}
+            >
+              <a href={r.url} target="_blank" rel="noopener noreferrer">
+                <span class="top">
+                  <span class="kind">{c.kinds[r.kind] ?? r.kind}</span>
+                  <span class={`lvl lvl-${r.level}`}>{c.levels[r.level]}</span>
+                  {r.essential && <span class="ess">★</span>}
+                </span>
+                <span class="t">{r.title}</span>
+                <span class="by">{r.by}</span>
+                <span class="why">{r.why[lang]}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .hero { padding: clamp(48px, 8vw, 88px) 0 0; }
+  .kicker { margin: 0 0 18px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
+  h1 { font-size: clamp(40px, 8vw, 84px); font-weight: 300; letter-spacing: -0.045em; }
+  .lead { max-width: 62ch; margin: 24px 0 0; font-size: clamp(16.5px, 2vw, 19px); line-height: 1.65; color: var(--color-muted); }
+  .band { padding: clamp(44px, 6vw, 72px) 0 0; }
+  .band-sm { padding: 44px 0 0; }
+  .band-lead { max-width: 64ch; margin: 14px 0 0; font-size: 17px; line-height: 1.6; color: var(--color-muted); }
+
+  .paths { display: grid; gap: 14px; margin-top: 26px; }
+  .path { padding: 22px; border-radius: 20px; border: 1px solid var(--color-line); background: var(--color-fill); }
+  .path h3 { font-size: 20px; font-weight: 500; }
+  .for { margin: 8px 0 14px; font-size: 14.5px; color: var(--color-muted); }
+  .for span { font: 500 10px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-faint); margin-right: 6px; }
+  .path ol { margin: 0; padding-left: 18px; display: grid; gap: 7px; }
+  .path li::marker { font-family: var(--font-mono); font-size: 11px; color: var(--color-signal-soft); }
+  .path a { font-size: 14.5px; color: rgb(255 255 255 / 0.9); text-decoration: none; border-bottom: 1px solid transparent; }
+  .path a:hover { color: var(--color-signal-soft); border-bottom-color: currentColor; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
+  .controls .input { max-width: 380px; }
+  .toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14.5px; color: var(--color-muted); }
+  .toggle input { accent-color: var(--color-signal); width: 16px; height: 16px; }
+  .jump { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .jump a { padding: 5px 11px; border-radius: 999px; border: 1px solid var(--color-line); font: 400 12px/1.4 var(--font-mono); color: var(--color-muted); text-decoration: none; }
+  .jump a:hover { color: #fff; border-color: var(--color-line-strong); }
+  .noresult { margin-top: 20px; font-size: 16px; color: var(--color-amber); }
+
+  .cat header h2 { font-size: clamp(24px, 3.4vw, 34px); font-weight: 400; }
+  .cat header p { margin: 8px 0 0; max-width: 62ch; font-size: 15.5px; color: var(--color-muted); }
+  .items { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 10px; }
+  .items a { display: grid; gap: 5px; padding: 16px 18px; border-radius: 16px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); text-decoration: none; color: inherit; height: 100%; align-content: start; transition: border-color 0.25s, background 0.25s, transform 0.4s var(--ease-out-expo); }
+  .items a:hover { border-color: rgb(43 127 255 / 0.5); background: var(--color-fill-hover); transform: translateY(-2px); }
+  .top { display: flex; align-items: center; gap: 7px; }
+  .kind { font: 500 10px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-faint); }
+  .lvl { width: 6px; height: 6px; border-radius: 50%; background: var(--color-faint); font-size: 0; }
+  .lvl-1 { background: var(--color-ok); }
+  .lvl-2 { background: var(--color-signal); }
+  .lvl-3 { background: var(--color-pink); }
+  .ess { margin-left: auto; color: var(--color-amber); font-size: 12px; }
+  .t { font-size: 16.5px; font-weight: 600; line-height: 1.3; color: #fff; }
+  .by { font: 400 11.5px/1 var(--font-mono); color: var(--color-faint); }
+  .why { font-size: 14px; line-height: 1.5; color: var(--color-muted); }
+  li[hidden] { display: none; }
+  section[hidden] { display: none; }
+
+  @media (min-width: 700px) { .items { grid-template-columns: repeat(2, 1fr); } .paths { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1060px) { .items { grid-template-columns: repeat(3, 1fr); } .paths { grid-template-columns: repeat(4, 1fr); } }
+</style>
+
+<script>
+  const search = document.querySelector<HTMLInputElement>('[data-search]');
+  const essential = document.querySelector<HTMLInputElement>('[data-essential]');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('[data-item]'));
+  const cats = Array.from(document.querySelectorAll<HTMLElement>('[data-cat]'));
+  const none = document.querySelector<HTMLElement>('[data-noresult]');
+
+  function apply() {
+    const q = (search?.value ?? '').trim().toLowerCase();
+    const onlyEss = essential?.checked ?? false;
+    let shown = 0;
+    items.forEach((li) => {
+      const okText = !q || (li.dataset.text ?? '').includes(q);
+      const okEss = !onlyEss || li.dataset.essential === '1';
+      const show = okText && okEss;
+      li.hidden = !show;
+      if (show) shown++;
+    });
+    cats.forEach((c) => {
+      c.hidden = !c.querySelector('[data-item]:not([hidden])');
+    });
+    if (none) none.hidden = shown > 0;
+  }
+
+  search?.addEventListener('input', apply);
+  essential?.addEventListener('change', apply);
+</script>

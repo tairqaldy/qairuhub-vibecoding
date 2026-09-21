@@ -7,9 +7,9 @@ prerequisites:
   - Node 20+ and git installed, and a terminal you can type in (Lab 00)
   - A GitHub account, with the GitHub CLI installed and ready to log in
   - A free Cloudflare account — no card is needed for anything in this lab
-  - A project that builds — the QAIRU Event Sign-up page from Lab 02 works
+  - A project to ship — the QAIRU Event Sign-up page from Lab 02 works
 doneWhen: Your page loads on a phone with wifi turned off, and you can name the exact command that put it there.
-artifact: Ship-it runbook — six commands, the one dashboard step, and the audit prompt
+artifact: Ship-it runbook — the deploy commands, the one dashboard step, and the audit prompt
 ---
 
 <Lead>
@@ -18,7 +18,7 @@ Right now your project is a folder. In twenty-five minutes it will be a URL. You
 
 Do the first half alone. Do the second half with Claude Code, and then spend the last five minutes proving that what it told you is true. The order matters: an agent that says "deployed successfully" is making a claim, and by the end of this page you will know four different ways that claim can be wrong.
 
-## Part one: six commands you type yourself
+## Part one: six steps you do yourself
 
 <Callout type="warn" title="Thirty seconds that save you a bad week">
 Before the first push, open `.gitignore` and make sure `.env` is in it. A public repo is public the instant it exists, and a key that has ever been committed is compromised even after you delete it. If you are not certain, run `git status` and read every filename in the list before you commit.
@@ -121,7 +121,7 @@ This is the only step in the lab that counts as proof. Everything before it is a
 <Step title="Attach a custom domain — and this one is not a command">
 There is no `wrangler` flag for this one. Open the Cloudflare dashboard, find your Pages project, open **Custom domains**, and add the name. Cloudflare creates the DNS record and issues the SSL certificate for you. Then DNS has to spread — minutes to hours, depending on who is asking from where.
 
-Write this step down somewhere, because in twenty minutes you are handing this job to an agent that cannot open a browser. It will route around the gap and report the `pages.dev` URL as finished.
+Write this step down somewhere, because in a few minutes you are handing this job to an agent that cannot open a browser. It will route around the gap and report the `pages.dev` URL as finished.
 
 Cloudflare's free plan allows 100 custom domains per project, so the limit is never the reason this fails ([Pages limits](https://developers.cloudflare.com/pages/platform/limits/)). The reason it fails is that nobody clicked.
 
@@ -209,6 +209,8 @@ curl -sI https://qairu-event.pages.dev | head -1
 
 Four commands, four different lies caught. `git log` shows whether the commit exists or whether the agent only staged files. `git remote -v` shows which repository it pushed to. `gh repo view --web` opens the repo so you can see, with your eyes, whether a `.env` is sitting in it. And `curl -sI` asks the live URL for its status line — `HTTP/2 200` means a server answered, which is the only thing that counts.
 
+On Windows PowerShell that last line needs two changes: `curl` there is an alias for a different command, and `head` does not exist. Run `curl.exe -sI https://qairu-event.pages.dev` on its own, or run the whole block in Git Bash.
+
 <Prompt title="Audit the deploy you just did" where="Claude Code · new session, after /clear">
 
 ```text
@@ -247,7 +249,7 @@ So `/rewind` can put your source back to before the mistake while the broken ver
     'Check that git log contains a commit mentioning the deploy',
   ]}
   answer={2}
-  explain="Checkpoints never record deploys — remote side effects are explicitly not tracked, so an empty rewind list proves nothing either way. A commit message is a sentence someone typed, not evidence. And an agent re-reading its own transcript just repeats itself more confidently. The only proof is a request from a machine that is not yours reaching a server that is not yours."
+  explain="Checkpoints never record deploys — remote side effects are explicitly not tracked, so the rewind list proves nothing either way, and a commit message is only a sentence someone typed. Only a fetch from a device and a network that are not yours proves a server answered."
   xp={15}
 />
 
@@ -263,7 +265,7 @@ Then break it on purpose: deploy a folder that is not the build output, show the
   items={[
     '.env is in .gitignore and was never committed — you checked the repo in a browser',
     'gh auth status shows the account you meant to use',
-    'The folder in the wrangler command is the folder npm run build actually writes',
+    'The folder in the wrangler command is the one that actually holds your page',
     'You loaded the pages.dev URL on a phone with wifi turned off',
     'curl -sI on the live URL returned 200, not 404',
     'You read the transcript with Ctrl+O, not just the summary the agent wrote',
@@ -273,5 +275,5 @@ Then break it on purpose: deploy a folder that is not the build output, show the
 />
 
 <Artifact title="Ship-it runbook" kind="checklist">
-The six commands, the one dashboard step nobody can automate, and the audit prompt you run in a fresh session when an agent tells you it is live.
+The deploy commands in order, the one dashboard step nobody can automate, and the audit prompt you run in a fresh session when an agent tells you it is live.
 </Artifact>

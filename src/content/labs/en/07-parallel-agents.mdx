@@ -26,18 +26,18 @@ Parallelism is not a speed setting. Anthropic's January 2026 guidance puts a mul
 <StatRow>
   <Stat value="3–10x" label="tokens of one agent, same task" source="Anthropic, 23 Jan 2026" href="https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them" tone="warn" />
   <Stat value="16" label="parallel Claudes that built a C compiler" source="Anthropic, 5 Feb 2026" href="https://www.anthropic.com/engineering/building-c-compiler" tone="info" />
-  <Stat value="~$20,000" label="what that two-week run cost" source="Anthropic, 5 Feb 2026" href="https://www.anthropic.com/engineering/building-c-compiler" tone="warn" />
+  <Stat value="~$20,000" label="API cost of that two-week run" source="Anthropic, 5 Feb 2026" href="https://www.anthropic.com/engineering/building-c-compiler" tone="warn" />
 </StatRow>
 
 That C compiler is the ceiling: sixteen instances in containers, roughly 2,000 sessions, about 100,000 lines of Rust. It worked because the test suite was near-perfect. Parallel agents without an automated check only multiply code nobody verified.
 
-<Compare a="Two agents earn their keep" b="Two agents are just expensive">
-  <div slot="a">
-Two features that touch different files. A build plus a separate review with fresh eyes. Work you can test half at a time, in a browser, before the halves ever meet.
-  </div>
-  <div slot="b">
+<Compare a="Two agents are just expensive" b="Two agents earn their keep">
+<div slot="a">
 Anything sequential. Anything where both halves depend on one design decision. Anything a better prompt or a `/clear` would have fixed. Anything you cannot test automatically.
-  </div>
+</div>
+<div slot="b">
+Two features that touch different files. A build plus a separate review with fresh eyes. Work you can test half at a time, in a browser, before the halves ever meet.
+</div>
 </Compare>
 
 ## Six things that must be true first
@@ -191,7 +191,7 @@ git merge worktree-seats-left
 ```
 </Terminal>
 
-Both agents edited `index.html`, so git stops and leaves conflict markers in the file. Expected outcome, not a mistake. Hand it to an agent in the main folder:
+Both agents edited `index.html`. When their edits land in the same region, git stops and leaves conflict markers in the file — the expected outcome here, not a mistake. Hand it to an agent in the main folder:
 
 <Prompt title="Conflict resolution" where="Claude Code · main folder, mid-merge">
 ```text
@@ -204,6 +204,8 @@ to test both features in the browser before I commit the merge.
 </Prompt>
 
 Read the resolved section yourself before committing. An agent resolving a conflict is guessing at intent, and the cheapest way to lose a feature is to accept a resolution that quietly dropped half of it.
+
+If git merges both edits without complaining, you got lucky with line numbers. Open the page anyway and check that both features are still there — a clean merge is not a working page.
 </Step>
 
 <Step title="Verify on main, then clean up">
@@ -224,11 +226,12 @@ Optional finish, from a normal shell:
 
 <Terminal title="bash">
 ```bash
-claude -p "Summarize what changed in the last 3 commits in 5 bullets" --output-format json
+claude -p "Summarize what changed in the last 3 commits in 5 bullets" \
+  --allowedTools "Bash(git log *),Bash(git diff *)" --output-format json
 ```
 </Terminal>
 
-Find `result`, `session_id` and `total_cost_usd` in the JSON. That last field is what this lab is really about.
+Find `result`, `session_id` and `total_cost_usd` in the JSON. That last field is what this lab is really about. The `--allowedTools` line is not decoration: `-p` starts in Manual mode, so a command you have not allowed is denied outright, and the summary gets written without ever reading the log.
 </Step>
 
 </Steps>
@@ -246,7 +249,7 @@ So the real skill is not typing `--worktree`. It is splitting work along file li
 
 ## When two agents is an expensive way to get one result
 
-[Cognition's June 2025 argument](https://cognition.com/blog/dont-build-multi-agents) against multi-agent systems holds where it matters: actions carry implicit decisions, and conflicting decisions produce bad results. Their example is two subagents building a game — one makes a Mario-style background, the other a bird that does not match it, and a human reconciles the mess. Your `index.html` conflict, scaled up.
+[Cognition's June 2025 argument](https://cognition.com/blog/dont-build-multi-agents) against multi-agent systems holds where it matters: actions carry implicit decisions, and conflicting decisions produce bad results. Their example is two subagents building a game — one makes a Mario-style background, the other a bird that does not match it, and the lead agent is left merging two incompatible assumptions. Your `index.html` conflict, scaled up.
 
 So skip the second agent when the work is sequential, when both halves share a decision, when a sharper prompt or a `/clear` would have done it, or when you have no automated check. The default that survives real work is modest: one agent, subagents for research, a fresh context to review.
 
@@ -271,7 +274,7 @@ Then `cd` into that folder and start whichever agent you like.
 </Deeper>
 
 <Deeper title="Bigger than two: /batch, agent teams and workflows">
-`/batch` followed by one instruction splits a large change across 5–30 worktree-isolated subagents, each opening its own pull request. Agent teams — a lead plus teammates sharing a task list — are experimental and off by default; the docs state that "teammates are not isolated in worktrees", so you partition files by hand, and the costs page puts them at roughly seven times a standard session's tokens when teammates run in plan mode. Dynamic workflows run up to 16 concurrent agents by default. Read [the agents overview](https://code.claude.com/docs/en/agents) first — all three multiply the bill you just measured.
+`/batch` followed by one instruction splits a large change across 5–30 worktree-isolated subagents, each opening its own pull request. Agent teams — a lead plus teammates sharing a task list — are experimental and off by default, and the docs say plainly that teammates are not worktree-isolated, so you partition files by hand; the costs page puts them at roughly seven times a standard session's tokens when teammates run in plan mode. Dynamic workflows run up to 16 concurrent agents by default. Read [the agents overview](https://code.claude.com/docs/en/agents) first — all three multiply the bill you just measured.
 </Deeper>
 
 <Quiz

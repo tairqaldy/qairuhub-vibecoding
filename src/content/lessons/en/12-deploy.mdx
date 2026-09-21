@@ -1,6 +1,6 @@
 ---
 title: Deploy
-subtitle: Your laptop is not a server. Here is how a folder on your machine becomes a URL a stranger can open, and the one step you still have to click.
+subtitle: Your laptop is not a server — here is how a folder on your machine becomes a URL a stranger can open, and the one step you still have to click.
 objective: put a working site on the public internet with a custom domain, HTTPS, production secrets and a rollback you have already practised
 description: Hosting in plain language, the real free-tier limits in September 2026, DNS and SSL, secrets in production, preview deploys, GitHub Actions and rollback.
 artifact: Deployment runbook — the command sequence, the secrets check and the rollback
@@ -10,7 +10,7 @@ artifact: Deployment runbook — the command sequence, the secrets check and the
 Right now your sign-up page exists on exactly one computer on Earth: yours. Close the lid and it is gone. Deploying means copying it onto machines that never sleep and giving it a name people can type. On this stack that is *four commands* — plus one thing you cannot do from the terminal.
 </Lead>
 
-Working on your machine is not done. Deployed is done. Everything in this module exists to get you from the first sentence to the second without losing a secret or a weekend.
+Working on your machine is not done. Deployed is done. This page gets you from the first sentence to the second without losing a secret or a weekend.
 
 ## Hosting is someone else's computer that never turns off
 
@@ -24,7 +24,7 @@ What changed is the delivery. Modern hosts watch your repository and deploy on e
 
 **Server-rendered** means a program runs for each request: it checks who you are, reads the database, calls a paid API. That code lives on the server, out of the user's sight, which is the only place secrets can live. It comes in two shapes — one long-running server, or small serverless functions (Cloudflare Workers, Vercel Functions) that wake per request and go back to sleep.
 
-The rule for a first project: keep as much static as you can and push the dynamic part into the smallest possible function. Free tiers are counted in function invocations and CPU time, not in static files — Cloudflare's free Workers tier gives 100,000 requests a day and 10 ms of CPU per invocation, while Pages lists no bandwidth cap at all for static assets. Serving a static page costs you nothing. A function spends budget every time someone loads it.
+The rule for a first project: keep as much static as you can and push the dynamic part into the smallest possible function. Free tiers are counted in function invocations and CPU time, not in static files — [Cloudflare's free Workers tier](https://developers.cloudflare.com/workers/platform/pricing/) gives 100,000 requests a day and 10 ms of CPU per invocation, while Pages lists no bandwidth cap at all for static assets. Serving a static page costs you nothing. A function spends budget every time someone loads it.
 
 <Deeper title="Where a reserved seat actually gets stored">
 A sign-up form needs a database, and all three sensible free options have a catch worth knowing before you choose.
@@ -42,7 +42,7 @@ These are the real numbers as of September 2026. The column that matters is the 
 
 | Host | Free tier | What happens when you exceed it |
 |---|---|---|
-| [Cloudflare Pages](https://developers.cloudflare.com/pages/platform/limits/) | 500 builds/month, 1 concurrent build, 20-min build timeout, 20,000 files, 25 MiB per file, 100 custom domains per project. No bandwidth cap listed for static assets | Builds queue or stop; the live site keeps serving. The paid Cloudflare plan is $5/month |
+| [Cloudflare Pages](https://developers.cloudflare.com/pages/platform/limits/) | 500 builds/month, 1 concurrent build, 20-min build timeout, 20,000 files, 25 MiB per file, 100 custom domains per project. No bandwidth cap listed for static assets | You run out of builds, not bandwidth, and only one build runs at a time. Cloudflare's paid Workers plan is $5/month |
 | [Vercel Hobby](https://vercel.com/docs/plans/hobby) | 100 GB data transfer, 1M edge requests, 1M function invocations, 100 deployments/day, runtime logs kept 1 hour | Usually you wait 30 days. Hobby is **non-commercial, personal use only**; Pro is $20/user/month |
 | [Netlify Free](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/) | 300 credits/month, hard limit, no rollover, cannot buy more. A production deploy costs 15 credits; 1 GB of bandwidth costs 20 | At zero credits **every project is paused** and shows "Site not available" until the next cycle |
 | [Railway](https://docs.railway.com/reference/pricing/plans) | One-time $5 trial credit for up to 30 days, then $1 of credit per month that does not roll over; 0.5 GB RAM, 1 vCPU, 0.5 GB volume | $1 a month is the entire budget and it does not accumulate. Hobby is $5/month with $5 of usage included |
@@ -57,10 +57,11 @@ These are the real numbers as of September 2026. The column that matters is the 
 For a student in Kazakhstan the choice is nearly made for you: a public GitHub repo, Cloudflare Pages or Workers for the site, and D1, Neon or Supabase for data. None of those asks for a card. Netlify's free tier is the trap — twenty deploys and the month is gone, and you will deploy twenty times in one evening. Firebase is the other one: Cloud Functions need the pay-as-you-go plan, and that plan needs a billing account with a payment method on it.
 
 <Callout type="live" title="Before you promise anything on stage">
-Ask the room how many have a card that works for international payments. In most rooms it is a minority, and that single question decides which host you demo. Everything in the recommended stack above works without one.
+Ask the room how many have a card that works for international payments, and count the hands before you pick a host to demo. Everything in the recommended stack above works without one.
 </Callout>
 
 <Myth
+  n={12}
   myth="If it is deployed, it is production."
   source="Render, Netlify and Supabase free-tier docs"
   href="https://render.com/docs/free"
@@ -79,7 +80,7 @@ DNS is the internet's directory: it translates a human-readable name into the ad
 The part that confuses everybody: DNS answers are cached worldwide, so a change takes anywhere from minutes to hours to reach everyone. If the site works for you and not for your friend, you are almost always looking at a cached old record, not a broken deploy. Wait before you debug.
 
 <Callout type="tip" title="A domain for zero tenge">
-The GitHub Student Developer Pack includes a free domain for one year — a `.me` from Namecheap, a `.TECH`, or a `.dev`/`.app` from Name.com. Verify your student status first; the domain outlives the workshop. [education.github.com/pack](https://education.github.com/pack)
+The GitHub Student Developer Pack includes a free domain: a `.me` from Namecheap or a `.TECH`, each for one year, or a `.dev`/`.app` from Name.com. Verify your student status first; the domain outlives the workshop. [education.github.com/pack](https://education.github.com/pack)
 </Callout>
 
 ## Secrets belong on the host, never in the repo and never in the browser
@@ -92,21 +93,9 @@ There are exactly three places a secret can be, and only one of them is correct:
 - **In the host's dashboard**, as an environment variable your server code reads. This is production.
 - **In the frontend.** Never. Anything the browser downloads is public — a visitor opens developer tools and reads it in seconds.
 
-If you let an agent work in this repo, give it a fence in `.claude/settings.json`:
+Moving from the first place to the second is where first deploys die. Your `.env` never leaves your laptop, so nothing in it exists on the host until you type it there. Before you deploy, open `.env`, go key by key, and add each one in the host's dashboard. When a page works locally and errors in production, the usual cause is one variable that lives in only one of those two places.
 
-<Terminal title=".claude/settings.json">
-
-```json
-{
-  "permissions": {
-    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)"]
-  }
-}
-```
-
-</Terminal>
-
-And now the honest half. That deny rule stops Claude's own file tools and the shell readers it recognises, such as `cat` and `head`. It does not stop a script that opens the file itself, because Bash rules match command text, not programs. Deny rules are convenience; real boundaries come from sandboxing or a hook. Treat the rule as a seatbelt, not a vault. ([Claude Code permissions docs](https://code.claude.com/docs/en/permissions))
+Module 8 gave your agent a deny rule on `.env` in `.claude/settings.json`. Keep it, and keep its limits in mind: it blocks Claude's file tools and the shell readers it recognises, not a script that opens the file itself. It is a second layer, not a lock ([Claude Code permissions docs](https://code.claude.com/docs/en/permissions)).
 
 <Quiz
   id="m12-secrets"
@@ -126,16 +115,16 @@ And now the honest half. That deny rule stops Claude's own file tools and the sh
 
 A preview deploy is a full copy of your site built from one branch, published at its own address, with nothing pointing at it but the link. You send that link instead of a screenshot. On Netlify, deploy previews and branch deploys are not metered at all — it is only production deploys that cost credits, which makes previews the cheapest place to be wrong.
 
-Previews also catch the single most common "it works on my machine" failure: your host builds on Linux, and Linux cares about capital letters in filenames while Windows does not. `Header.astro` imported as `header.astro` works all day on your laptop and fails in the build log. Read the log; it tells you the filename.
+Previews also catch the classic "it works on my machine" failure: your host builds on Linux, and Linux cares about capital letters in filenames while Windows does not. `Header.astro` imported as `header.astro` works all day on your laptop and fails in the build log. Read the log; it tells you the filename.
 
 <Widget name="deploy-sim" />
 
-## The four commands this site runs, and the click at the end
+## The four commands that ship it, and the click at the end
 
 <Steps>
 
 <Step title="Prove it builds before anyone else sees it">
-This repository bundles its checks into one script, so there is one thing to remember. It runs the translation check, the type check, the build and the link check, in that order, and stops at the first failure.
+The repo behind this site bundles its checks into one script, so there is one thing to remember. It runs the translation check, the type check, the build and the link check, in that order, and stops at the first failure.
 
 <Terminal title="bash">
 
@@ -147,7 +136,7 @@ npm run verify
 </Step>
 
 <Step title="Build the folder that is the website">
-The build turns your source into `dist/` — plain HTML, CSS and JavaScript. Open `dist/` and look at it once. Understanding that a static site is just a folder removes most of the fear from this whole step.
+`npm run verify` already ran this as its third step. Run it once on its own anyway, then open `dist/` and look inside: plain HTML, CSS and JavaScript. Understanding that a static site is just a folder removes most of the fear from this whole step.
 
 <Terminal title="bash">
 
@@ -171,7 +160,7 @@ git push origin main
 </Step>
 
 <Step title="Publish the folder to the edge">
-Wrangler is Cloudflare's CLI. It uploads `dist/` and hands you a live URL on `pages.dev`, served with HTTPS from data centres worldwide, at no cost.
+Wrangler is Cloudflare's CLI. It uploads `dist/` and hands you a live URL on `pages.dev`, served with HTTPS from data centres worldwide, at no cost. `qairu-event` is the Pages project name — use your own, and the URL that comes back is that name plus `.pages.dev`.
 
 <Terminal title="bash">
 
@@ -185,7 +174,7 @@ npx wrangler pages deploy dist --project-name=qairu-event
 <Step title="Attach the domain — and this one is not a command">
 Be honest with yourself about this step: you cannot finish it from the terminal. You open the Cloudflare dashboard, find your Pages project, go to **Custom domains**, and add the name. Cloudflare creates the CNAME record and issues the SSL certificate for you. Then you wait for DNS to spread.
 
-Every deploy guide that shows four tidy commands quietly skips this. Your agent will skip it too, and then tell you the site is live when it is live only on `pages.dev`.
+Deploy guides that show four tidy commands quietly skip this one. Your agent will skip it too, and then tell you the site is live when it is live only on `pages.dev`.
 </Step>
 
 </Steps>
@@ -229,7 +218,7 @@ Everything in that file is stable except the two `uses:` version pins. Actions g
 
 ## Rollback is a skill you practise on a quiet Tuesday
 
-Here is the thing beginners learn the hard way: your agent's undo does not reach production. Claude Code checkpoints cover the edits it made to your files, and explicitly not remote side effects — database writes, pushes, deploys. `/rewind` puts your source back and the broken version stays live the whole time. ([Checkpointing docs](https://code.claude.com/docs/en/checkpointing))
+Your agent's undo does not reach production. Claude Code checkpoints cover the edits it made to your files, and explicitly not remote side effects — database writes, pushes, deploys. `/rewind` puts your source back and the broken version stays live the whole time. ([Checkpointing docs](https://code.claude.com/docs/en/checkpointing))
 
 So rollback is a git operation followed by a deploy. Find the last commit that was fine, undo the bad one as a new commit, push, rebuild, publish:
 
@@ -289,7 +278,7 @@ custom domain. Do not claim the site is live until that list is done.
 />
 
 <ProjectStep n={12} title="Put the sign-up page on a URL you can send to someone">
-Build it, push it, deploy it. Get the `pages.dev` URL and open it on your phone — not on your laptop, where a cached localhost will happily lie to you.
+Build it, push it, deploy it. Get the `pages.dev` URL and open it on your phone — not on your laptop, where a browser tab still pointed at localhost will happily lie to you.
 
 Then set any secret the page needs in the Cloudflare dashboard rather than in the code, and if you claimed a Student Pack domain, attach it and wait for DNS.
 

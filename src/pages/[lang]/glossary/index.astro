@@ -1,0 +1,166 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import { groups, terms, rules } from '@/data/glossary';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+
+const c = {
+  en: {
+    title: 'Glossary',
+    desc: 'Every term in this course in English and Kazakh, with a plain definition and how to use it in a Kazakh sentence.',
+    kicker: 'EN ↔ ҚАЗ',
+    h1: 'The words',
+    lead: 'Technical Kazakh is still being decided in public. This is the set of choices this site makes, why it makes them, and what to avoid. If you teach or write in Kazakh, take it and argue with it.',
+    search: 'Search a term in either language',
+    rulesK: 'How we write Kazakh here',
+    termsK: 'Terms',
+    keepLatin: 'stays in Latin',
+    avoid: 'avoid',
+    alt: 'also',
+    none: 'No term matches. Try part of the word.',
+    count: 'terms',
+  },
+  kk: {
+    title: 'Глоссарий',
+    desc: 'Осы курстағы барлық термин ағылшынша және қазақша, қарапайым анықтамасымен әрі қазақ сөйлемінде қалай қолданылатынымен.',
+    kicker: 'EN ↔ ҚАЗ',
+    h1: 'Сөздер',
+    lead: 'Техникалық қазақ тілі әлі де қалыптасу үстінде. Бұл — сайттың жасаған таңдауы, оның себебі және неден аулақ болу керегі. Қазақша оқытсаң немесе жазсаң, алып қолдан әрі келіспесең айт.',
+    search: 'Терминді екі тілдің бірінде іздеу',
+    rulesK: 'Мұнда қазақша қалай жазамыз',
+    termsK: 'Терминдер',
+    keepLatin: 'латынша қалады',
+    avoid: 'болмайды',
+    alt: 'баламасы',
+    none: 'Ондай термин жоқ. Сөздің бір бөлігін жазып көр.',
+    count: 'термин',
+  },
+}[lang];
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc} act="scale">
+  <section class="hero wrap">
+    <p class="kicker">{c.kicker} · {terms.length} {c.count}</p>
+    <h1>{c.h1}</h1>
+    <p class="lead">{c.lead}</p>
+    <input class="input search" type="search" placeholder={c.search} data-search aria-label={c.search} />
+  </section>
+
+  <section class="wrap band" data-reveal>
+    <p class="eyebrow"><b>01</b> {c.rulesK}</p>
+    <div class="rules">
+      {
+        rules.map((r, i) => (
+          <article class="rule" data-reveal style={`--i:${i}`}>
+            <h3>{r.title[lang]}</h3>
+            <p>{r.body[lang]}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wrap band">
+    <p class="eyebrow"><b>02</b> {c.termsK}</p>
+    <nav class="jump" aria-label={c.termsK}>
+      {groups.map((g) => <a href={`#${g.id}`}>{g.title[lang]}</a>)}
+    </nav>
+    <p class="noresult" data-noresult hidden>{c.none}</p>
+  </section>
+
+  {
+    groups.map((g) => {
+      const list = terms.filter((t) => t.group === g.id);
+      return list.length ? (
+        <section class="wrap band-sm grp" id={g.id} data-grp>
+          <h2>{g.title[lang]}</h2>
+          <dl class="terms">
+            {list.map((t) => (
+              <div class="term" data-term data-text={`${t.en} ${t.kk} ${t.alt ?? ''} ${t.def.en} ${t.def.kk}`.toLowerCase()}>
+                <dt>
+                  <span class="en">{t.en}</span>
+                  <span class="arrow" aria-hidden="true">→</span>
+                  <span class={t.keepLatin ? 'kk latin' : 'kk'}>{t.kk}</span>
+                  {t.keepLatin && <span class="flag">{c.keepLatin}</span>}
+                </dt>
+                <dd>
+                  <p class="def">{t.def[lang]}</p>
+                  {t.example && <p class="ex">{t.example[lang]}</p>}
+                  <p class="meta">
+                    {t.alt && <span class="alt">{c.alt}: {t.alt}</span>}
+                    {t.avoid && <span class="avoid">{c.avoid}: {t.avoid}</span>}
+                  </p>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ) : null;
+    })
+  }
+</BaseLayout>
+
+<style>
+  .hero { padding: clamp(48px, 8vw, 88px) 0 0; }
+  .kicker { margin: 0 0 18px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
+  h1 { font-size: clamp(44px, 9vw, 92px); font-weight: 300; letter-spacing: -0.045em; }
+  .lead { max-width: 62ch; margin: 24px 0 0; font-size: clamp(16.5px, 2vw, 19px); line-height: 1.65; color: var(--color-muted); }
+  .search { max-width: 420px; margin-top: 28px; }
+  .band { padding: clamp(40px, 6vw, 68px) 0 0; }
+  .band-sm { padding: 40px 0 0; }
+
+  .rules { display: grid; gap: 12px; margin-top: 24px; }
+  .rule { padding: 20px 22px; border-radius: 18px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); }
+  .rule h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .rule p { margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: var(--color-muted); }
+
+  .jump { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+  .jump a { padding: 5px 11px; border-radius: 999px; border: 1px solid var(--color-line); font: 400 12px/1.4 var(--font-mono); color: var(--color-muted); text-decoration: none; }
+  .jump a:hover { color: #fff; border-color: var(--color-line-strong); }
+  .noresult { margin-top: 18px; font-size: 16px; color: var(--color-amber); }
+
+  .grp h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 400; }
+  .terms { margin: 18px 0 0; display: grid; gap: 8px; }
+  .term { padding: 16px 18px; border-radius: 16px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.025); }
+  dt { display: flex; flex-wrap: wrap; align-items: baseline; gap: 9px; }
+  .en { font-size: 17px; font-weight: 600; color: #fff; }
+  .arrow { color: var(--color-faint); font-size: 13px; }
+  .kk { font-size: 17px; color: var(--color-signal-soft); }
+  .kk.latin { font-family: var(--font-mono); font-size: 15px; }
+  .flag { padding: 2px 8px; border-radius: 999px; border: 1px solid rgb(190 235 80 / 0.4); font: 400 10px/1.5 var(--font-mono); color: var(--color-lime); }
+  dd { margin: 8px 0 0; }
+  .def { margin: 0; font-size: 15px; line-height: 1.55; color: var(--color-muted); }
+  .ex { margin: 7px 0 0; padding-left: 12px; border-left: 2px solid rgb(43 127 255 / 0.4); font-size: 14.5px; line-height: 1.5; color: rgb(255 255 255 / 0.82); }
+  .meta { margin: 7px 0 0; display: flex; flex-wrap: wrap; gap: 12px; font: 400 12px/1.4 var(--font-mono); }
+  .alt { color: var(--color-faint); }
+  .avoid { color: #f0a0a8; }
+  .term[hidden] { display: none; }
+  section[hidden] { display: none; }
+
+  @media (min-width: 860px) { .terms { grid-template-columns: repeat(2, 1fr); } .rules { grid-template-columns: repeat(2, 1fr); } }
+</style>
+
+<script>
+  const search = document.querySelector<HTMLInputElement>('[data-search]');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('[data-term]'));
+  const grps = Array.from(document.querySelectorAll<HTMLElement>('[data-grp]'));
+  const none = document.querySelector<HTMLElement>('[data-noresult]');
+
+  search?.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    items.forEach((el) => {
+      const show = !q || (el.dataset.text ?? '').includes(q);
+      el.hidden = !show;
+      if (show) shown++;
+    });
+    grps.forEach((g) => {
+      g.hidden = !g.querySelector('[data-term]:not([hidden])');
+    });
+    if (none) none.hidden = shown > 0;
+  });
+</script>

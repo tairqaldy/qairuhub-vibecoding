@@ -1,7 +1,7 @@
 ---
 title: Make the Agent Prove It
 subtitle: When an agent says "it works", that is a prediction. A test is a measurement. Here is how to get one.
-objective: give an agent a check it cannot argue with, write the failing test before the code, and review an AI diff for the four things that actually go wrong
+objective: give an agent a check it cannot argue with, write the failing test before the code, and review an AI diff for the five things that actually go wrong
 description: Verification loops, red/green TDD with an agent, one worked Playwright end-to-end test, and how to review AI code before the debt piles up.
 artifact: Red/green + adversarial review — a two-prompt pack
 ---
@@ -16,7 +16,7 @@ Turning that guess into an output you can read is the cheapest skill in this cou
 
 Anthropic's own guide for Claude Code now opens with a section called "Give Claude a way to verify its work" — it is the first thing on the page, before planning, before context, before anything else ([code.claude.com/docs](https://code.claude.com/docs/en/best-practices)). The reasoning is blunt. The agent needs a signal to decide it is finished. If you have not given it one, the only signal available is *this looks finished*. And then you become the test suite: you click around, you find the broken thing, you paste it back, and you do that again on every feature for the rest of the project.
 
-You can see that cost in the survey data. Of the developers who named their top frustrations with AI tools, the biggest was not wrong answers — it was answers that are nearly right.
+You can see that cost in the survey data. The frustration developers named most often was not wrong answers. It was answers that are nearly right.
 
 <StatRow>
   <Stat value="66%" label="frustrated by AI answers that are almost right, but not quite" source="Stack Overflow 2025" href="https://survey.stackoverflow.co/2025/ai" tone="warn" />
@@ -70,7 +70,7 @@ The classic picture is a pyramid, and it is worth ten seconds of your attention 
 
 The pyramid describes where you should end up after a year. It does not describe your first afternoon. With zero tests, write one test at the top: the single path your product exists for. For QAIRU Event Sign-up that is *open the page, fill in a name and an email, press reserve, see a confirmation*. One test, covering the only thing that makes the app worth deploying.
 
-Then push downward, and let the bugs choose for you. Every time something actually breaks, that bug becomes a unit test before it becomes a fix. Anthropic's bug-fix pattern is exactly this: describe the symptom, the likely location, and what "fixed" means — then ask for a failing test that reproduces it, and only then the fix. You end up with a suite made entirely of things that genuinely went wrong in your project, which is a far better suite than one made of things a model imagined might go wrong.
+Then push downward, and let the bugs choose for you. Every time something breaks, that bug becomes a unit test before it becomes a fix. Anthropic's [bug-fix pattern](https://code.claude.com/docs/en/best-practices) is exactly this: describe the symptom, the likely location, and what "fixed" means, then ask for a failing test that reproduces it, and only then the fix. Your suite ends up made entirely of things that genuinely went wrong in your project — a far better suite than one made of things a model imagined might go wrong.
 
 ## Write the test that fails, then let it code
 
@@ -124,7 +124,7 @@ Rules:
 </Prompt>
 
 <Callout type="danger" title="Three signs the agent is cheating">
-Kent Beck named these after months of pairing with one: it starts **looping** on the same fix; it adds **functionality nobody asked for**; and it **disables or deletes tests to get green** ([Augmented Coding, 25 Jun 2025](https://newsletter.kentbeck.com/p/augmented-coding-beyond-the-vibes)). The third is the dangerous one, because the output on your screen says "all tests pass". Read the diff for deleted or skipped test files every single time.
+Kent Beck named three signals in June 2025: it starts **looping** on the same fix; it adds **functionality nobody asked for**; and it **disables or deletes tests to get green** ([Augmented Coding, 25 Jun 2025](https://newsletter.kentbeck.com/p/augmented-coding-beyond-the-vibes)). The third is the dangerous one, because the output on your screen says "all tests pass". Read the diff for deleted or skipped test files every single time.
 </Callout>
 
 <Quiz
@@ -150,7 +150,7 @@ Set it up once:
 <Terminal title="bash">
 ```bash
 npm init playwright@latest
-# accept TypeScript, tests in ./e2e, and let it install the browsers
+# choose TypeScript, put the tests in ./e2e, let it install the browsers
 npx playwright test
 ```
 </Terminal>
@@ -162,7 +162,7 @@ Then this is the whole test for QAIRU Event Sign-up — the one path the app exi
 import { test, expect } from '@playwright/test';
 
 test('a visitor can reserve a seat and sees a confirmation', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('http://localhost:3000/');
   await expect(page.getByRole('heading', { name: 'QAIRU Meetup' })).toBeVisible();
 
   await page.getByLabel('Name').fill('Aiganym');
@@ -175,12 +175,11 @@ test('a visitor can reserve a seat and sees a confirmation', async ({ page }) =>
 
 Read it out loud and it is just the thing a person does. That is the point: it fails when a human would fail, not when an internal function signature changes. Notice it asks for elements by their visible role and label rather than by CSS class — so a restyle does not break it, but removing the button does.
 
-Now put it in your project memory, because the agent cannot guess a command it has never seen. Two lines in `AGENTS.md`:
+Your `AGENTS.md` from Module 6 already promises an E2E command. Now one exists, so make that line true — the agent cannot guess a command it has never seen:
 
 ```markdown
 ## Commands
-- One test file: `npx vitest run path/to/file.test.ts`   All tests: `npm test`
-- E2E: `npx playwright test` (needs the dev server running)
+- E2E: `npx playwright test` (needs the dev server running on port 3000)
 ```
 
 <Callout type="live" title="For whoever is teaching this">
@@ -200,7 +199,7 @@ Tests catch behaviour. They do not catch the slow rot — and there is now a lar
 Copy-pasted lines went from 9.4% of changes to 15.7% in the first half of 2026, while cross-file reuse fell 35%. This is not a claim that AI writes bad code. It is a claim about what *unreviewed* AI code does to a repository over time: an agent asked to add a feature will happily write a fifth copy of a function that already exists four times, because writing is cheap for it and searching costs context. Nobody decided to accumulate that debt. It accumulated because no human read the diff.
 
 <Deeper title="How much to trust these numbers">
-GitClear sells code-quality tooling, and the study is correlational — there is no AI-versus-non-AI control group. Their own caveat matters too: the "moved lines" metric can undercount refactoring when an agent rewrites a function in place rather than relocating it. A separate vendor study from [CodeRabbit](https://www.coderabbit.ai/newsroom/state-of-ai-vs-human-code-generation-report) (17 Dec 2025, 470 open-source PRs) found AI-co-authored pull requests carried about 1.7x more issues — 10.83 versus 6.45 per PR — with logic errors 1.75x higher. The same dataset found human PRs had 1.76x more spelling errors and 1.32x more testability issues, which is a useful reminder that nobody in this comparison is clean. Treat all of it as a direction, not a measurement.
+GitClear sells code-quality tooling, and the study is correlational — there is no AI-versus-non-AI control group. One more caveat: the "moved lines" metric can undercount refactoring when an agent rewrites a function in place rather than relocating it. A separate vendor study from [CodeRabbit](https://www.coderabbit.ai/newsroom/state-of-ai-vs-human-code-generation-report) (17 Dec 2025, 470 open-source PRs) found AI-co-authored pull requests carried about 1.7x more issues — 10.83 versus 6.45 per PR — with logic errors 1.75x higher. The same dataset found human PRs had 1.76x more spelling errors and 1.32x more testability issues, which is a useful reminder that nobody in this comparison is clean. Treat all of it as a direction, not a measurement.
 </Deeper>
 
 So: five things to look for in an AI diff, in this order.
@@ -264,7 +263,7 @@ Two pieces of work, in this order.
 
 **Then, one feature by red/green.** The same email should not be able to reserve two seats. Paste the red/green prompt, fill in the feature line, and hold the agent at step 3 until you have read the failure message yourself. Only then approve.
 
-Finish by adding the two test commands to your `AGENTS.md` under `## Commands`, and commit. Next session starts knowing how to check its own work.
+Finish by putting the real E2E command into your `AGENTS.md` under `## Commands`, and commit. Next session starts knowing how to check its own work.
 </ProjectStep>
 
 <Artifact title="Red/green + adversarial review" kind="prompt-pack">

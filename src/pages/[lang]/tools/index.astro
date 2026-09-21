@@ -1,0 +1,323 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import { href } from '@/i18n/ui';
+import { tools, toolKinds, pickGuide } from '@/data/tools';
+import { models, localOptions, pricingNote } from '@/data/models';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+
+const c = {
+  en: {
+    title: 'Tools & models',
+    desc: 'Every serious AI coding environment and model side by side — free tiers, real weaknesses, and what to pick first.',
+    kicker: 'The landscape',
+    h1a: 'Pick a tool.',
+    h1b: 'Any tool.',
+    lead: 'The workflow matters more than the brand. This page exists so you can choose honestly — including the free options, which matter when a foreign card does not always work.',
+    startK: 'If you are starting today',
+    startP: 'These are the ones worth your first hour. The rest of the table is for when you know what you want.',
+    allK: 'Everything, compared',
+    allP: 'Grouped by what kind of thing it is. Open one to see the free tier, the honest weakness, and how to start it.',
+    freeLabel: 'free',
+    filterAll: 'All',
+    which: 'Which one should I use?',
+    modelsK: 'The models underneath',
+    modelsH: 'The environment and the model are two different choices',
+    modelsP: 'Most tools let you swap the model. A cheap model in a good harness often beats an expensive model in a bad one — and knowing the difference is what stops you paying for the wrong thing.',
+    localK: 'Running it on your own machine',
+    cols: { free: 'Free tier', best: 'Best at', weak: 'Weakness', rules: 'Rules file', from: 'Paid from' },
+    ctx: 'context',
+    inOut: 'in / out per 1M tokens',
+    open: 'open weights',
+    docs: 'Docs',
+    install: 'Get started',
+    kzNote: 'From Kazakhstan',
+    priceNote: 'On pricing',
+    backTo: 'Learn how to actually use these →',
+  },
+  kk: {
+    title: 'Құралдар мен модельдер',
+    desc: 'Барлық негізгі ЖИ coding ортасы мен модельдер қатар: тегін мүмкіндіктері, шын кемшіліктері және неден бастау керегі.',
+    kicker: 'Жалпы көрініс',
+    h1a: 'Құрал таңда.',
+    h1b: 'Кез келгенін.',
+    lead: 'Бренд емес, жұмыс тәсілі маңызды. Бұл бет адал таңдау жасауың үшін жасалған — оның ішінде тегін нұсқалар да бар, ал шетелдік карта әрқашан жұмыс істей бермейтін жерде бұл маңызды.',
+    startK: 'Бүгін бастайтын болсаң',
+    startP: 'Алғашқы сағатыңа тұрарлықтары осылар. Кестенің қалғаны — не керегін білген кезге арналған.',
+    allK: 'Бәрі салыстырылған',
+    allP: 'Түріне қарай топтастырылған. Тегін мүмкіндігін, шын кемшілігін және қалай бастау керегін көру үшін біреуін аш.',
+    freeLabel: 'тегін',
+    filterAll: 'Бәрі',
+    which: 'Маған қайсысы керек?',
+    modelsK: 'Астындағы модельдер',
+    modelsH: 'Орта мен модель — екі бөлек таңдау',
+    modelsP: 'Көп құралда модельді ауыстыруға болады. Жақсы ортадағы арзан модель нашар ортадағы қымбат модельден жиі асып түседі — ал айырмашылықты білу керек емес нәрсеге ақша төлеуден сақтайды.',
+    localK: 'Өз компьютеріңде іске қосу',
+    cols: { free: 'Тегін мүмкіндік', best: 'Ең мықты тұсы', weak: 'Кемшілігі', rules: 'Ереже файлы', from: 'Ақылы нұсқа' },
+    ctx: 'контекст',
+    inOut: '1M token: кіріс / шығыс',
+    open: 'ашық салмақтар',
+    docs: 'Құжаттама',
+    install: 'Бастау',
+    kzNote: 'Қазақстаннан',
+    priceNote: 'Баға туралы',
+    backTo: 'Бұларды қалай қолдануды үйрену →',
+  },
+}[lang];
+
+const starters = tools.filter((t) => t.startHere);
+const byKind = toolKinds.map((k) => ({ ...k, list: tools.filter((t) => t.kind === k.id) })).filter((k) => k.list.length);
+const tiers = ['flagship', 'balanced', 'small', 'open'] as const;
+const tierLabel: Record<(typeof tiers)[number], { en: string; kk: string }> = {
+  flagship: { en: 'Flagship', kk: 'Флагман' },
+  balanced: { en: 'Balanced', kk: 'Теңгерімді' },
+  small: { en: 'Small & fast', kk: 'Шағын әрі жылдам' },
+  open: { en: 'Open weights', kk: 'Ашық салмақтар' },
+};
+const money = (n: number | null) => (n === null ? '—' : n === 0 ? 'free' : `$${n}`);
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc} image="/og/tools.png" act="how">
+  <section class="hero wrap">
+    <p class="kicker">{c.kicker}</p>
+    <h1><span class="block">{c.h1a}</span><span class="block accent">{c.h1b}</span></h1>
+    <p class="lead">{c.lead}</p>
+  </section>
+
+  <section class="wrap band" data-reveal>
+    <p class="eyebrow"><b>01</b> {c.startK}</p>
+    <p class="band-lead">{c.startP}</p>
+    <div class="starters">
+      {
+        starters.map((t, i) => (
+          <article class="starter" data-reveal style={`--i:${i}`}>
+            <header>
+              <h3>{t.name}</h3>
+              <span class="vendor">{t.vendor}</span>
+            </header>
+            <p class="tag">{t.tagline[lang]}</p>
+            <dl>
+              <div><dt>{c.cols.free}</dt><dd class="ok">{t.free[lang]}</dd></div>
+              <div><dt>{c.cols.best}</dt><dd>{t.strength[lang]}</dd></div>
+              <div><dt>{c.cols.weak}</dt><dd class="warn">{t.weakness[lang]}</dd></div>
+            </dl>
+            {t.install && <code class="inst">{t.install}</code>}
+            {t.kzNote && <p class="kz"><span>{c.kzNote}</span> {t.kzNote[lang]}</p>}
+            <a class="btn btn-sm" href={t.docs} target="_blank" rel="noopener noreferrer">{c.docs} ↗</a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wrap band" data-reveal>
+    <p class="eyebrow"><b>02</b> {c.which}</p>
+    <div class="guide">
+      {
+        pickGuide.map((g) => (
+          <div class="g-row">
+            <p class="g-sit">{g.situation[lang]}</p>
+            <p class="g-pick">
+              {g.pick.map((id) => {
+                const t = tools.find((x) => x.id === id);
+                return <span class="pill pill-act">{t ? t.name : id}</span>;
+              })}
+            </p>
+            <p class="g-why">{g.why[lang]}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wrap-wide band" data-reveal>
+    <p class="eyebrow"><b>03</b> {c.allK}</p>
+    <p class="band-lead">{c.allP}</p>
+    {
+      byKind.map((k) => (
+        <div class="kind">
+          <h3>{k.label[lang]} <span class="k-n">{k.list.length}</span></h3>
+          <div class="grid">
+            {k.list.map((t) => (
+              <details class="tool">
+                <summary>
+                  <span class="t-head">
+                    <span class="t-name">{t.name}</span>
+                    <span class="t-vendor">{t.vendor}</span>
+                  </span>
+                  <span class="t-tag">{t.tagline[lang]}</span>
+                  <span class="t-meta">
+                    <span class="t-free">{t.paidFrom ? t.paidFrom : c.freeLabel}</span>
+                    {t.rulesFile && <code>{t.rulesFile}</code>}
+                    <span class="t-more" aria-hidden="true">+</span>
+                  </span>
+                </summary>
+                <div class="t-body">
+                  <p class="row"><span class="lbl">{c.cols.free}</span><span class="ok">{t.free[lang]}</span></p>
+                  <p class="row"><span class="lbl">{c.cols.best}</span><span>{t.strength[lang]}</span></p>
+                  <p class="row"><span class="lbl">{c.cols.weak}</span><span class="warn">{t.weakness[lang]}</span></p>
+                  {t.kzNote && <p class="row"><span class="lbl pinkk">{c.kzNote}</span><span>{t.kzNote[lang]}</span></p>}
+                  {t.install && <code class="inst">{t.install}</code>}
+                  <a class="btn btn-sm" href={t.docs} target="_blank" rel="noopener noreferrer">{c.docs} ↗</a>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </section>
+
+  <section class="wrap band" data-reveal>
+    <p class="eyebrow"><b>04</b> {c.modelsK}</p>
+    <h2>{c.modelsH}</h2>
+    <p class="band-lead">{c.modelsP}</p>
+  </section>
+
+  <section class="wrap-wide band-sm" data-reveal>
+    {
+      tiers.map((tier) => {
+        const list = models.filter((m) => m.tier === tier);
+        return list.length ? (
+          <div class="kind">
+            <h3>{tierLabel[tier][lang]}</h3>
+            <div class="models">
+              {list.map((m) => (
+                <article class="model">
+                  <header>
+                    <h4>{m.name}</h4>
+                    <span class="vendor">{m.vendor}</span>
+                  </header>
+                  <p class="good">{m.goodAt[lang]}</p>
+                  <ul class="specs">
+                    {m.contextTokens && (
+                      <li>
+                        <b>{Math.round(m.contextTokens / 1000)}k</b> {c.ctx}
+                      </li>
+                    )}
+                    {(m.inputPerM !== null || m.outputPerM !== null) && (
+                      <li>
+                        <b>{money(m.inputPerM)} / {money(m.outputPerM)}</b> <span>{c.inOut}</span>
+                      </li>
+                    )}
+                    {m.openWeights && <li class="open">{c.open}</li>}
+                  </ul>
+                  <p class="note">{m.note[lang]}</p>
+                  {m.freeAccess && <p class="free">{m.freeAccess[lang]}</p>}
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : null;
+      })
+    }
+    <div class="pricing">
+      <p class="eyebrow">{c.priceNote}</p>
+      <p>{pricingNote[lang]}</p>
+    </div>
+  </section>
+
+  <section class="wrap band" data-reveal>
+    <p class="eyebrow"><b>05</b> {c.localK}</p>
+    <div class="locals">
+      {
+        localOptions.map((l) => (
+          <a class="local card card-hover" href={l.url} target="_blank" rel="noopener noreferrer">
+            <span class="l-n">{l.name}</span>
+            <span class="l-w">{l.what[lang]}</span>
+            <span class="l-r">{l.needs[lang]}</span>
+          </a>
+        ))
+      }
+    </div>
+    <a class="btn btn-signal mt-8" href={href(lang, 'learn/the-agent')}>{c.backTo}</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { padding: clamp(48px, 8vw, 88px) 0 0; }
+  .kicker { margin: 0 0 18px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
+  h1 { font-size: clamp(44px, 9vw, 92px); font-weight: 300; letter-spacing: -0.045em; line-height: 0.98; }
+  .block { display: block; }
+  .accent { color: var(--color-signal-soft); }
+  .lead { max-width: 62ch; margin: 26px 0 0; font-size: clamp(16.5px, 2vw, 19px); line-height: 1.65; color: var(--color-muted); }
+  .band { padding: clamp(44px, 6vw, 76px) 0 0; }
+  .band-sm { padding: 28px 0 0; }
+  .band h2 { margin-top: 14px; font-size: clamp(26px, 4vw, 42px); font-weight: 350; }
+  .band-lead { max-width: 64ch; margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: var(--color-muted); }
+  .mt-8 { margin-top: 32px; }
+
+  .starters { display: grid; gap: 16px; margin-top: 28px; }
+  .starter { padding: 24px 22px; border-radius: 22px; border: 1px solid rgb(43 127 255 / 0.35); background: linear-gradient(180deg, rgb(43 127 255 / 0.09), rgb(255 255 255 / 0.02)); display: grid; gap: 14px; align-content: start; }
+  .starter header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .starter h3 { font-size: 23px; font-weight: 500; }
+  .vendor { font: 400 11.5px/1 var(--font-mono); color: var(--color-faint); }
+  .tag { margin: 0; font-size: 15px; color: var(--color-muted); }
+  .starter dl { margin: 0; display: grid; gap: 10px; }
+  .starter dl div { display: grid; gap: 2px; }
+  .starter dt { font: 500 10.5px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-faint); }
+  .starter dd { margin: 0; font-size: 14.5px; line-height: 1.5; color: rgb(255 255 255 / 0.88); }
+  .ok { color: #9fe3c3; }
+  .warn { color: #f0c690; }
+  .inst { display: block; padding: 10px 12px; border-radius: 10px; background: #05060f; border: 1px solid var(--color-line); font-size: 12.5px; color: #cfe2ff; overflow-x: auto; white-space: nowrap; }
+  .kz { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--color-muted); }
+  .kz span { font: 500 10px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-pink); display: block; margin-bottom: 4px; }
+
+  .guide { display: grid; gap: 10px; margin-top: 24px; }
+  .g-row { display: grid; gap: 8px; padding: 18px 20px; border-radius: 16px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); }
+  .g-sit { margin: 0; font-size: 17px; font-weight: 500; color: #fff; }
+  .g-pick { margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .g-why { margin: 0; font-size: 15px; line-height: 1.55; color: var(--color-muted); }
+
+  .kind { margin-top: 34px; }
+  .kind h3 { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; font-family: var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-signal-soft); margin-bottom: 14px; }
+  .k-n { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--color-line); font-size: 11px; color: var(--color-faint); letter-spacing: 0; }
+
+  .grid { display: grid; gap: 10px; }
+  .tool { border-radius: 16px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); overflow: hidden; transition: border-color 0.25s, background 0.25s; }
+  .tool:hover { border-color: rgb(43 127 255 / 0.45); background: var(--color-fill-hover); }
+  .tool[open] { border-color: rgb(43 127 255 / 0.55); background: rgb(43 127 255 / 0.06); }
+  .tool summary { display: grid; gap: 7px; padding: 16px 18px; cursor: pointer; list-style: none; }
+  .tool summary::-webkit-details-marker { display: none; }
+  .t-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .t-name { font-size: 16.5px; font-weight: 600; color: #fff; }
+  .t-vendor { font: 400 11px/1 var(--font-mono); color: var(--color-faint); }
+  .t-tag { font-size: 14px; line-height: 1.5; color: var(--color-muted); }
+  .t-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .t-free { padding: 2px 9px; border-radius: 999px; border: 1px solid rgb(72 213 151 / 0.35); font: 400 11px/1.5 var(--font-mono); color: #9fe3c3; }
+  .t-meta code { padding: 2px 7px; border-radius: 6px; background: rgb(255 255 255 / 0.06); font-size: 11px; color: var(--color-muted); }
+  .t-more { margin-left: auto; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--color-line-strong); font: 400 13px/1 var(--font-mono); color: var(--color-signal-soft); }
+  .tool[open] .t-more { transform: rotate(45deg); }
+  .t-body { display: grid; gap: 10px; padding: 4px 18px 18px; border-top: 1px solid var(--color-line); padding-top: 14px; }
+  .t-body .row { margin: 0; display: grid; gap: 3px; font-size: 14.5px; line-height: 1.55; color: rgb(255 255 255 / 0.86); }
+  .lbl { font: 500 10px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-faint); }
+  .lbl.pinkk { color: var(--color-pink); }
+  .t-body .btn { justify-self: start; }
+
+  .models { display: grid; gap: 12px; }
+  .model { padding: 18px 20px; border-radius: 18px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); display: grid; gap: 8px; align-content: start; }
+  .model header { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .model h4 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+  .good { margin: 0; font-size: 14.5px; line-height: 1.5; color: rgb(255 255 255 / 0.85); }
+  .specs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .specs li { padding: 4px 9px; border-radius: 999px; border: 1px solid var(--color-line); font: 400 11.5px/1.3 var(--font-mono); color: var(--color-muted); }
+  .specs b { color: #fff; font-weight: 500; }
+  .specs .open { color: var(--color-lime); border-color: rgb(190 235 80 / 0.4); }
+  .note { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--color-faint); }
+  .free { margin: 0; font-size: 13.5px; line-height: 1.5; color: #9fe3c3; }
+  .pricing { margin-top: 32px; padding: 22px 24px; border-radius: 18px; border-left: 3px solid var(--color-signal); background: rgb(43 127 255 / 0.08); }
+  .pricing p { margin: 10px 0 0; font-size: 16px; line-height: 1.6; color: rgb(255 255 255 / 0.9); max-width: 70ch; }
+
+  .locals { display: grid; gap: 12px; margin-top: 24px; }
+  .local { display: grid; gap: 6px; padding: 20px; text-decoration: none; color: inherit; }
+  .l-n { font-size: 18px; font-weight: 600; color: #fff; }
+  .l-w { font-size: 14.5px; line-height: 1.5; color: var(--color-muted); }
+  .l-r { font: 400 12px/1.4 var(--font-mono); color: var(--color-faint); }
+
+  @media (min-width: 720px) { .starters { grid-template-columns: repeat(2, 1fr); } .models { grid-template-columns: repeat(2, 1fr); } .locals { grid-template-columns: repeat(3, 1fr); } .grid { grid-template-columns: repeat(2, 1fr); } .tool[open] { grid-column: 1 / -1; } }
+  @media (min-width: 1100px) { .starters { grid-template-columns: repeat(4, 1fr); } .models { grid-template-columns: repeat(3, 1fr); } .grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

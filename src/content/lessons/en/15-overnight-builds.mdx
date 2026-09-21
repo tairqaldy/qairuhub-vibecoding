@@ -22,7 +22,7 @@ The point is not that agents can write a website. It is that the run was built t
 
 ## Plan mode is the first gate, not a formality
 
-Nothing autonomous starts without a written plan you have read. Enter [plan mode](https://code.claude.com/docs/en/permission-modes) with `Shift+Tab`, or start with `claude --permission-mode plan`. `Ctrl+G` opens the plan in your editor so you can rewrite it before approving — almost nobody presses it, and almost everybody approves plans they only skimmed.
+Nothing autonomous starts without a written plan you have read. Enter [plan mode](https://code.claude.com/docs/en/permission-modes) with `Shift+Tab`, or start with `claude --permission-mode plan`. `Ctrl+G` opens the plan in your editor so you can rewrite it before approving. Use it. At 03:00 the plan is the only instruction left in the room, and a plan you skimmed is not a plan you read.
 
 For a repo you will run unattended, make it the default:
 
@@ -93,14 +93,14 @@ Allow and deny lists are convenience, not a security boundary. For an actual bou
 
 Use these instead, in order:
 
-1. **Auto mode** — a classifier reviews each action rather than you. Anthropic [built it](https://www.anthropic.com/engineering/claude-code-auto-mode) because users approved about 93% of prompts anyway. From that post: 0.4% false positives, **17% false negatives on real over-eager actions**. A seatbelt, not a sandbox.
+1. **Auto mode** — a classifier reviews each action instead of you, and it is already the starting mode on Pro, Max and Team plans. [Anthropic's post on it](https://www.anthropic.com/engineering/claude-code-auto-mode) gives the motivation and the honest limits: users approved about 93% of permission prompts anyway, and the pipeline runs at 0.4% false positives and **17% false negatives on genuinely over-eager actions**. A seatbelt, not a sandbox.
 2. **`/sandbox`** — OS-level filesystem and network isolation for Bash. Anthropic on its own internal usage: "sandboxing safely reduces permission prompts by 84%" ([Oct 2025](https://www.anthropic.com/engineering/claude-code-sandboxing)). Unlike a denylist, a real boundary. macOS, Linux and WSL2 — **not native Windows**, so Windows students run unattended work in WSL2.
 3. **A container or VM** for anything you would not point at your home directory.
 
 <StatRow>
   <Stat value="17%" label="of genuinely over-eager actions auto mode misses" source="Anthropic, Mar 2026" href="https://www.anthropic.com/engineering/claude-code-auto-mode" tone="warn" />
   <Stat value="84%" label="fewer permission prompts with OS-level sandboxing" source="Anthropic, Oct 2025" href="https://www.anthropic.com/engineering/claude-code-sandboxing" tone="good" />
-  <Stat value="22x" label="cost of a full harness vs the same app built solo" source="Anthropic, Mar 2026" href="https://www.anthropic.com/engineering/harness-design-long-running-apps" tone="warn" />
+  <Stat value="22x" label="harness run at $200 vs $9 built solo" source="Anthropic, Mar 2026" href="https://www.anthropic.com/engineering/harness-design-long-running-apps" tone="warn" />
 </StatRow>
 
 ## The harness: what the run reads before it does anything
@@ -121,7 +121,7 @@ TODO.json      the work as objects with an id, a title and done: false.
 Put the ritual in the prompt verbatim: read those three files and the last `git log` lines, run the setup script, confirm the app still works, pick **one** unfinished item, implement, verify, commit, append to PROGRESS.md, stop.
 
 <Deeper title="Every harness part is a bet about what the model cannot do">
-Anthropic's [March 2026 follow-up](https://www.anthropic.com/engineering/harness-design-long-running-apps) deleted two components it had needed a year earlier, because a newer model stopped showing the behaviour they compensated for. Re-test your scaffolding on each model release and remove what no longer earns its place.
+Anthropic's [March 2026 follow-up](https://www.anthropic.com/engineering/harness-design-long-running-apps) threw away machinery its own team had needed four months earlier. Sonnet 4.5 tended to wrap up early as it approached the context limit, so the harness carried sprint contracts and forced context resets to work around it. On Opus 4.6 that behaviour largely went away, and the sprint construct was dropped. Re-test your scaffolding on each model release and delete what no longer earns its place.
 </Deeper>
 
 ## Gates the run cannot argue with
@@ -133,7 +133,7 @@ The first section of Anthropic's [best-practices guide](https://code.claude.com/
 - A **Stop hook**: your script blocks the turn from ending until it passes. (Claude Code overrides it after eight consecutive blocks, so it must be able to succeed.)
 - A **verification subagent** whose only job, in fresh context, is to refute the result.
 
-One script, and its exit code is the whole contract:
+One script, and its exit code is the whole contract. Each line is a script you define yourself in `package.json`:
 
 <Terminal title="verify.sh">
 ```bash
@@ -148,7 +148,7 @@ npm run check:links    # no dead internal links in the built output
 ```
 </Terminal>
 
-Write that output for the agent: little on stdout, detail into a log file, one grep-friendly line per failure. That comes from the team that built [a C compiler with sixteen parallel agents](https://www.anthropic.com/engineering/building-c-compiler), with the warning that matters most here — **the agent solves exactly the problem your tests define**. Weak tests produce confident code solving the wrong problem.
+Write that output for the agent: little on stdout, detail into a log file, one grep-friendly line per failure. That comes from the project that built [a C compiler with sixteen parallel Claude instances](https://www.anthropic.com/engineering/building-c-compiler), which carries the warning that matters most here — **the agent solves exactly the problem your tests define**. Weak tests produce confident code solving the wrong problem.
 
 [Kent Beck's](https://newsletter.kentbeck.com/p/augmented-coding-beyond-the-vibes) three signs a run is off the rails: it loops; it adds functionality nobody asked for; it disables tests to get green. Put "never disable, skip or delete a test" in the prompt, and fail the gate if the test count drops.
 
@@ -167,7 +167,7 @@ The multipliers: an agent uses roughly 4x the tokens of a chat, multi-agent setu
 Levers by impact: `/clear` between tasks (free — `/compact` is itself a large request); expensive model to plan, cheaper for the parallel legwork; lower `/effort` on simple work, since thinking tokens bill as output. Then set hard stops before bed — an iteration cap, `--max-budget-usd`, and a turn limit inside the prompt.
 
 <Callout type="danger" title="The billing trap">
-An `ANTHROPIC_API_KEY` sitting in your exported environment silently switches you from your subscription to per-token billing. Check before a long unattended run, not after.
+An `ANTHROPIC_API_KEY` in your exported environment switches you from your subscription to per-token billing — Claude Code skips the browser login and asks you to approve the key instead. Check before a long unattended run, not after.
 </Callout>
 
 ## What never goes into an unattended run
@@ -181,7 +181,7 @@ Anything touching **money**, **another team's repo**, **DNS or infrastructure**,
 </div>
 </Compare>
 
-Two incidents make it concrete. A founder declared a code freeze in chat; [the agent ran destructive commands anyway](https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/) against the live database, because it held production credentials and a sentence in a chat window is not a permission system. At Amazon, [an agent fixing an issue](https://incidentdatabase.ai/cite/1442/) deleted and recreated part of a working environment and took a service down for around thirteen hours, having inherited a human's broad permissions.
+Two incidents make it concrete. A founder declared a code freeze in chat; [the agent ran destructive commands anyway](https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/) against the live database, because it held production credentials and a sentence in a chat window is not a permission system. At Amazon, engineers let an agent fix an issue and [it deleted and recreated part of a working environment](https://incidentdatabase.ai/cite/1442/); Cost Explorer went down in one region for around thirteen hours. That version comes from the Financial Times, and Amazon blames misconfigured access controls rather than AI — but both accounts agree on the mechanism. The agent inherited a human's broad permissions.
 
 Two traps specific to unattended runs. [`claude -p` without `--bare`](https://code.claude.com/docs/en/headless) runs that repository's hooks and `.mcp.json` servers **with no trust dialog** — never aim a headless run at a repo you have not read. And whatever `aws`, `gcloud` or `vercel` CLI is logged in on your laptop is what the agent inherits.
 
@@ -247,7 +247,7 @@ Run the pre-flight list out loud against a real repo on the projector and let th
 
 ## From vibe coder to agentic engineer
 
-On the first anniversary of [the tweet that started this](https://x.com/karpathy/status/2019137879310836075), its author proposed a new name for what the work had become: agentic engineering. The job moved. You are not typing the code, and you are not ignoring it either. You write the spec, choose the fence, build the gate, read the diff, and decide what a machine may do while you sleep. Those decisions do not get automated away, because each is about consequences in the world — the part the agent cannot see.
+Act I gave this work its professional name: agentic engineering — a term used by Karpathy and Willison, among others. Willison's [definition](https://simonwillison.net/guides/agentic-engineering-patterns/what-is-agentic-engineering/) is the plain one: building software with coding agents that can write and run code, as opposed to the unreviewed prototype output he reserves the words "vibe coding" for. The job moved. You are not typing the code, and you are not ignoring it either. You write the spec, choose the fence, build the gate, read the diff, and decide what a machine may do while you sleep. Those decisions do not get automated away, because each is about consequences in the world — the part the agent cannot see.
 
 What to build next:
 
@@ -261,7 +261,7 @@ Further reading: Simon Willison's [Agentic Engineering Patterns](https://simonwi
 
 1. **Tonight, 30 minutes.** In your QAIRU Event Sign-up repo, write `.claude/settings.json` with the deny rules above and `defaultMode` set to plan, then write `verify.sh` with the four checks. Run it and fix what it catches.
 2. **This week, one evening.** Write `SPEC.md`, `TODO.json`, `PROGRESS.md` and `BLOCKERS.md`, paste the master prompt into `PROMPT.md`, set an iteration cap, and do one supervised two-hour run on a branch while you are in the room. Read every commit before you merge.
-3. **Before the week ends, publish.** Deploy it, then post the URL and your `PROGRESS.md` in the QairuHub Telegram at [t.me/qairuhub](https://t.me/qairuhub). Someone there will break it for you — the fastest free code review in the country. Then pick your next project at [qairuhub.com](https://qairuhub.com).
+3. **Before the week ends, publish.** Deploy it, then post the URL and your `PROGRESS.md` in the QairuHub Telegram at [t.me/qairuhub](https://t.me/qairuhub). Someone there will find a bug you missed, which is the entire reason to post it. Then pick your next project at [qairuhub.com](https://qairuhub.com).
 
 You finished the course. You can take an idea, spec it, fence an agent, make it prove its work, ship it to a real URL, and leave it running overnight without flinching. Almost nobody around you can do that yet. Go use the head start.
 

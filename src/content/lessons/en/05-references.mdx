@@ -50,7 +50,7 @@ Paste one success response and one error response, trimmed to a dozen lines each
 Data samples work the same way. Twenty rows of the real shape, not a thousand — and put the ugly ones in on purpose. Kazakh names and words run long, and a fixed-width layout truncates them; nobody notices until a real person signs up. One very long name, one empty phone field, one address outside the Latin alphabet. The agent handles what it can see.
 
 <Callout type="danger" title="Never paste a real secret or a real person">
-Sample responses are where tokens leak. Replace every key, cookie, phone number and email before the text goes near a prompt. What you paste now lives in a transcript, a log, and possibly a repo.
+Sample responses are where credentials leak. Replace every key, cookie, phone number and email before the text goes near a prompt. What you paste now lives in a transcript, a log, and possibly a repo.
 </Callout>
 
 ## Do not paste the documentation site
@@ -73,7 +73,7 @@ Reference the page, not the site. If you cannot name the specific page, you do n
 <StatRow>
   <Stat value="53%" label="pass rate with no docs index" source="Vercel eval, Jan 2026" href="https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals" tone="warn" />
   <Stat value="100%" label="with an 8 KB curated index" source="Vercel eval, Jan 2026" href="https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals" tone="good" />
-  <Stat value=">20%" label="extra inference cost from context files" source="ETH Zurich / LogicStar, Feb 2026" href="https://arxiv.org/abs/2602.11988" tone="warn" />
+  <Stat value="20%+" label="extra inference cost from context files" source="ETH Zurich / LogicStar, Feb 2026" href="https://arxiv.org/abs/2602.11988" tone="warn" />
 </StatRow>
 
 <Deeper title="Two studies that look contradictory, and the rule that resolves them">

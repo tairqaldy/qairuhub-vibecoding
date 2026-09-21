@@ -60,7 +60,7 @@ export const acts: Act[] = [
 
 export const modules: Module[] = [
   {
-    slug: 'the-tweet', order: 0, act: 'why', minutes: 8, xp: 50, widget: 'timeline',
+    slug: 'the-tweet', order: 0, act: 'why', minutes: 8, xp: 50, widget: 'none',
     title: { en: 'The Tweet That Named a Movement', kk: 'Қозғалысқа ат берген твит' },
     blurb: { en: 'What vibe coding is, what it is not, and how one throwaway post became Word of the Year.', kk: 'Vibe coding деген не, не емес және бір кездейсоқ жазба қалай «Жыл сөзіне» айналды.' },
   },
@@ -75,7 +75,7 @@ export const modules: Module[] = [
     blurb: { en: 'Tokens, context windows, hallucinations, agents and MCP without the jargon.', kk: 'Token, контекст терезесі, галлюцинация, agent және MCP — терминсіз түсіндірме.' },
   },
   {
-    slug: 'problem-solving-mindset', order: 3, act: 'why', minutes: 8, xp: 50, widget: 'spec-breaker',
+    slug: 'problem-solving-mindset', order: 3, act: 'why', minutes: 8, xp: 50, widget: 'none',
     title: { en: 'The Problem-Solving Mindset', kk: 'Мәселе шешу ойлауы' },
     blurb: { en: 'Understand, plan, do, review. The agent types; you still think.', kk: 'Түсін, жоспарла, орында, тексер. Кодты agent жазады, ойлайтын — сен.' },
   },
@@ -85,7 +85,7 @@ export const modules: Module[] = [
     blurb: { en: 'Turn a vague idea into a one-page PRD an agent can actually build from.', kk: 'Бұлыңғыр идеяны agent шынымен құра алатын бір беттік PRD-ге айналдыр.' },
   },
   {
-    slug: 'references', order: 5, act: 'how', cycleStep: 2, minutes: 7, xp: 40, widget: 'reference-board',
+    slug: 'references', order: 5, act: 'how', cycleStep: 2, minutes: 7, xp: 40, widget: 'none',
     title: { en: 'References', kk: 'Үлгілер мен дереккөздер' },
     blurb: { en: 'Screenshots, examples and API samples: show the agent what good looks like.', kk: 'Скриншот, мысал, API үлгілері: agent-ке «жақсы» қандай болатынын көрсет.' },
   },
@@ -110,7 +110,7 @@ export const modules: Module[] = [
     blurb: { en: 'Commits are save points. Learn to undo anything an agent does.', kk: 'Commit — сақтау нүктесі. Agent жасаған кез келген нәрсені кері қайтаруды үйрен.' },
   },
   {
-    slug: 'test-and-quality', order: 10, act: 'how', cycleStep: 7, minutes: 9, xp: 60, widget: 'test-sorter',
+    slug: 'test-and-quality', order: 10, act: 'how', cycleStep: 7, minutes: 9, xp: 60, widget: 'none',
     title: { en: 'Test & Quality', kk: 'Тестілеу және сапа' },
     blurb: { en: 'Plausible is not correct. Make the agent prove its work.', kk: 'Шынайы көріну — дұрыс деген сөз емес. Agent жұмысын дәлелдесін.' },
   },
@@ -125,7 +125,7 @@ export const modules: Module[] = [
     blurb: { en: 'From localhost to a real URL with a domain, SSL and zero dollars.', kk: 'Localhost-тан домені, SSL-і бар нақты URL-ге — нөл теңгеге.' },
   },
   {
-    slug: 'logs-and-feedback', order: 13, act: 'how', cycleStep: 9, minutes: 8, xp: 50, widget: 'log-detective',
+    slug: 'logs-and-feedback', order: 13, act: 'how', cycleStep: 9, minutes: 8, xp: 50, widget: 'none',
     title: { en: 'Logs & Feedback', kk: 'Логтар және кері байланыс' },
     blurb: { en: 'Read what production tells you and feed it into the next loop.', kk: 'Production не айтып тұрғанын оқып, оны келесі циклге енгіз.' },
   },
@@ -135,7 +135,7 @@ export const modules: Module[] = [
     blurb: { en: 'Orchestrators, subagents, worktrees and when one agent is still the right answer.', kk: 'Orchestrator, subagent, worktree және қай кезде бір agent жеткілікті.' },
   },
   {
-    slug: 'overnight-builds', order: 15, act: 'scale', minutes: 10, xp: 100, widget: 'master-prompt-builder',
+    slug: 'overnight-builds', order: 15, act: 'scale', minutes: 10, xp: 100, widget: 'none',
     title: { en: 'Autonomous Builds & What Comes Next', kk: 'Автономды құрастыру және әрі қарай не болады' },
     blurb: { en: 'This site was built overnight by agents. Here is exactly how, and where you go from here.', kk: 'Бұл сайтты agent-тер бір түнде құрастырды. Дәл қалай жасалғаны және сенің келесі қадамың.' },
   },
