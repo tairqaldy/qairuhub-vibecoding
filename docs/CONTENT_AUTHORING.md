@@ -76,6 +76,15 @@ All of these are available with no import. Do not import anything at the top of 
   plausible; explain teaches rather than scolds.
 - `<Checklist id="sec-preship" title="Before you ship" items={['…','…']} xp={15} />`
 - `<Figure caption="…">` wrapping inline `<svg>` — only if you can write clean, correct SVG.
+- `<Chart title="…" source="Veracode, Jul 2025" unit="%" bars={[{ label: '…', value: 45, tone: 'signal|good|bad|warn|quiet', note: '…' }]} />`
+  — the figures you already cited in the prose, as bars. **Every value must appear in the
+  surrounding text with its source**; a chart is a second view of a fact, never a new one.
+  `unit=""` for plain counts. `max` overrides the scale when bars should not fill the row.
+- `<Meme art="ship|fire|loop|wall" topLabel="What you picture" top="…" bottomLabel="What happens" bottom="…" />`
+  — the two-panel expectation-versus-reality card. The art is drawn in the component, so
+  **never** point it at a borrowed image. `art` must be identical in the English and Kazakh
+  copies; only the four strings are translated. Use it to land a point the reader already
+  half-suspects, not to fill space — at most one or two per lesson.
 
 ### Hands-on
 
