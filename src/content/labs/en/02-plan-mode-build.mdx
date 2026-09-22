@@ -2,7 +2,7 @@
 title: "Plan Mode: Build a Real Page"
 subtitle: Twenty-five minutes from an empty folder to a sign-up page you can defend line by line.
 objective: run explore → plan → code → commit end to end, and change the plan before a single file is written
-description: Build the QAIRU Event Sign-up landing page in Claude Code plan mode. Read the plan, edit it with Ctrl+G, approve it, watch the diffs, run it, commit it.
+description: Build the QAIRU Event Sign-up page in Claude Code plan mode. Read the plan, edit it with Ctrl+G, approve it, read the diffs, run it, commit it.
 prerequisites:
   - Claude Code installed and logged in (Lab 01)
   - git working in your terminal (Lab 00)
@@ -13,14 +13,14 @@ doneWhen: git log --oneline shows your commit, the page opens in a browser, and 
 ---
 
 <Lead>
-In the next twenty-five minutes you go from an empty folder to a working sign-up page. The most valuable thing you do will not be typing. It will be *reading a plan* — and changing one line of it before a single file exists.
+In twenty-five minutes you go from an empty folder to a working sign-up page. The most valuable thing you do is not typing. It is *reading a plan*, and changing one line of it before a single file exists.
 </Lead>
 
-Anthropic's guide gives the order in four words: explore, plan, implement, commit — plan mode does the first two ([best practices](https://code.claude.com/docs/en/best-practices)). The reason is arithmetic: one bad line of research becomes many bad lines of plan, and one bad line of plan becomes hundreds of bad lines of code. Hence HumanLayer's rule — review the research and the plan, not only the diff ([advanced context engineering](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents/blob/main/ace-fca.md)).
+Anthropic's guide gives the order in four words: explore, plan, implement, commit. Plan mode does the first two ([best practices](https://code.claude.com/docs/en/best-practices)). One bad line of plan becomes hundreds of bad lines of code, so review the plan, not only the diff ([advanced context engineering](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents/blob/main/ace-fca.md)).
 
-A plan is short enough to read end to end. Its diff is long enough that you will skim it. Read the cheap one.
+A plan is short enough to read end to end. Its diff is not. Read the cheap one.
 
-You are building the first real version of **QAIRU Event Sign-up**: one page, one event, a form that reserves a seat, a counter that runs down. One file, no framework, no build step.
+You build the first real version of **QAIRU Event Sign-up**: one page, one event, a form that reserves a seat, a counter that runs down. One file, no framework, no build step.
 
 ## Nine steps from an empty folder to a commit
 
@@ -37,7 +37,7 @@ git init
 
 Expected: `Initialized empty Git repository` and a path ending in `qairu-event/.git/`. On Windows PowerShell chain the three with `;`, not `&&` — `&&` there prints `The token '&&' is not a valid statement separator`.
 
-Do not skip `git init`. Claude Code snapshots files before its own edit tools touch them, but checkpoints do not track changes made by Bash commands, most subagent edits, or files you change in another window ([checkpointing](https://code.claude.com/docs/en/checkpointing)). Checkpoints are local undo. Git is permanent undo.
+Do not skip `git init`. Claude Code checkpoints its own edits, but not Bash commands, most subagent edits, or files you change in another window ([checkpointing](https://code.claude.com/docs/en/checkpointing)). Checkpoints are local undo. Git is permanent ([module 09](/en/learn/git-and-github/)).
 </Step>
 
 <Step title="Start in plan mode, and prove you are in it">
@@ -47,13 +47,13 @@ claude --permission-mode plan
 ```
 </Terminal>
 
-The first run in a new folder shows a workspace-trust dialog; accept it. Then read the status bar under the input box. It must say `plan mode on`.
+The first run in a new folder asks you to trust the workspace; accept. Then read the status bar under the input box. It must say `plan mode on`.
 
-Already in a session? Press `Shift+Tab` until it does. The count varies: on Pro, Max and Team plans a terminal session now starts in **auto** mode, so the first press goes to Manual, then accept edits, then plan — three presses. A session that started in Manual needs two presses ([which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in)). On some Windows setups the shortcut is `Alt+M`.
+Already in a session? Press `Shift+Tab` until it does. On Pro, Max and Team plans a terminal session starts in **auto** mode: Manual, accept edits, plan — three presses. A session that started in Manual needs two ([which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in)). On some Windows setups the shortcut is `Alt+M`.
 </Step>
 
 <Step title="Hand it the whole job in one prompt">
-Paste this exactly. Swap in your own event details, or leave them.
+Paste this exactly. Swap in your own event details or leave them.
 
 <Prompt title="Build prompt" where="Claude Code · plan mode">
 ```text
@@ -80,13 +80,13 @@ before you change anything else.
 ```
 </Prompt>
 
-It reads the folder, runs a read-only command or two, and comes back with findings and a numbered plan. It will not create `index.html`: in plan mode source edits are blocked until you approve ([plan mode](https://code.claude.com/docs/en/permission-modes#analyze-before-you-edit-with-plan-mode)). While it works, `Ctrl+T` toggles its to-do checklist and `Ctrl+O` opens the transcript viewer.
+It reads the folder, runs a read-only command or two, and comes back with findings and a numbered plan. No `index.html` yet: plan mode blocks source edits until you approve ([plan mode](https://code.claude.com/docs/en/permission-modes#analyze-before-you-edit-with-plan-mode)). While it works, `Ctrl+T` toggles its to-do list and `Ctrl+O` opens the transcript.
 </Step>
 
-<Step title="Read the plan like it is the only thing you will read today">
+<Step title="Read the plan like it is the only thing you read today">
 Three questions.
 
-1. **Does every step name a check I can run?** "Implement the reservation form", with no way to tell whether it worked, is a wish rather than a step. Giving the agent a check it can run itself is the habit that pays most in this course ([best practices](https://code.claude.com/docs/en/best-practices)).
+1. **Does every step name a check I can run?** "Implement the reservation form" is a wish, not a step: nothing there tells you whether it worked ([best practices](https://code.claude.com/docs/en/best-practices)).
 2. **Does it say what it will not touch?** An agent with no stated boundary reorganises things you never asked about.
 3. **Is there a step I could not explain to the person next to me?** That is the one that hurts later.
 
@@ -103,13 +103,13 @@ Press `Ctrl+G`. The proposed plan opens in your text editor. Add this, save, clo
 ```
 </Prompt>
 
-That constraint is the one thing this project has that a generic sign-up form does not, and the agent will not invent it for you. The plan you approve is now partly yours — which is the difference between supervising a build and watching one.
+The agent will not invent that constraint for you. Now the plan is partly yours — the difference between supervising a build and watching one.
 </Step>
 
 <Step title="Approve it the slow way">
 Claude offers three answers: use auto mode, approve edits manually, or keep planning. Where auto mode is unavailable the first reads "Yes, auto-accept edits".
 
-Pick **"Yes, manually approve edits"**. Read **one** diff end to end — the JavaScript that handles the form submit, because that is where the rules you wrote either exist or do not. Approve the rest at whatever speed you like. Simon Willison's main anti-pattern for agent work is this same rule one size up: never open a pull request with code you have not reviewed yourself ([anti-patterns](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/)).
+Pick **"Yes, manually approve edits"**. Read **one** diff end to end: the JavaScript that handles the form submit, where the rules you wrote either exist or do not. Approve the rest at any speed. Simon Willison's main anti-pattern is the same rule one size up: never open a pull request with code you have not read ([anti-patterns](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/)).
 
 Expected: `PLAN.md` written first, then `index.html`, and nothing else in the folder.
 </Step>
@@ -123,9 +123,9 @@ npx -y serve
 ```
 </Terminal>
 
-It prints a local address such as `http://localhost:3000`. Read the port off your own screen — the terminal always tells you which door it opened. Open it and try to break the page, in this order: reserve a seat (counter drops, name appears at the top), reload (the name is still there), submit an empty form (a visible message, not silence), press KK / EN (every visible string changes).
+It prints a local address such as `http://localhost:3000`. Read the port off your own screen. Open it and try to break the page, in this order: reserve a seat (counter drops, name appears at the top), reload (the name is still there), submit an empty form (a visible message, not silence), press KK / EN (every visible string changes).
 
-Offline, or `npx` hangs? Open `index.html` straight from your file manager — fine today, but get used to `http://`, because that is how the page runs once it leaves your laptop.
+Offline, or `npx` hangs? Open `index.html` from your file manager. Fine today, but get used to `http://` — that is how the page runs once it leaves your laptop.
 </Step>
 
 <Step title="Find the one thing that does not work, and say it precisely">
@@ -160,30 +160,30 @@ Then show me git log --oneline and git status.
 ```
 </Prompt>
 
-Expected: one commit, one line, something like `feat(signup): event landing page with seat counter`, and a clean `git status`. Anthropic's harness work says it plainly: commit after every unit of progress with a descriptive message, so a later session — or you tomorrow — can return to a state that worked ([harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)).
+Expected: one commit, one line, something like `feat(signup): event landing page with seat counter`, and a clean `git status`. Commit after every unit of progress, so a later session — or you tomorrow — can return to a state that worked ([harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)).
 </Step>
 
 </Steps>
 
 ## Four ways this goes wrong, and the move for each
 
-- **It explores forever.** Unscoped investigation reads hundreds of files and fills the window — the guide's name for it is "infinite exploration". Scope it to named files, or hand it to a subagent.
+- **It explores forever.** Unscoped investigation reads hundreds of files and fills the context window — the guide calls it "infinite exploration". Scope it to named files, or hand it to a subagent.
 - **You have corrected the same thing twice.** Stop: the context is now mostly failed attempts. `/clear` and write a better first prompt ([best practices](https://code.claude.com/docs/en/best-practices)).
-- **It says done and it is not.** The guide calls this the trust-then-verify gap. Ask for evidence, not assertions — the command it ran and the output it got.
+- **It says done and it is not.** Ask for evidence, not assertions: the command it ran and the output it got.
 - **It is quietly cheating.** Kent Beck's warning signs: it loops, it adds functionality nobody asked for, or it disables and deletes tests to get green ([augmented coding](https://newsletter.kentbeck.com/p/augmented-coding-beyond-the-vibes)).
 
-Want the last ten minutes back? `Esc` `Esc` on an empty input opens the rewind menu: restore code, conversation, or both. It will not undo what a Bash command did. That is what your commit is for.
+Want the last ten minutes back? `Esc` `Esc` on an empty input opens the rewind menu ([lab 04](/en/labs/undo-anything/)). It will not undo what a Bash command did. That is what your commit is for.
 
 <Callout type="warn" title="What you built is not a sign-up system yet">
-The reservations live in the visitor's own browser. Nobody else can see them and clearing site data erases them. Treat this as a page, not a service: no real event on it yet, and no asking anyone for a real email address until it has somewhere safe to put one.
+The reservations live in the visitor's own browser. Nobody else sees them, and clearing site data erases them. This is a page, not a service. Put no real event on it, and ask nobody for a real email address until it has somewhere safe to put one.
 </Callout>
 
 <Deeper title="When to skip the plan entirely">
-Plan mode is not free — exploration and the plan both spend context. The rule from the docs: if you could describe the resulting change in one sentence, skip the plan and ask. A typo, a log line, a rename. Planning pays when the approach is uncertain, the change spans files, or the code is unfamiliar ([best practices](https://code.claude.com/docs/en/best-practices)).
+Exploration and the plan both spend context. The rule from the docs: if you can describe the change in one sentence, skip the plan and ask. A typo, a log line, a rename. Planning pays when the approach is uncertain, the change spans files, or the code is unfamiliar ([best practices](https://code.claude.com/docs/en/best-practices)).
 </Deeper>
 
 <Deeper title="Making plan mode the default for a project">
-For a repo where you always want a plan first, put `{"permissions": {"defaultMode": "plan"}}` in its `.claude/settings.json`; every session there starts in plan mode, and `Shift+Tab` still leaves without approving anything ([permission modes](https://code.claude.com/docs/en/permission-modes)).
+Want a plan first every time in a repo? Put `{"permissions": {"defaultMode": "plan"}}` in its `.claude/settings.json`. Every session there starts in plan mode, and `Shift+Tab` still leaves without approving anything ([permission modes](https://code.claude.com/docs/en/permission-modes)).
 </Deeper>
 
 <Quiz
@@ -196,7 +196,7 @@ For a repo where you always want a plan first, put `{"permissions": {"defaultMod
     'It fails to specify which framework to use',
   ]}
   answer={2}
-  explain="A step you cannot verify is a step the agent grades itself on, and an agent stops when the work looks done. That is why giving Claude a runnable check comes first in Anthropic's guide. Send it back: rewrite step 4 with what I click and what I should see."
+  explain="A step you cannot verify is a step the agent grades itself on, and an agent stops when the work looks done. Send it back: rewrite step 4 with what I click and what I should see."
   xp={10}
 />
 
@@ -216,11 +216,11 @@ For a repo where you always want a plan first, put `{"permissions": {"defaultMod
 />
 
 <Callout type="live" title="If you are running this lab in a room">
-Do steps 1 to 4 on the projector and stop at the plan. Read it aloud, then ask the room for one thing it is missing before you press `Ctrl+G` — someone always finds the bilingual strings, the empty-list state, or the double submit. Take their line, type it into the plan in front of them, and let them watch it reach the code five minutes later.
+Do steps 1 to 4 on the projector and stop at the plan. Read it aloud, then ask the room what it is missing before you press `Ctrl+G`. Someone always finds the bilingual strings, the empty-list state, or the double submit. Type their line into the plan in front of them. Five minutes later they watch it reach the code.
 
 Budget: 4 minutes setup, 6 plan and edit, 8 build and approvals, 4 browser, 3 fix and commit.
 </Callout>
 
 <Artifact title="The explore → plan → code → commit loop" kind="checklist">
-Nine moves, three questions to ask any plan, and four failures with their fixes — the loop you run for every feature from here on.
+Nine moves, three questions to ask any plan, four failures and their fixes — the loop you run for every feature from here on.
 </Artifact>

@@ -1,114 +1,66 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import CycleDiagram from '@/components/CycleDiagram.astro';
 import type { Lang } from '@/data/curriculum';
-import { acts, labs, modules } from '@/data/curriculum';
-import { href, useT } from '@/i18n/ui';
+import { labs, modules } from '@/data/curriculum';
+import { href } from '@/i18n/ui';
 
 export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
 
 const { lang } = Astro.params as { lang: Lang };
-const t = useT(lang);
 
 const c = {
   en: {
-    kicker: 'Free · English & Kazakh · A QairuHub project',
+    kicker: 'Free · English & Kazakh · QairuHub',
     h1a: 'Everything about',
     h1b: 'vibecoding',
     h1c: 'in one place',
-    lead: 'The tools, the models, the workflow and the failures — taught hands-on, in English and Kazakh, by people building from Kazakhstan.',
+    lead: 'The tools, the models, the workflow and the failures. Taught hands-on, in English and Kazakh.',
     start: 'Try it in 10 minutes',
-    learnCta: 'Or start the full path',
-    stat1: 'modules',
-    stat2: 'hands-on labs',
-    stat3: 'tools compared',
-    stat4: 'interactive drills',
+    learnCta: 'Start the course',
 
-    tryK: 'Start here',
     tryH: 'You cannot read your way to this',
-    tryP: 'Everything on this site is downstream of one thing: opening a terminal and asking an agent to build something. People spend weeks reading about AI coding and learn less than they would in one honest hour of trying it and watching it fail.',
-    tryP2: 'So start there. Ten minutes, no card, no experience. Then come back and the rest of this will actually mean something.',
-    tryBtn: 'Your first 10 minutes →',
+    tryP: 'Ten minutes with a real agent teaches you more than a week of articles. No card, no experience needed.',
+    tryBtn: 'Your first 10 minutes',
 
-    coversK: 'What is inside',
-    coversH: 'Four things, not one course',
-    covers: [
-      { n: '01', t: 'The path', d: '16 modules from what vibe coding actually means to running several agents at once. Story, evidence, and a drill in every one.', to: 'learn', cta: 'Start the path' },
-      { n: '02', t: 'The labs', d: 'Nine guided sessions on your own machine. Exact commands, exact prompts, and a check so you know it worked.', to: 'labs', cta: 'Open the labs' },
-      { n: '03', t: 'The tools and models', d: 'Every serious AI coding environment and model side by side, with free tiers, real weaknesses and what to pick first.', to: 'tools', cta: 'Compare them' },
-      { n: '04', t: 'The library', d: 'The documentation, research, incidents and people worth your time, sorted by what you are trying to do.', to: 'materials', cta: 'Browse materials' },
+    insideK: 'Four things',
+    inside: [
+      { t: 'The course', d: `${modules.length} modules, from what vibe coding means to running several agents at once.`, to: 'learn', meta: '~2h' },
+      { t: 'The labs', d: `${labs.length} guided sessions on your own machine. Exact commands, exact prompts.`, to: 'labs', meta: 'hands-on' },
+      { t: 'Tools & models', d: 'Every serious AI coding tool side by side. Free tiers and real weaknesses.', to: 'tools', meta: '32 tools' },
+      { t: 'The library', d: 'The docs, research and incidents worth your time, sorted by what you need.', to: 'materials', meta: '167 links' },
     ],
 
-    toolsK: 'Not one product',
-    toolsH: 'Claude Code is where we start. It is not where this ends.',
-    toolsP: 'The workflow matters more than the brand. We teach it in Claude Code because it shows you the most, then show you the same loop in Cursor, Codex, Gemini CLI and Copilot — including the options that cost nothing, which matters when a card does not always work from here.',
-    toolsBtn: 'See all the tools →',
-
-    cycleK: 'The workflow',
-    cycleH: 'One loop, nine steps',
-    cycleP: 'Idea, context, agent, code, repo, test, deploy, logs, back to idea. Act II walks it once, slowly, building a real sign-up app you finish by the end. It is one part of the course, not the whole of it.',
-
-    actsK: 'The path',
-    actsP: 'Three acts. Why it matters, how the work is actually done, and what happens when one agent becomes several.',
-
-    honestK: 'One promise',
     honestH: 'We tell you what does not work, too',
-    honestP: 'AI coding is genuinely useful and genuinely oversold. Both sides are in here with sources — including the controlled trial where experienced developers were 19% slower while believing they were 20% faster, and the production database an agent deleted during a code freeze. You will leave able to tell the difference.',
-
-    builtK: 'How this was made',
-    builtH: 'Agents built this site overnight',
-    builtP: 'The research, the writing, the Kazakh, the fact-checking, the deploy — done in one night by a team of AI agents directed by one person. The final module opens the whole run: the prompts, the guardrails, the parts that went wrong. The most honest way to teach this is to show you a real one.',
-    seeHow: 'Read the run →',
+    honestP: 'AI coding is useful and oversold. Both sides are here with sources: the trial where developers were 19% slower while feeling faster, and the production database an agent deleted during a code freeze.',
+    builtP: 'This site was built overnight by a team of AI agents directed by one person. The last module opens the whole run, including what went wrong.',
+    seeHow: 'Read how it was built',
   },
   kk: {
-    kicker: 'Тегін · Ағылшынша және қазақша · QairuHub жобасы',
+    kicker: 'Тегін · Ағылшынша және қазақша · QairuHub',
     h1a: 'Vibecoding туралы',
     h1b: 'бәрі',
     h1c: 'бір жерде',
-    lead: 'Құралдар, модельдер, жұмыс тәсілі және сәтсіздіктер — Қазақстаннан құрастырып жүргендердің тәжірибесімен, ағылшынша және қазақша.',
+    lead: 'Құралдар, модельдер, жұмыс тәсілі және сәтсіздіктер. Тәжірибе арқылы, ағылшынша және қазақша.',
     start: '10 минутта байқап көр',
-    learnCta: 'Немесе толық жолды баста',
-    stat1: 'модуль',
-    stat2: 'практика',
-    stat3: 'құрал салыстырылған',
-    stat4: 'интерактив жаттығу',
+    learnCta: 'Курсты бастау',
 
-    tryK: 'Осыдан баста',
     tryH: 'Мұны оқып үйрену мүмкін емес',
-    tryP: 'Бұл сайттағының бәрі бір нәрседен басталады: терминалды ашып, agent-ке бірдеңе құрастыруды тапсыру. Көп адам ЖИ-мен кодтау туралы апталап оқиды да, шын мәнінде бір сағат нақты байқап, қалай қателесетінін көргеннен азырақ үйренеді.',
-    tryP2: 'Сондықтан содан баста. Он минут, картасыз, тәжірибесіз. Содан кейін мұнда орал — қалғанының бәрі мағынаға ие болады.',
-    tryBtn: 'Алғашқы 10 минутың →',
+    tryP: 'Нағыз agent-пен өткізген он минут бір апта мақала оқығаннан көп үйретеді. Карта да, тәжірибе де керек емес.',
+    tryBtn: 'Алғашқы 10 минутың',
 
-    coversK: 'Ішінде не бар',
-    coversH: 'Бір курс емес, төрт бөлім',
-    covers: [
-      { n: '01', t: 'Жол', d: 'Vibe coding деген не екенінен бастап бірнеше agent-ті қатар басқаруға дейінгі 16 модуль. Әрқайсысында тарих, дәлел және жаттығу бар.', to: 'learn', cta: 'Жолды бастау' },
-      { n: '02', t: 'Практика', d: 'Өз компьютеріңде орындалатын тоғыз сабақ. Нақты командалар, нақты prompt-тар және нәтижені тексеру қадамы.', to: 'labs', cta: 'Практикаға өту' },
-      { n: '03', t: 'Құралдар мен модельдер', d: 'Барлық негізгі ЖИ орталары мен модельдер қатар қойылған: тегін мүмкіндіктері, шын кемшіліктері және неден бастау керегі.', to: 'tools', cta: 'Салыстыру' },
-      { n: '04', t: 'Кітапхана', d: 'Уақытыңа тұрарлық құжаттама, зерттеулер, оқиғалар мен адамдар — не істегің келетініне қарай сұрыпталған.', to: 'materials', cta: 'Материалдарды қарау' },
+    insideK: 'Төрт бөлім',
+    inside: [
+      { t: 'Курс', d: `Vibe coding деген не екенінен бірнеше agent-ті қатар басқаруға дейін — ${modules.length} модуль.`, to: 'learn', meta: '~2 сағ' },
+      { t: 'Практика', d: `Өз компьютеріңде орындайтын ${labs.length} сабақ. Нақты командалар, нақты prompt-тар.`, to: 'labs', meta: 'тәжірибе' },
+      { t: 'Құралдар мен модельдер', d: 'Барлық негізгі ЖИ құралы қатар. Тегін мүмкіндіктері мен шын кемшіліктері.', to: 'tools', meta: '32 құрал' },
+      { t: 'Кітапхана', d: 'Уақытыңа тұрарлық құжаттама, зерттеу және оқиғалар — керегіңе қарай сұрыпталған.', to: 'materials', meta: '167 сілтеме' },
     ],
 
-    toolsK: 'Бір өнім туралы емес',
-    toolsH: 'Claude Code — бастау нүктесі. Бірақ бәрі онымен бітпейді.',
-    toolsP: 'Бренд емес, жұмыс тәсілі маңызды. Біз оны Claude Code-та үйретеміз, өйткені ол ең көп нәрсені ашық көрсетеді. Содан соң дәл сол циклді Cursor, Codex, Gemini CLI және Copilot-та көрсетеміз — оның ішінде мүлде тегін нұсқалары да бар, ал бұл карта әрдайым жұмыс істей бермейтін жерде маңызды.',
-    toolsBtn: 'Барлық құралды көру →',
-
-    cycleK: 'Жұмыс тәсілі',
-    cycleH: 'Бір цикл, тоғыз қадам',
-    cycleP: 'Идея, контекст, agent, код, репозиторий, тест, deploy, логтар — және қайта идеяға. II бөлім осы циклді асықпай бір рет жүріп өтеді әрі соңында нақты тіркелу қолданбасын бітіресің. Бұл — курстың бір бөлігі, бәрі емес.',
-
-    actsK: 'Жол',
-    actsP: 'Үш бөлім. Неге маңызды, жұмыс шын мәнінде қалай істеледі және бір agent бірнешеуге айналғанда не болады.',
-
-    honestK: 'Бір уәде',
     honestH: 'Не жұмыс істемейтінін де айтамыз',
-    honestP: 'ЖИ-мен кодтау шынымен пайдалы әрі шынымен асыра дәріптелген. Мұнда екі жағы да дереккөзімен берілген — тәжірибелі әзірлеушілер өздерін 20%-ға жылдам сезініп, шын мәнінде 19%-ға баяу болған зерттеу де, agent «код мұздатылған» кезде өшіріп жіберген production дерекқоры да. Курстан кейін айырмашылықты өзің ажыратасың.',
-
-    builtK: 'Бұл қалай жасалды',
-    builtH: 'Бұл сайтты agent-тер бір түнде құрастырды',
-    builtP: 'Зерттеу, мәтін, қазақша нұсқа, фактілерді тексеру, deploy — бәрін бір адам басқарған ЖИ agent-тер командасы бір түнде жасады. Соңғы модуль сол жұмысты толық ашады: prompt-тар, шектеулер және қате кеткен тұстар. Мұны үйретудің ең адал жолы — нағыз мысалды көрсету.',
-    seeHow: 'Жұмысты оқу →',
+    honestP: 'ЖИ-мен кодтау пайдалы да, асыра дәріптелген де. Мұнда екі жағы да дереккөзімен: әзірлеушілер өздерін жылдам сезініп, шын мәнінде 19%-ға баяу болған зерттеу де, agent код мұздатылған кезде өшіріп жіберген production дерекқоры да.',
+    builtP: 'Бұл сайтты бір адам басқарған ЖИ agent-тер командасы бір түнде құрастырды. Соңғы модуль сол жұмысты толық ашады, қате кеткен тұстарымен бірге.',
+    seeHow: 'Қалай жасалғанын оқу',
   },
 }[lang];
 ---
@@ -116,196 +68,116 @@ const c = {
 <BaseLayout lang={lang}>
   <section class="hero">
     <div class="wrap">
-      <p class="kicker rise" style="--i:0">{c.kicker}</p>
+      <p class="kicker">{c.kicker}</p>
       <h1>
-        <span class="rise block" style="--i:1">{c.h1a}</span>
-        <span class="rise brand-xl block" style="--i:2">{c.h1b}</span>
-        <span class="rise block" style="--i:3">{c.h1c}</span>
+        <span class="block">{c.h1a}</span>
+        <span class="brand block">{c.h1b}</span>
+        <span class="block">{c.h1c}</span>
       </h1>
-      <p class="lead rise" style="--i:4">{c.lead}</p>
-      <div class="cta rise" style="--i:5">
+      <p class="lead">{c.lead}</p>
+      <div class="cta">
         <a class="btn btn-signal" href={href(lang, 'try')}>{c.start}</a>
-        <a class="btn" href={href(lang, 'learn/the-tweet')}>{c.learnCta} →</a>
+        <a class="btn" href={href(lang, 'learn')}>{c.learnCta} →</a>
       </div>
-      <dl class="stats rise" style="--i:6">
-        <div><dt>{modules.length}</dt><dd>{c.stat1}</dd></div>
-        <div><dt>{labs.length}</dt><dd>{c.stat2}</dd></div>
-        <div><dt>18+</dt><dd>{c.stat3}</dd></div>
-        <div><dt>13</dt><dd>{c.stat4}</dd></div>
-      </dl>
     </div>
   </section>
 
   <section class="wrap band" data-reveal>
-    <div class="try-card">
-      <div>
-        <p class="eyebrow"><b>01</b> {c.tryK}</p>
+    <a class="try" href={href(lang, 'try')}>
+      <div class="try-text">
         <h2>{c.tryH}</h2>
-        <p class="band-lead">{c.tryP}</p>
-        <p class="band-lead strong">{c.tryP2}</p>
-        <a class="btn btn-signal mt-6" href={href(lang, 'try')}>{c.tryBtn}</a>
+        <p>{c.tryP}</p>
+        <span class="try-go">{c.tryBtn} →</span>
       </div>
       <div class="try-term" aria-hidden="true">
-        <div class="term">
-          <div class="term-bar">
-            <span class="term-dots"><i></i><i></i><i></i></span><span>terminal</span>
-          </div>
-          <div class="term-body">
-            <div><span class="pr">$</span> npm install -g @anthropic-ai/claude-code</div>
-            <div><span class="pr">$</span> claude</div>
-            <div class="dim">&nbsp;</div>
-            <div><span class="pr">❯</span> build me a page that counts down to my birthday</div>
-            <div class="dim">● Write(index.html)</div>
-            <div class="ok">✓ done — open index.html</div>
-            <div class="caret dim">&nbsp;</div>
-          </div>
-        </div>
+        <code><span>$</span> npm install -g @anthropic-ai/claude-code</code>
+        <code><span>$</span> claude</code>
+        <code class="dim">❯ build me a page that counts down to my birthday</code>
+        <code class="ok">✓ done — open index.html</code>
       </div>
-    </div>
+    </a>
   </section>
 
   <section class="wrap band" data-reveal>
-    <p class="eyebrow"><b>02</b> {c.coversK}</p>
-    <h2>{c.coversH}</h2>
-    <div class="covers">
+    <p class="eyebrow">{c.insideK}</p>
+    <div class="inside">
       {
-        c.covers.map((x, i) => (
-          <a class="cover card card-hover" href={href(lang, x.to)} data-reveal style={`--i:${i}`}>
-            <span class="cover-n">{x.n}</span>
-            <span class="cover-t">{x.t}</span>
-            <span class="cover-d">{x.d}</span>
-            <span class="cover-cta">{x.cta} →</span>
+        c.inside.map((x, i) => (
+          <a class="card-i" href={href(lang, x.to)} data-reveal style={`--i:${i}`}>
+            <span class="i-meta">{x.meta}</span>
+            <span class="i-t">{x.t}</span>
+            <span class="i-d">{x.d}</span>
           </a>
         ))
       }
     </div>
   </section>
 
-  <section class="wrap band" data-reveal>
-    <div class="tools-band">
-      <p class="eyebrow"><b>03</b> {c.toolsK}</p>
-      <h2>{c.toolsH}</h2>
-      <p class="band-lead">{c.toolsP}</p>
-      <ul class="logos">
-        {
-          ['Claude Code', 'Cursor', 'Codex', 'Gemini CLI', 'Copilot', 'Windsurf', 'Cline', 'Aider', 'Kiro', 'Lovable', 'v0', 'Bolt'].map((n) => (
-            <li>{n}</li>
-          ))
-        }
-      </ul>
-      <a class="btn mt-6" href={href(lang, 'tools')}>{c.toolsBtn}</a>
-    </div>
-  </section>
-
-  <section class="wrap band" data-reveal>
-    <p class="eyebrow"><b>04</b> {c.cycleK}</p>
-    <h2>{c.cycleH}</h2>
-    <p class="band-lead">{c.cycleP}</p>
-    <div class="mt-10"><CycleDiagram lang={lang} /></div>
-  </section>
-
-  <section class="wrap band" data-reveal>
-    <p class="eyebrow"><b>05</b> {c.actsK}</p>
-    <p class="band-lead mb-8">{c.actsP}</p>
-    <div class="acts">
-      {
-        acts.map((act, i) => (
-          <article class="act-card" data-act={act.id} data-reveal style={`--i:${i}`}>
-            <span class="act-n">{act.n}</span>
-            <h3>{act.title[lang]}</h3>
-            <p class="act-tag">{act.tagline[lang]}</p>
-            <ol>
-              {modules
-                .filter((m) => m.act === act.id)
-                .map((m) => (
-                  <li>
-                    <a href={href(lang, `learn/${m.slug}`)}>
-                      <span class="mn">{String(m.order).padStart(2, '0')}</span>
-                      <span class="mt">{m.title[lang]}</span>
-                    </a>
-                  </li>
-                ))}
-            </ol>
-          </article>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="wrap band" data-reveal>
-    <div class="honest">
-      <p class="eyebrow"><b>06</b> {c.honestK}</p>
-      <h2>{c.honestH}</h2>
-      <p class="band-lead">{c.honestP}</p>
-    </div>
-  </section>
-
-  <section class="wrap band" data-reveal>
-    <div class="built">
-      <p class="eyebrow"><b>07</b> {c.builtK}</p>
-      <h2>{c.builtH}</h2>
-      <p class="band-lead">{c.builtP}</p>
-      <a class="btn btn-primary mt-6" href={href(lang, 'learn/overnight-builds')}>{c.seeHow}</a>
+  <section class="wrap band last" data-reveal>
+    <div class="notes">
+      <div class="note">
+        <h2>{c.honestH}</h2>
+        <p>{c.honestP}</p>
+      </div>
+      <div class="note">
+        <p class="built">{c.builtP}</p>
+        <a class="quiet" href={href(lang, 'learn/overnight-builds')}>{c.seeHow} →</a>
+      </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .hero { position: relative; padding: clamp(56px, 11vw, 124px) 0 clamp(40px, 7vw, 80px); }
-  .kicker { margin: 0 0 22px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
-  h1 { font-size: clamp(46px, 10.5vw, 112px); font-weight: 300; letter-spacing: -0.045em; line-height: 0.96; }
-  .brand-xl { font-family: var(--font-brand); font-weight: 400; font-size: 0.95em; line-height: 1.15; color: var(--color-signal-soft); letter-spacing: -0.01em; padding: 0.04em 0; text-shadow: 0 6px 50px rgb(43 127 255 / 0.5); }
-  .lead { max-width: 58ch; margin: 30px 0 0; font-size: clamp(17px, 2.1vw, 21px); line-height: 1.6; color: var(--color-muted); }
+  /* A calm landing: one hook, one invitation, four doors, two honest notes. */
+  .hero { padding: clamp(60px, 12vw, 132px) 0 clamp(20px, 4vw, 40px); }
+  .kicker { margin: 0 0 26px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-faint); }
+  h1 { font-size: clamp(42px, 9vw, 96px); font-weight: 300; letter-spacing: -0.045em; line-height: 1.0; }
+  .block { display: block; }
+  .brand { font-family: var(--font-brand); font-weight: 400; font-size: 0.92em; line-height: 1.15; color: var(--color-signal-soft); letter-spacing: -0.01em; padding: 0.04em 0; }
+  .lead { max-width: 52ch; margin: 30px 0 0; font-size: clamp(17px, 2vw, 20px); line-height: 1.6; color: var(--color-muted); }
   .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
-  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 12px; margin: 56px 0 0; padding-top: 28px; border-top: 1px solid var(--color-line); }
-  .stats dt { font: 300 clamp(34px, 5vw, 46px)/1 var(--font-display); letter-spacing: -0.04em; color: #fff; }
-  .stats dd { margin: 6px 0 0; font: 500 11px/1.3 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-faint); }
 
-  .band { padding: clamp(56px, 9vw, 104px) 0 0; }
-  .band h2 { margin-top: 16px; font-size: clamp(30px, 5vw, 52px); font-weight: 350; }
-  .band-lead { max-width: 62ch; margin: 22px 0 0; font-size: clamp(16.5px, 1.9vw, 19px); line-height: 1.65; color: var(--color-muted); }
-  .band-lead.strong { color: #fff; }
-  .mt-6 { margin-top: 24px; }
-  .mt-10 { margin-top: 40px; }
-  .mb-8 { margin-bottom: 32px; }
+  .band { padding: clamp(44px, 7vw, 78px) 0 0; }
+  .last { padding-bottom: 20px; }
+  .eyebrow { margin: 0 0 22px; }
 
-  .try-card { display: grid; gap: 32px; padding: 32px 26px; border-radius: 26px; border: 1px solid color-mix(in oklab, var(--color-signal) 40%, transparent); background: linear-gradient(135deg, rgb(43 127 255 / 0.14), transparent 62%); }
-  .try-card h2 { margin-top: 14px; }
-  .try-term .term-body { font-size: 12.5px; line-height: 1.85; }
-  .try-term .pr { color: var(--color-signal-soft); }
+  /* the one invitation */
+  .try { display: grid; gap: 26px; padding: 30px 26px; border-radius: 26px; text-decoration: none; color: inherit;
+         border: 1px solid rgb(43 127 255 / 0.32); background: linear-gradient(135deg, rgb(43 127 255 / 0.1), transparent 62%);
+         transition: border-color 0.3s, transform 0.5s var(--ease-out-expo); }
+  .try:hover { border-color: rgb(43 127 255 / 0.6); transform: translateY(-2px); }
+  .try h2 { font-size: clamp(25px, 3.6vw, 38px); font-weight: 350; }
+  .try p { margin: 14px 0 0; max-width: 46ch; font-size: 16.5px; line-height: 1.6; color: var(--color-muted); }
+  .try-go { display: inline-block; margin-top: 20px; font: 500 14px/1 var(--font-mono); color: var(--color-signal-soft); }
+  .try-term { display: grid; gap: 7px; align-content: center; padding: 18px; border-radius: 16px; background: #05060f; border: 1px solid var(--color-line); overflow: hidden; }
+  .try-term code { font: 400 12.5px/1.5 var(--font-mono); color: #dbe2f7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .try-term code span { color: var(--color-signal-soft); }
   .try-term .dim { color: var(--color-faint); }
   .try-term .ok { color: var(--color-ok); }
 
-  .covers { display: grid; gap: 14px; margin-top: 36px; }
-  .cover { display: grid; gap: 10px; padding: 24px 22px; text-decoration: none; color: inherit; align-content: start; }
-  .cover-n { font: 500 11px/1 var(--font-mono); letter-spacing: 0.14em; color: var(--color-signal-soft); }
-  .cover-t { font: 400 24px/1.15 var(--font-display); letter-spacing: -0.02em; color: #fff; }
-  .cover-d { font-size: 15px; line-height: 1.55; color: var(--color-muted); }
-  .cover-cta { margin-top: 4px; font: 500 13px/1 var(--font-mono); color: var(--color-signal-soft); }
+  /* four doors */
+  .inside { display: grid; gap: 12px; }
+  .card-i { display: grid; gap: 8px; align-content: start; padding: 24px 22px; border-radius: 20px;
+            border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.028); text-decoration: none; color: inherit;
+            transition: border-color 0.25s, background 0.25s, transform 0.45s var(--ease-out-expo); }
+  .card-i:hover { border-color: rgb(43 127 255 / 0.45); background: rgb(255 255 255 / 0.055); transform: translateY(-2px); }
+  .i-meta { font: 400 11px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-faint); }
+  .i-t { font: 400 23px/1.2 var(--font-display); letter-spacing: -0.02em; color: #fff; }
+  .i-d { font-size: 15px; line-height: 1.55; color: var(--color-muted); }
 
-  .tools-band { padding: 34px 28px; border-radius: 26px; border: 1px solid var(--color-line-strong); background: var(--color-fill); }
-  .logos { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; margin: 28px 0 0; padding: 0; }
-  .logos li { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.04); font: 500 13px/1 var(--font-mono); color: var(--color-muted); }
+  /* two quiet notes */
+  .notes { display: grid; gap: 14px; }
+  .note { padding: 26px 24px; border-radius: 22px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.022); }
+  .note h2 { font-size: clamp(21px, 2.8vw, 27px); font-weight: 400; }
+  .note p { margin: 14px 0 0; font-size: 15.5px; line-height: 1.65; color: var(--color-muted); }
+  .note .built { margin: 0; }
+  .quiet { display: inline-block; margin-top: 16px; font: 500 13px/1 var(--font-mono); color: var(--color-signal-soft); text-decoration: none; }
+  .quiet:hover { text-decoration: underline; }
 
-  .acts { display: grid; gap: 16px; margin-top: 28px; }
-  .act-card { padding: 26px 24px; border-radius: 22px; border: 1px solid var(--color-line); background: linear-gradient(180deg, color-mix(in oklab, var(--act) 9%, transparent), rgb(255 255 255 / 0.02)); }
-  .act-n { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: color-mix(in oklab, var(--act) 20%, transparent); color: var(--act); font: 500 13px/1 var(--font-mono); }
-  .act-card h3 { margin-top: 16px; font-size: clamp(26px, 3.4vw, 32px); font-weight: 350; }
-  .act-tag { margin: 8px 0 20px; font-size: 15px; color: var(--color-muted); }
-  .act-card ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-  .act-card a { display: flex; gap: 10px; align-items: baseline; padding: 8px 10px; margin-left: -10px; border-radius: 10px; text-decoration: none; transition: background 0.2s; }
-  .act-card a:hover { background: rgb(255 255 255 / 0.07); }
-  .mn { font: 500 11px/1 var(--font-mono); color: var(--act); flex: none; }
-  .mt { font-size: 15.5px; color: rgb(255 255 255 / 0.9); }
-
-  .honest, .built { padding: 34px 28px; border-radius: 26px; border: 1px solid var(--color-line-strong); background: linear-gradient(135deg, rgb(255 120 210 / 0.08), transparent 60%); }
-  .built { background: linear-gradient(135deg, rgb(43 127 255 / 0.12), transparent 60%); }
-
-  @media (min-width: 560px) { .stats { grid-template-columns: repeat(4, 1fr); } }
   @media (min-width: 820px) {
-    .try-card { grid-template-columns: 1.05fr 0.95fr; align-items: center; padding: 44px 40px; }
-    .covers { grid-template-columns: repeat(2, 1fr); }
-    .honest, .built, .tools-band { padding: 48px 44px; }
+    .try { grid-template-columns: 1.1fr 0.9fr; align-items: center; padding: 42px 38px; }
+    .inside { grid-template-columns: repeat(2, 1fr); }
+    .notes { grid-template-columns: 1fr 1fr; }
   }
-  @media (min-width: 1040px) { .acts { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1100px) { .inside { grid-template-columns: repeat(4, 1fr); } }
 </style>

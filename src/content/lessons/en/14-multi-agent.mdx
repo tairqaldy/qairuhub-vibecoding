@@ -7,14 +7,14 @@ artifact: Fan-out decision card + orchestrator prompt
 ---
 
 <Lead>
-Anthropic's research system runs a lead agent that fans out to subagents, and on their own internal eval it beats a single agent by a wide margin. It also spends roughly fifteen times the tokens of a chat. Both numbers are the lesson: multi-agent is not *free speed*, it is a trade.
+Anthropic's research system runs a lead agent that fans out to subagents. It beats a single agent by a wide margin on their internal eval, and spends roughly fifteen times the tokens of a chat. Multi-agent is not *free speed*. It is a trade.
 </Lead>
 
-Everything you have built so far took one agent, one session, one terminal. That is still the right shape for most work, and the fastest way to waste a weekend is to summon a fleet of agents for a job one of them could finish. This module is about the exceptions: what they look like, what they cost, and how to run one tonight.
+Everything so far took one agent, one session, one terminal. That is still right for most work. This module is about the exceptions.
 
 ## Start by assuming you do not need this
 
-Anthropic's January 2026 guidance on multi-agent systems puts the order of operations first: exhaust what a single agent can do before you add a second one. A sharper prompt, a `/clear`, a plan you actually read — those cost nothing. A second agent typically costs [three to ten times the tokens](https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them) of one agent doing the same task.
+Anthropic's January 2026 guidance puts the order first: exhaust one agent before you add a second. A sharper prompt, a `/clear`, a plan you actually read cost nothing. A second agent typically costs [three to ten times the tokens](https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them) for the same task.
 
 <StatRow>
   <Stat value="3–10×" label="tokens of a single agent, same task" source="Anthropic, Jan 2026" href="https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them" tone="warn" />
@@ -29,41 +29,41 @@ Anthropic's January 2026 guidance on multi-agent systems puts the order of opera
   href="https://x.com/bcherny/status/2007179832300581177"
   platform="x"
 >
-The person who built Claude Code describes his own setup: five sessions running locally plus five to ten on the web at the same time, each started in Plan mode, all sharing one `CLAUDE.md` checked into git that the whole team fixes whenever Claude gets something wrong. Read that as a ceiling, not a starting point. He is running his own tool on a codebase he knows by heart, and the shared file is doing at least as much work as the parallelism.
+The person who built Claude Code runs five sessions locally plus five to ten on the web at once, each started in Plan mode, all sharing one `CLAUDE.md` in git that the team fixes whenever Claude gets something wrong. Read that as a ceiling, not a start: the shared file does as much work as the parallelism.
 </Post>
 
-The sharpest counter-argument is Walden Yan's [Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents) at Cognition, June 2025. Two principles: agents must share context — the full trace, not a tidy summary — and every action an agent takes carries a decision it never announces. His example is two subagents building one game, a Mario-style background and a bird that does not match it, leaving the lead to merge incompatible assumptions. One correction before you repeat that post: its claim that Claude Code subagents cannot write code in parallel was true in mid-2025 and is not true now. The principle survives; the product description does not.
+Walden Yan's [Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents) at Cognition, June 2025, argues the other side. Agents must share the full trace, not a tidy summary, because every action carries a decision the agent never announces. Two subagents build one game — a Mario-style background, a bird that does not match — and the lead merges incompatible assumptions. (Its line about subagents not writing code in parallel was true in mid-2025, not now.)
 
 <Callout type="warn" title="Parallel agents do not fail loudly">
-They rarely crash. Each one produces something reasonable, and the pieces contradict each other. You find out at merge time — the most expensive possible moment to find out anything.
+They rarely crash. Each one produces something reasonable, and the pieces contradict each other. You find out at merge time — the most expensive moment possible.
 </Callout>
 
 ## Three reasons to split, and one bad way to split
 
-The January 2026 post names three cases where a second agent earns its keep. **Context protection**: the side work would flood your main window, so it happens in someone else's. **Parallelisation**: the facets are genuinely independent. **Specialisation**: a narrow tool set, prompt or domain beats a generalist. It also names the split that fails, and this is where most people go wrong.
+The January 2026 post names three cases where a second agent earns its keep. **Context protection**: the side work would flood your main window. **Parallelisation**: the facets are genuinely independent. **Specialisation**: a narrow tool set or prompt beats a generalist.
 
 <Compare a="Split by job title" b="Split by context">
 <div slot="a">
-A planner plans, a coder codes, a tester tests. Three handoffs, and each one drops what the previous agent knew but never wrote down. The tester ends up testing what it guessed the feature was.
+A planner plans, a coder codes, a tester tests. Each handoff drops what the previous agent knew but never wrote down. The tester tests what it guessed the feature was.
 </div>
 <div slot="b">
-The agent that builds a feature also writes its tests, because it already holds the context. Split when the context itself is separate: a different module, a different file set, a question answerable without knowing the rest.
+The agent that builds a feature writes its tests too — it already holds the context. Split when the context is separate: a different module, a different file set, a question answerable without the rest.
 </div>
 </Compare>
 
 ## Run the same job three ways and watch what changes
 
-Same job — review a forty-file pull request — in three shapes. Run all three and read the verdicts, not just the numbers.
+Same job, three shapes: review a forty-file pull request. Read the verdicts, not just the numbers.
 
 <Widget name="orchestrator" />
 
 <Callout type="live">
-On stage: run the first two shapes, then ask the room to vote on whether the third finds more bugs or only costs more, before you run it. It finds the same nine and throws away five of the six false alarms.
+On stage: run the first two shapes. Before the third, ask the room to vote — more bugs, or only more cost? It finds the same nine and drops five of the six false alarms.
 </Callout>
 
 ## Five shapes, and the one Anthropic actually shipped
 
-The vocabulary comes from [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) by Erik Schluntz and Barry Zhang, December 2024. Five patterns — you have already used three of them without naming them — and one piece of default advice that has aged well: start with the simplest thing, and add complexity only when it measurably improves the result.
+The vocabulary comes from [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) by Erik Schluntz and Barry Zhang, December 2024. Five patterns, three of which you have already used. Its advice has aged well: start simple, add complexity only when it measurably improves the result.
 
 | Shape | What it is | Where you have met it |
 | --- | --- | --- |
@@ -73,9 +73,9 @@ The vocabulary comes from [Building effective agents](https://www.anthropic.com/
 | Orchestrator-worker | A lead decides the split at runtime, then delegates | The research system below |
 | Evaluator-optimizer | One generates, a second critiques, loop | A fresh-context reviewer on your own diff |
 
-The worked example is Anthropic's [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system), June 2025: a lead Opus 4 agent plans the search and spawns Sonnet 4 subagents that run in parallel, each searching in its own clean context window and returning a condensed summary to the lead. It outperformed single-agent Opus 4 by 90.2% on their internal research eval.
+The worked example is Anthropic's [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system), June 2025: a lead Opus 4 agent plans the search and spawns Sonnet 4 subagents in parallel, each searching in its own clean window and returning a condensed summary. It beat single-agent Opus 4 by 90.2% on their internal research eval.
 
-Now the honest half of the same post. Token usage alone explained about 80% of the performance variance on a browsing benchmark — the architecture works largely because it spends more tokens, in more windows, at once. The post also says tasks that need shared context or carry many dependencies are a poor fit, and that most coding work has fewer genuinely parallel parts than research does.
+Now the honest half. Token usage alone explained about 80% of the performance variance on a browsing benchmark — it works largely because it spends more tokens, in more windows, at once. Tasks with shared context or many dependencies are a poor fit, and coding has fewer parallel parts than research.
 
 <Post
   author="Andrej Karpathy"
@@ -84,24 +84,24 @@ Now the honest half of the same post. Token usage alone explained about 80% of t
   href="https://x.com/karpathy/status/2027521323275325622"
   platform="x"
 >
-He ran eight agents at once on nanochat experiments — four Claude, four Codex — and reported back that it does not work yet, that the result was a mess, and that he still finds the direction interesting. The man who named vibe coding, on his own research code, could not make a fleet of them pay off. If your split is less clean than his, expect less.
+He ran eight agents at once on nanochat experiments — four Claude, four Codex. The verdict: it does not work yet, the result was a mess, the direction is still interesting. The man who named vibe coding could not make a fleet pay off on his own research code. Expect less from a messier split.
 </Post>
 
 <Deeper title="The summary is the trick, not the parallelism">
-Anthropic's [context engineering post](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) lists three techniques for long-horizon work: compaction, notes written to disk outside the window, and sub-agent architectures — clean windows for focused subtasks, with condensed summaries returned to the lead.
+Anthropic's [context engineering post](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) lists three techniques for long-horizon work: compaction, notes on disk outside the window, and sub-agent architectures.
 
-Read that as compression. A subagent can read forty files and hand back one paragraph; the lead's window pays for the paragraph, not the forty files. That is why delegating a wide search helps even when you are in no hurry, and why a subagent that dumps its whole transcript back has given you nothing. In a subagent definition, the output contract is the most important line.
+Read that as compression. A subagent reads forty files and hands back one paragraph; the lead's window pays for the paragraph, not the files ([module 02](/en/learn/ai-in-plain-language/)). A subagent that dumps its whole transcript back gives you nothing. The output contract is the most important line in a subagent definition.
 </Deeper>
 
 ## What this looks like in Claude Code tonight
 
-The [docs put every parallel option on one page](https://code.claude.com/docs/en/agents). Here is the ladder, in rising order of how much rope you hand over:
+The [docs put every parallel option on one page](https://code.claude.com/docs/en/agents), in rising order of how much rope you hand over:
 
-- **Subagents.** Workers inside one session, each with its own context window, tools and model. Define one at `.claude/agents/<name>.md`; set `model: haiku` for cheap work and `isolation: worktree` when it will edit files. They nest up to three layers below the main conversation, and spawning fails once twenty are running at once.
-- **Worktrees.** A second working directory of the same repo on its own branch, so two sessions can never touch the same file. This is not a way to go parallel; it is the layer that keeps the others from colliding.
-- **Background and cloud sessions.** `claude agents` — a research preview — gives one screen to dispatch and monitor background sessions, each moving into its own worktree before editing. `claude --cloud` runs the task in an Anthropic-managed VM that clones your branch, so push first; `claude --teleport` brings the work back to your machine.
-- **Agent teams.** A lead plus teammates with a shared task list and a mailbox. Experimental and off by default. Three to five teammates, five or six tasks each, one owner per file — teammates are *not* worktree-isolated, so partitioning the files is your job.
-- **Dynamic workflows.** Claude writes a script that a runtime executes in the background, and only the final answer returns to your context. Sixteen concurrent agents by default, a thousand per run, with a warning once a plan passes about twenty-five.
+- **Subagents.** Workers inside one session, each with its own context window, tools and model. Define one at `.claude/agents/<name>.md`; set `model: haiku` for cheap work and `isolation: worktree` when it edits files. They nest three layers below the main conversation, and spawning fails once twenty run at once.
+- **Worktrees.** A second working directory of the same repo on its own branch ([module 09](/en/learn/git-and-github/)), so two sessions can never touch the same file. Not a way to go parallel — the layer that stops collisions.
+- **Background and cloud sessions.** `claude agents`, a research preview, dispatches and monitors background sessions from one screen, each moving into its own worktree before editing. `claude --cloud` runs the task in an Anthropic-managed VM that clones your branch, so push first; `claude --teleport` brings it back.
+- **Agent teams.** A lead plus teammates with a shared task list and a mailbox. Experimental, off by default. Three to five teammates, five or six tasks each, one owner per file. Teammates are *not* worktree-isolated, so partitioning files is your job.
+- **Dynamic workflows.** Claude writes a script that a runtime executes in the background; only the final answer returns to your context. Sixteen concurrent agents by default, a thousand per run, a warning past about twenty-five.
 
 <Terminal title="bash">
 ```bash
@@ -121,9 +121,9 @@ claude --cloud "Execute the migration plan in docs/migration-plan.md"
 ```
 </Terminal>
 
-One more before Lab 07: `/batch <instruction>` splits a single large change across five to thirty worktree-isolated subagents, each opening its own pull request. It is the fastest legitimate fan-out in the tool, and the fastest way to produce thirty PRs nobody has read.
+`/batch <instruction>` splits one large change across five to thirty worktree-isolated subagents, each opening its own pull request. It is the fastest legitimate fan-out in the tool, and the fastest way to produce thirty PRs nobody has read.
 
-The hard part is the split itself. This prompt forces it into the open before anything spawns.
+This prompt forces the split into the open before anything spawns.
 
 <Prompt title="Fan-out prompt" where="Claude Code · main session">
 ```text
@@ -151,14 +151,14 @@ Its only job is to re-run every check and report what actually fails.
 
 ## Where the money goes, and how to watch it go there
 
-Parallel work multiplies token usage; that is the mechanism, not a side effect. The [Claude Code cost docs](https://code.claude.com/docs/en/costs) describe an agent team as using "approximately 7x more tokens than standard sessions when teammates run in plan mode" — carry the condition with the number, because the multiplier is not a fixed property of teams.
+The [Claude Code cost docs](https://code.claude.com/docs/en/costs) put an agent team at "approximately 7x more tokens than standard sessions when teammates run in plan mode" — carry the condition with the number, because the multiplier is not fixed.
 
-1. **Route models by role.** Expensive model plans and synthesises, cheap model does the parallel legwork — the Opus-lead, Sonnet-workers shape from the research system. Set `model: haiku` on simple subagents; name the model when you spawn teammates.
+1. **Route models by role.** Expensive model plans and synthesises, cheap model does the parallel legwork — the Opus-lead, Sonnet-workers shape. Set `model: haiku` on simple subagents; name the model when you spawn teammates.
 2. **Cap anything that loops.** An iteration cap in the prompt, `--max-budget-usd` on scripted runs. Unbounded loops on an API key are where surprise bills come from.
-3. **Read `/usage`.** It shows plan bars plus an attribution breakdown: skills, subagents, plugins, MCP servers, loops. `/insights` writes an HTML report on how you work; `/context` shows what is filling the current window.
-4. **Know what normal is.** That same cost page puts enterprise use at roughly $13 per developer per active day, and under $30 per active day for 90% of users. If one afternoon of fan-out dwarfs that, it should have bought something you can name.
+3. **Read `/usage`.** Plan bars plus an attribution breakdown: skills, subagents, plugins, MCP servers, loops. `/insights` writes an HTML report on how you work; `/context` shows what fills the current window.
+4. **Know what normal is.** That same page puts enterprise use at roughly $13 per developer per active day, and under $30 per active day for 90% of users. An afternoon of fan-out that dwarfs that should have bought something you can name.
 
-For a team that wants real observability rather than a slash command, Claude Code [exports OpenTelemetry](https://code.claude.com/docs/en/monitoring-usage): `CLAUDE_CODE_ENABLE_TELEMETRY=1` plus an `OTEL_EXPORTER_OTLP_ENDPOINT` gives you `claude_code.token.usage`, `claude_code.cost.usage` and `claude_code.code_edit_tool.decision` — that last one, how often edits are accepted, is the number nobody looks at.
+For real observability, Claude Code [exports OpenTelemetry](https://code.claude.com/docs/en/monitoring-usage): `CLAUDE_CODE_ENABLE_TELEMETRY=1` plus an `OTEL_EXPORTER_OTLP_ENDPOINT` gives you `claude_code.token.usage`, `claude_code.cost.usage` and `claude_code.code_edit_tool.decision`. That last one, how often edits are accepted, is the number nobody looks at.
 
 <Myth
   n={14}
@@ -168,7 +168,7 @@ For a team that wants real observability rather than a slash command, Claude Cod
 >
 Cursor tried it. Twenty flat peer agents coordinating through locks slowed to the throughput of two or three, because locks were held too long or never released. Optimistic concurrency failed differently: agents turned risk-averse, made small safe edits, and churned.
 
-What worked was hierarchy — planners that can spawn sub-planners, workers that grind one task with no cross-talk, and a judge at the end of each cycle. Removing a role, the integrator, removed a bottleneck. Every agent you add is another coordination surface.
+What worked was hierarchy: planners that spawn sub-planners, workers that grind one task with no cross-talk, a judge at the end of each cycle. Removing the integrator role removed a bottleneck. Every agent you add is another coordination surface.
 </Myth>
 
 <Quiz
@@ -187,16 +187,16 @@ What worked was hierarchy — planners that can spawn sub-planners, workers that
 
 ## The rule: independent, and independently verifiable
 
-The largest published example of this working is Nicholas Carlini's [C compiler built by parallel Claudes](https://www.anthropic.com/engineering/building-c-compiler), February 2026: sixteen Opus 4.6 instances, each in its own Docker container with its own clone, each in an endless loop, claiming tasks through lock files. Roughly two thousand sessions over two weeks, just under $20,000, about 100,000 lines of Rust that compiles Linux 6.9 on three architectures.
+The largest published example is Nicholas Carlini's [C compiler built by parallel Claudes](https://www.anthropic.com/engineering/building-c-compiler), February 2026: sixteen Opus 4.6 instances, each in its own Docker container with its own clone, each looping endlessly, claiming tasks through lock files. Two thousand sessions over two weeks, just under $20,000, about 100,000 lines of Rust that compiles Linux 6.9 on three architectures.
 
-Two lessons scale down to your laptop. The agent optimises for exactly the problem the tests define, so weak tests produce a confidently wrong product — and sixteen agents produce sixteen times as much of it. And parallelism collapsed whenever every agent hit the same giant task; the fix was splitting that task against an external oracle, not adding agents.
+Two lessons for your laptop. The agent optimises for exactly the problem the tests define, so weak tests give a confidently wrong product ([module 10](/en/learn/test-and-quality/)) — and sixteen agents give sixteen times as much of it. Parallelism also collapsed whenever every agent hit the same giant task; the fix was splitting that task against an external oracle, not adding agents.
 
-Which gives you the rule that survives every system on this page. **Parallelise only work that is independent and independently verifiable.** Independent: separate files, no shared design decision. Independently verifiable: each slice carries its own check — a test, a build, a script — that passes or fails without a human reading the diff. Work that fails either half belongs in one session, in order.
+**Parallelise only work that is independent and independently verifiable.** Independent: separate files, no shared design decision. Independently verifiable: each slice has its own check — a test, a build, a script — that passes or fails without a human reading the diff. Work that fails either half belongs in one session, in order.
 
 <Deeper title="A default stack you can actually run this month">
-One agent in the main session. Subagents for investigation, so file reads and log dumps land in someone else's window and come back as summaries. A fresh-context reviewer on every diff you did not write — evaluator-optimizer with two participants.
+One agent in the main session. Subagents for investigation, so file reads and log dumps come back as summaries. A fresh-context reviewer on every diff you did not write.
 
-Add parallel *writers* only when the checklist passes, with worktrees and one owner per file. Agent teams and thirty-subagent batches are real; they are the last thing you reach for, not the first.
+Add parallel *writers* only when the checklist passes, with worktrees and one owner per file. Agent teams and thirty-subagent batches are the last thing you reach for.
 </Deeper>
 
 <Checklist
@@ -213,8 +213,8 @@ Add parallel *writers* only when the checklist passes, with worktrees and one ow
   xp={15}
 />
 
-Now go break something on purpose. [Lab 07: Two Agents, Two Worktrees, One Merge](/en/labs/parallel-agents/) runs two agents on two branches at the same time, reviews one branch with a subagent that did not write it, and merges both — including the conflict, which is the part that teaches.
+Now go break something on purpose. [Lab 07: Two Agents, Two Worktrees, One Merge](/en/labs/parallel-agents/) runs two agents on two branches at once, reviews one with a subagent that did not write it, and merges both — conflict included.
 
 <Artifact title="Fan-out decision card + orchestrator prompt" kind="prompt-pack">
-The six-line checklist, the fan-out prompt and the worktree commands on one page you can keep open in a second terminal.
+The six-line checklist, the fan-out prompt and the worktree commands on one page.
 </Artifact>

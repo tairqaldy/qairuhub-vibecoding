@@ -1,62 +1,62 @@
 ---
 title: Idea → Product
-subtitle: The distance between the app in your head and the app an agent builds is about one page of writing. This is that page.
+subtitle: The app in your head and the app an agent builds are one page of writing apart. This is that page.
 objective: write a one-page PRD with a definition of done an agent can run and an out-of-scope list that stops it inventing features
 description: Problem, users, the one job, definition of done, and what you are NOT building — the one page that changes what an agent produces.
 artifact: One-page PRD template
 ---
 
 <Lead>
-You already have the idea. The trouble is that it lives in your head as a *feeling*, and an agent cannot read feelings. It reads text. Everything you leave out, it fills in for you — confidently, in code, in about ninety seconds.
+You already have the idea. It lives in your head as a *feeling*, and an agent cannot read feelings. It reads text. Everything you leave out, it fills in for you — confidently, in code, in about ninety seconds.
 </Lead>
 
-This module is one page of writing and one prompt. It is the cheapest work in the whole course, because everything you get wrong here gets multiplied by every line the agent writes afterwards.
+One page of writing and one prompt. It is the cheapest work in the course, because every mistake here gets multiplied by every line the agent writes afterwards.
 
 ## The agent builds what you wrote, not what you meant
 
-Ask for "a sign-up page for our event" and you will get one. You will also get a login form nobody asked for, a phone-number field you did not want, an invented event with an invented date, and a save button that writes to a variable which disappears when the tab closes. None of that is the model malfunctioning. Each one is a decision you did not make, so it made the decision for you, in a fraction of a second, without mentioning it.
+Ask for "a sign-up page for our event" and you will get one. You will also get a login form nobody asked for, a phone-number field you did not want, an invented event with an invented date, and a save button that writes to a variable which disappears when the tab closes. None of that is a malfunction. Each one is a decision you did not make, so the model made it for you.
 
-Module 3 gave you the habit: decide before you prompt. This module gives you the artifact. A decision you made in your head is not a decision the agent can read, and a decision you made in a chat window three sessions ago is already gone. One page, on disk, present at the start of every build — that is the whole trick.
+[Module 03](/en/learn/problem-solving-mindset/) gave you the habit: decide before you prompt. This module gives you the file. A decision in your head is one the agent cannot read. One you typed into a chat three sessions ago is gone. One page, on disk, at the start of every build.
 
 <Compare a="Prompt: build a sign-up page for our event" b="Prompt: read PRD.md, ask me three questions, then plan">
 <div slot="a">
 
-Four hundred lines and a rendered page in ninety seconds. It looks impressive on the projector, and you have no idea what it decided. Finding out means reading all of it. Changing your mind costs another four hundred lines.
+Four hundred lines and a rendered page in ninety seconds. Impressive on the projector. You have no idea what it decided, and finding out means reading all four hundred.
 
 </div>
 <div slot="b">
 
-Three questions you can answer in half a minute, then a plan of about twenty lines: the files it will create, the order it will build them in, the check that proves each step, and what it promises not to touch. You review the plan instead of the diff.
+Three questions you answer in half a minute, then about twenty lines of plan. You review the plan instead of the diff.
 
 </div>
 </Compare>
 
-Nothing in the right-hand column needs a bigger model. It needs a page that already existed when the session started.
+The right-hand column does not need a bigger model. It needs a page that existed before the session started.
 
 ## Five questions that fit on one page
 
-A PRD is a product requirements document. The name is corporate; ignore the name. For what you are building this month it is one page, five answers, written before anything exists, saved as `PRD.md` next to your code. Some tools and some later modules call the same file `SPEC.md`. Same page, different label — pick one name and use it everywhere.
+PRD stands for product requirements document. Ignore the corporate name. Here it is one page, five answers, written before anything exists and saved as `PRD.md` next to your code. Some tools call the same file `SPEC.md`. Pick one name and use it everywhere.
 
-**Problem.** One sentence about the pain, not the feature. "Seats fill up in a Telegram thread and nobody knows who is actually coming" is a problem. "We need a sign-up form" is already a solution, and it smuggles in decisions you have not examined yet.
+**Problem.** One sentence about the pain, not the feature. "Seats fill up in a Telegram thread and nobody knows who is actually coming" is a problem. "We need a sign-up form" is a solution that smuggles in decisions you have not examined.
 
-**User.** Specific enough to picture one person. A student in Astana, on a phone, on mobile data, deciding right now whether she has a seat. Her constraints — small screen, slow connection, no patience — are requirements wearing a disguise.
+**User.** Specific enough to picture one person. A student in Astana, on a phone, on mobile data, deciding right now whether she has a seat. Her constraints — small screen, slow connection, no patience — are requirements in disguise.
 
-**The one job.** Borrow the jobs-to-be-done framing here: people do not want your product, they hire it to get a job done, and they fire it the moment something does that job faster. Your user is not hiring a sign-up page. She is hiring certainty that she has a seat. Write that job as one sentence in her words. If the sentence contains the word "and", you probably have two jobs — keep the one that hurts more and push the other into the not-building list.
+**The one job.** People do not want your product. They hire it to get a job done, and fire it when something does that job faster. Your user is not hiring a sign-up page. She is hiring certainty that she has a seat. Write that job as one sentence in her words. If it contains "and", you have two jobs: keep the one that hurts more.
 
-**Definition of done.** One or two sentences describing something a stranger or a script could run to prove the thing works. This is the hardest of the five, so it gets its own section below.
+**Definition of done.** One or two sentences a stranger or a script could run to prove it works. The hardest of the five — its own section is below.
 
-**Not building.** The things you are deliberately leaving out. It is the section people skip, and the one that pays.
+**Not building.** What you are deliberately leaving out.
 
 <Widget name="prd-wizard" />
 
-## The most valuable section is the one about what you will not build
+## The not-building list is the part that pays
 
-Every line in that list is a decision the agent no longer gets to make on your behalf. It is also the only part of a PRD that gets shorter as you get better at this, because you learn which things actually needed to be there.
+Every line in it is a decision the agent no longer gets to make for you. It is also the only part of a PRD that gets shorter as you improve.
 
-A first build you can finish in one sitting looks roughly like this: one page, no login, no payments, no admin panel, data kept in the browser or in one file, deployed by dragging a folder. Everything else is version two. And when the plan the agent hands back is bigger than you expected, the fix is unglamorous: cut the must-have list in half and ask again.
+A first build you can finish in one sitting: one page, no login, no payments, no admin panel, data in the browser or one file, deployed by dragging a folder. Everything else is version two. If the plan comes back bigger than you expected, cut the must-have list in half and ask again.
 
 <Callout type="warn" title="Some things are out of scope for a different reason">
-Do not let an agent invent your login, your database permissions or your payment flow while you are learning. Semafor reported in May 2025 on a scan of 1,645 Lovable-built apps: 170 of them let anyone read user names, email addresses, financial information and secret API keys ([Semafor, 29 May 2025](https://www.semafor.com/article/05/29/2025/the-hottest-new-vibe-coding-startup-lovable-is-a-sitting-duck-for-hackers)). When you genuinely need accounts, use a managed service and have a human read that part. For your first build, "no accounts" is not a limitation. It is a security decision.
+Do not let an agent invent your login, your database permissions or your payment flow while you are learning. A scan of 1,645 Lovable-built apps found 170 that let anyone read user names, email addresses, financial information and secret API keys ([Semafor, 29 May 2025](https://www.semafor.com/article/05/29/2025/the-hottest-new-vibe-coding-startup-lovable-is-a-sitting-duck-for-hackers)). When you genuinely need accounts, use a managed service and have a human read that part ([module 11](/en/learn/security/)). For a first build, "no accounts" is a security decision, not a limitation.
 </Callout>
 
 <Quiz
@@ -69,23 +69,19 @@ Do not let an agent invent your login, your database permissions or your payment
     'A detailed description of how the screens should look',
   ]}
   answer={1}
-  explain="Scope and a checkable 'done' are the two things an agent cannot guess and will invent if you stay silent. A long feature list mostly buys you work you did not want, and an agent stops when the work looks done — so 'done' has to be something it can actually run."
+  explain="Scope and a checkable 'done' are the two things an agent cannot guess and will invent if you stay silent. An agent stops when the work looks done, so 'done' has to be something it can actually run."
   xp={10}
 />
 
 ## Write "done" in words a stranger could act on
 
-Module 3 argued that done has to be checkable. This is where that lands on the page, in the exact sentences you type.
-
 **Weak.** The sign-up should feel fast and look clean. An agent will cheerfully claim both, and you have nothing to argue with.
 
 **Strong.** A person who has never seen the page opens the link on a phone, types a name and an email, presses one button, and sees a confirmation. You open the list and the name is there. Two people signing up in the same second do not overwrite each other.
 
-Three sentences, no adjectives, each one a thing somebody can do standing in front of you. Notice the last one — it is the clause nobody writes and the bug everybody ships. [Anthropic's Claude Code guide](https://code.claude.com/docs/en/best-practices) describes a good spec the same way: self-contained, naming the files and interfaces involved, stating what is out of scope, and giving one end-to-end verification step. Your one page can carry all three.
+Three sentences, no adjectives, each one a thing somebody can do in front of you. Notice the last one: nobody writes that clause, and everybody ships that bug. [Anthropic's Claude Code guide](https://code.claude.com/docs/en/best-practices) describes a good spec the same way — self-contained, naming the files involved, stating what is out of scope, giving one end-to-end verification step.
 
 ## Hand it over: read, ask, plan, do not code
-
-Here is the hand-off. It is short, and it is the reason the rest of the page was worth writing.
 
 <Prompt title="Hand the PRD to the agent" where="Claude Code · plan mode">
 ```text
@@ -107,18 +103,18 @@ are implementing it, stop and update the plan instead of improvising.
 ```
 </Prompt>
 
-Three questions, not "any questions". A hard limit forces the agent to rank, and the three it picks tell you which parts of your page are thin — free information about your own thinking. You review a twenty-line plan instead of a four-hundred-line diff, which is the entire return on the page you just wrote. Module 7 runs this prompt against a real agent, in plan mode, on your own machine.
+Three questions, not "any questions". A hard limit forces the agent to rank, and the three it picks show you which parts of your page are thin. You run this prompt for real in [module 07](/en/learn/the-agent/).
 
 ## Spec-driven development is a dial, not a religion
 
-When people turn this one page into a whole toolchain, they call it spec-driven development. GitHub's Spec Kit is the best-known version: open source under MIT, Python 3.11 or newer, installed with `uv tool install specify-cli` and started with `specify init my-project --integration copilot`. Its commands run in order — `/speckit-constitution` for project principles, `/speckit-specify` for what and why, `/speckit-plan` for the technical approach, `/speckit-tasks` for work items, `/speckit-implement` to build, and `/speckit-converge` to re-check progress against the spec, repeating implement and converge until it reports that it has converged ([github.com/github/spec-kit](https://github.com/github/spec-kit)). It moves fast — seven releases landed between 1 and 21 September 2026 — so read the README, not last year's tutorial.
+Turn this one page into a whole toolchain and you have spec-driven development. GitHub's Spec Kit is the best-known version: open source under MIT, Python 3.11 or newer, installed with `uv tool install specify-cli` and started with `specify init my-project --integration copilot`. Its commands run in order: `/speckit-constitution` for project principles, `/speckit-specify` for what and why, `/speckit-plan` for the technical approach, `/speckit-tasks` for work items, `/speckit-implement` to build, `/speckit-converge` to re-check progress against the spec. Implement and converge repeat until it reports that it has converged ([github.com/github/spec-kit](https://github.com/github/spec-kit)). It moves fast: seven releases landed between 1 and 21 September 2026. Read the README, not last year's tutorial.
 
-You do not need any of that today. Module 3 gave you the sizing rule; Birgitta Böckeler's other finding is the one that matters here. Testing these toolkits, she reported that the elaborate process created a false sense of control, because the agent still skipped some instructions and over-applied others ([martinfowler.com, 15 Oct 2025](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html)). More markdown is not more certainty. One page you genuinely reread beats six templates you generated and skimmed.
+You do not need any of it today. Testing these toolkits, Birgitta Böckeler found the elaborate process created a false sense of control: the agent still skipped some instructions and over-applied others ([martinfowler.com, 15 Oct 2025](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html)). More markdown is not more certainty. One page you reread beats six templates you skimmed.
 
 <Deeper title="Three different things people mean by 'spec-driven'">
-Böckeler separates them. **Spec-first**: the spec is starter fluid — you write it, the agent builds, and afterwards the code is the truth. **Spec-anchored**: the spec stays alive, and every change flows through it before it reaches the code. **Spec-as-source**: humans edit only the spec, and the generated code is marked do-not-edit. All three get called the same name in the same conversation, which is why people argue past each other.
+Böckeler separates them. **Spec-first**: you write the spec, the agent builds, and afterwards the code is the truth. **Spec-anchored**: the spec stays alive, and every change goes through it before it reaches the code. **Spec-as-source**: humans edit only the spec, and the generated code is marked do-not-edit. All three get called the same name, which is why people argue past each other.
 
-Two other toolkits, for when you go looking: AWS Kiro splits a spec into `requirements.md`, `design.md` and `tasks.md` with approval gates between the phases ([kiro.dev/docs/specs](https://kiro.dev/docs/specs/)); BMAD now ships as skills and plugins around a Clarify → Plan → Build and verify → Learn and adjust loop ([github.com/bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD)). Module 6 is where this course picks one answer for your project and makes it the file your agent reads at the start of every session.
+Two other toolkits, for when you go looking: AWS Kiro splits a spec into `requirements.md`, `design.md` and `tasks.md` with approval gates between the phases ([kiro.dev/docs/specs](https://kiro.dev/docs/specs/)); BMAD now ships as skills and plugins around a Clarify → Plan → Build and verify → Learn and adjust loop ([github.com/bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD)).
 </Deeper>
 
 <Myth
@@ -127,17 +123,15 @@ Two other toolkits, for when you go looking: AWS Kiro splits a spec into `requir
   source="Anthropic Engineering, 5 Feb 2026"
   href="https://www.anthropic.com/engineering/building-c-compiler"
 >
-In February 2026 Anthropic published a C compiler written almost entirely by agents: 16 parallel Claude instances, roughly 2,000 sessions over two weeks, about $20,000 of API cost, and around 100,000 lines of Rust that compiles Linux 6.9 on x86, ARM and RISC-V. What made that possible was not a bigger model. It was a definition of done the agents could run themselves — the compiler test suites. The post's own lesson is the one to take home: the agent solves exactly the problem the tests define, so weak tests produce the wrong product. Precision scales. Vagueness does not.
+In February 2026 Anthropic published a C compiler written almost entirely by agents: 16 parallel Claude instances, roughly 2,000 sessions over two weeks, about $20,000 of API cost, and around 100,000 lines of Rust that compiles Linux 6.9 on x86, ARM and RISC-V. What made it possible was not a bigger model but a definition of done the agents could run themselves: the compiler test suites. An agent solves exactly the problem the tests define, so weak tests produce the wrong product. Precision scales. Vagueness does not.
 </Myth>
 
 <Callout type="live" title="On stage">
-Take a one-line idea from the room and run the five questions live in under three minutes. Then invite someone to object to the not-building list. The argument about scope is the lesson — have it in front of everyone rather than describing it.
+Take a one-line idea from the room and run the five questions in under three minutes. Then invite someone to object to the not-building list. The argument about scope is the lesson. Have it, do not describe it.
 </Callout>
 
 <ProjectStep n={4} title="Write the PRD for QAIRU Event Sign-up">
-Ten minutes, five answers, one page. Use the wizard above, or open a new folder and write `PRD.md` by hand.
-
-Here is the version the rest of this course builds against. Change the details to match your own event before you use it:
+Ten minutes, five answers, one page. Use the wizard above, or open a new folder and write `PRD.md` by hand. The rest of the course builds against the version below — change the details to match your own event.
 
 - **Problem.** Seats for QairuHub events are claimed in a Telegram thread, so nobody knows who is actually coming until the room either fills or does not.
 - **User.** A student in Astana who saw the event in the channel and is deciding right now, on a phone, whether she has a seat.
@@ -145,9 +139,9 @@ Here is the version the rest of this course builds against. Change the details t
 - **Done.** A stranger opens the link on a phone, signs up, and sees a confirmation; the organiser opens the list and sees that name. Two people signing up at the same time do not overwrite each other.
 - **Not building.** No accounts, no passwords, no payments, no admin panel, no email reminders, no calendar sync, no second event.
 
-Save it and commit it. Module 5 adds the references that show the agent what good looks like, module 6 turns this page into the file your agent reads at the start of every session, and module 7 is where you paste the hand-off prompt above into a real agent and read the plan it writes back.
+Save it and commit it. Next: [module 05](/en/learn/references/) adds the references, [module 06](/en/learn/context-ssot/) turns this page into the file your agent reads every session, [module 07](/en/learn/the-agent/) runs the hand-off prompt for real.
 </ProjectStep>
 
 <Artifact title="One-page PRD template" kind="template">
-The five questions, the wording that makes each answer checkable, and the hand-off prompt — on one page you can reuse for every project.
+The five questions, the wording that makes each answer checkable, and the hand-off prompt — reusable for every project.
 </Artifact>

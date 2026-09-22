@@ -1,7 +1,7 @@
 ---
 title: Context & the Single Source of Truth
 subtitle: One short file decides what your agent knows — and every line in it is paid for again in every session.
-objective: write a project memory file that actually changes agent behaviour, and a master prompt that carries everything the file should not
+objective: write a project memory file that changes agent behaviour, and a master prompt that carries the rest
 description: CLAUDE.md, AGENTS.md and the master prompt. What belongs in project memory, what quietly poisons it, and the prompt skeleton that carries the rest.
 artifact: CLAUDE.md / AGENTS.md starter + master-prompt skeleton
 ---
@@ -10,15 +10,15 @@ artifact: CLAUDE.md / AGENTS.md starter + master-prompt skeleton
 Your agent starts every session knowing how to program and nothing about your project. Not the test command. Not the rule you explained three times yesterday. There is one file that fixes this, and *almost everyone* overfills it.
 </Lead>
 
-Overfilling is not a small mistake. Claude Code's guide names "over-specified CLAUDE.md" as one of its five common failure patterns: bloat makes the agent ignore rules that are sitting right there in the file. The fix is counter-intuitive — the file that changes behaviour most is the short one. The docs set the target at under 200 lines. ([best practices](https://code.claude.com/docs/en/best-practices), [memory](https://code.claude.com/docs/en/memory))
+Claude Code's guide names "over-specified CLAUDE.md" as one of its five common failure patterns. Bloat makes the agent ignore rules that are sitting right there in the file. The file that changes behaviour most is the short one, and the docs set the target at under 200 lines. ([best practices](https://code.claude.com/docs/en/best-practices), [memory](https://code.claude.com/docs/en/memory))
 
 ## Context is a budget you spend, not a container you fill
 
-In September 2025 Anthropic published the post that renamed the whole discipline. Context engineering is the work of choosing which tokens occupy the window at the moment the model answers. Attention is finite. Every token you add spends some of it, and recall drops as the window fills — the effect the post calls context rot. ([Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents))
+In September 2025 Anthropic named the discipline. Context engineering is choosing which tokens occupy the window when the model answers. The window is finite ([module 02](/en/learn/ai-in-plain-language/)), and recall drops as it fills — the effect the post calls context rot. ([Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents))
 
-That reframes your memory file. It is not a folder of documentation. It is a standing charge against a budget, loaded at the start of every session, paid for again in every session — including the ones about a file it has nothing to do with.
+So your memory file is not a folder of documentation. It is a standing charge, paid again in every session — including the ones about a file it has nothing to do with.
 
-The same post gives the target for how a standing instruction should read: the "right altitude". Specific enough to steer the model, general enough to work as a heuristic. Not brittle if-else rules that break on the first case you did not imagine. Not vague vibes like "write good code". A rule at the right altitude sounds like this: all database access goes through `src/lib/db`, with no Supabase calls inside components.
+The post also sets the target for how a standing rule should read: the "right altitude". Specific enough to steer the model, general enough to work as a heuristic. Not brittle if-else rules. Not "write good code". At the right altitude a rule sounds like this: all database access goes through `src/lib/db`, with no Supabase calls inside components.
 
 <Myth
   n={6}
@@ -26,12 +26,12 @@ The same post gives the target for how a standing instruction should read: the "
   source="Anthropic, Effective context engineering for AI agents, Sep 2025"
   href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
 >
-Prompt engineering was about the sentence you type. Once an agent runs in a loop — reading files, running commands, reading the output, deciding again — your sentence is a small fraction of what the model sees. The post positions context engineering as the successor: what matters is every token in the window, including the files that got read, the output that got dumped in, and what your memory file is still charging you for. A perfect prompt in a polluted window loses to an ordinary prompt in a clean one.
+Prompt engineering was about the sentence you type. Once an agent runs in a loop, your sentence is a small fraction of what the model sees: the files it read, the command output it dumped in, and what your memory file is still charging you for. A perfect prompt in a polluted window loses to an ordinary prompt in a clean one.
 </Myth>
 
-## What belongs in the file, and what quietly poisons it
+## What belongs in the file, and what poisons it
 
-The docs give an include list and an exclude list. They are worth memorising, because most bad memory files are made entirely of the second one.
+The docs give an include list and an exclude list. Most bad memory files are made entirely of the second one.
 
 <Compare a="What people write" b="What changes behaviour">
 <div slot="a">
@@ -39,8 +39,8 @@ The docs give an include list and an exclude list. They are worth memorising, be
 - A tour of every folder in the repo
 - Long pasted API documentation
 - "Write clean, maintainable code"
-- Standard language conventions the model already knows
-- Anything readable from the code itself
+- Language conventions the model already knows
+- Anything readable from the code
 - Fast-changing facts (the current sprint, today's bug)
 
 </div>
@@ -50,21 +50,21 @@ The docs give an include list and an exclude list. They are worth memorising, be
 - Style rules that differ from the defaults
 - Repo etiquette: branch names, never push to `main`, PR expectations
 - Architecture decisions specific to this project
-- Environment quirks and gotchas that have already bitten someone
-- Pointers — file paths and links — instead of pasted content
+- Gotchas that have already bitten someone
+- Pointers — file paths and links — not pasted content
 
 </div>
 </Compare>
 
-Two rules keep it short. To add: write a line when the agent makes the same mistake twice. To cut: for every line ask whether removing it would cause a mistake. If the answer is no, delete it. Run `/doctor` on a file you have already committed and it proposes cuts for you. And if the agent is ignoring a rule that is definitely in the file, the file is probably too long — emphasis words like IMPORTANT only work when one or two lines carry them. ([memory](https://code.claude.com/docs/en/memory), [best practices](https://code.claude.com/docs/en/best-practices))
+Two rules keep it short. Add a line when the agent makes the same mistake twice. Cut a line when removing it would not cause a mistake. `/doctor` proposes the cuts for a file you have already committed, and emphasis words like IMPORTANT only work when one or two lines carry them. ([memory](https://code.claude.com/docs/en/memory), [best practices](https://code.claude.com/docs/en/best-practices))
 
-Three things must never go in, for different reasons:
+Three things never go in:
 
-**Secrets.** The project file is committed. Put the shape of your config in it (`.env.local` is required, see `.env.example`) and never a value. A `Read(./.env)` deny rule helps, but the docs are blunt that these rules are convenience, not a security boundary: the deny covers `cat` and `head` in Bash, and not a script that opens the file itself. ([permissions](https://code.claude.com/docs/en/permissions))
+**Secrets.** The project file is committed. Put the shape of your config in it (`.env.local` is required, see `.env.example`) and never a value. A `Read(./.env)` deny rule helps, but the docs are blunt: it is convenience, not a security boundary. It covers `cat` and `head` in Bash, not a script that opens the file itself. ([permissions](https://code.claude.com/docs/en/permissions))
 
-**A style manifesto.** Platitudes are on the official exclude list. They cost tokens in every session and change nothing, because "write clean code" gives the model no decision it could not already make.
+**A style manifesto.** Platitudes are on the official exclude list: "write clean code" gives the model no decision it could not already make.
 
-**"Read all the docs before starting."** This is the opposite of how a good agent works. Anthropic's context post calls the alternative just-in-time retrieval: keep lightweight identifiers — paths, queries, links — and let the agent load the data at runtime. Claude Code already does this, using grep and glob instead of indexing everything up front. Your file should hand it addresses, not cargo.
+**"Read all the docs before starting."** The post calls the alternative just-in-time retrieval: keep light identifiers — paths, queries, links — and let the agent load the data when it needs it. Claude Code already works this way: grep and glob, not an index built up front. Hand it addresses, not cargo.
 
 <StatRow>
   <Stat value="200" label="lines: the target the docs set for a memory file" source="Claude Code · memory" href="https://code.claude.com/docs/en/memory" tone="warn" />
@@ -79,36 +79,36 @@ Three things must never go in, for different reasons:
   source="agents.md"
   date="accessed Sep 2026"
 >
-One file, read by many different tools. This is why naming it AGENTS.md costs you nothing and buys portability.
+One file, read by many tools. Naming it AGENTS.md costs nothing and buys portability.
 </Evidence>
 
-## CLAUDE.md, AGENTS.md, and which one your tool actually reads
+## CLAUDE.md, AGENTS.md, and which one your tool reads
 
-`AGENTS.md` is the open standard version of the same idea: plain Markdown, no required fields, a predictable place for build commands, test commands, style, security notes and PR rules. Its own site describes it as a "README for agents". ([agents.md](https://agents.md/))
+`AGENTS.md` is the open-standard version of the same idea: plain Markdown, no required fields, a predictable place for commands, style, security notes and PR rules. Its site calls it a "README for agents". ([agents.md](https://agents.md/))
 
 It is no longer one company's format. On 9 December 2025 the Linux Foundation announced the Agentic AI Foundation, with three founding projects: MCP from Anthropic, goose from Block, and AGENTS.md from OpenAI. Platinum members include AWS, Anthropic, Block, Bloomberg, Cloudflare, Google, Microsoft and OpenAI. Today the file is read by Codex, Cursor, GitHub Copilot, Aider, Zed, VS Code, JetBrains Junie, Jules, Warp, Devin and more.
 
-Claude Code reads it too, with one rule you have to know. Since v2.1.277 it reads `AGENTS.md` natively **when there is no CLAUDE.md** in or above the working directory. If a `CLAUDE.md` exists, only `CLAUDE.md` is read, unless you set project instructions to `claude-md-and-agents-md`. And in some sessions — Bedrock, or telemetry disabled — native reading is not available at all. ([memory#agents-md](https://code.claude.com/docs/en/memory#agents-md))
+Claude Code reads it too, with one rule. Since v2.1.277 it reads `AGENTS.md` natively **when there is no CLAUDE.md** in or above the working directory. If a `CLAUDE.md` exists, only `CLAUDE.md` is read, unless you set project instructions to `claude-md-and-agents-md`. In some sessions — Bedrock, or telemetry disabled — native reading is not available at all. ([memory#agents-md](https://code.claude.com/docs/en/memory#agents-md))
 
-So the portable move — the one that survives switching tools and switching versions — is this: make `AGENTS.md` the single source of truth, and put exactly one line in `CLAUDE.md`:
+The portable move, the one that survives a change of tool or version: make `AGENTS.md` the single source of truth and put one line in `CLAUDE.md`:
 
 ```markdown
 @AGENTS.md
 ```
 
-Now every tool in the room reads the same file, and there is only one file to keep honest.
+Now every tool reads the same file, and there is one file to keep honest.
 
 <Deeper title="Monorepos, Codex paths, and scoped rules">
 In a monorepo the nearest `AGENTS.md` to the edited file wins, and an explicit instruction in chat overrides any file. OpenAI's own main repo is cited as carrying 88 of them.
 
 Codex reads a global `~/.codex/AGENTS.md`, then every directory from the git root down to your current one, with a combined cap set by `project_doc_max_bytes` (32 KiB by default). ([Codex agent configuration](https://learn.chatgpt.com/docs/agent-configuration/agents-md))
 
-Claude Code has the matching trick for large repos: subdirectory `CLAUDE.md` files load on demand when Claude reads files there, and `.claude/rules/*.md` with a `paths:` frontmatter load only when a matching file is touched. That is how you keep a rule about migrations from costing anything on a CSS task.
+Claude Code has the matching trick: subdirectory `CLAUDE.md` files load on demand when Claude reads files there, and `.claude/rules/*.md` with a `paths:` frontmatter load only when a matching file is touched. That is how a rule about migrations costs nothing on a CSS task.
 </Deeper>
 
 ## Where the file lives decides who it binds
 
-The same file name exists at four levels, from broad to specific. Picking the wrong one is how a good rule ends up in the wrong place: stuck on your laptop, or pushed onto every project you open.
+The same file name exists at four levels. Pick the wrong one and a good rule ends up stuck on your laptop, or pushed onto every project you open.
 
 | Scope | Where it lives | Who it binds |
 |---|---|---|
@@ -117,7 +117,7 @@ The same file name exists at four levels, from broad to specific. Picking the wr
 | Project | `./CLAUDE.md` or `./.claude/CLAUDE.md` | everyone who clones the repo — commit it |
 | Local | `./CLAUDE.local.md` | you, in this project only — add it to `.gitignore` |
 
-There is a second memory system running beside yours: Claude keeps its own notes in `~/.claude/projects/<project>/memory/`, with the first 200 lines or 25 KB of `MEMORY.md` loaded each session. Saying "remember that I prefer short answers" writes there. Saying "add this to CLAUDE.md" writes to your file. Use `/init` to generate a starter, `/memory` to open and edit, and `/context` to confirm what actually loaded. ([memory](https://code.claude.com/docs/en/memory))
+A second memory system runs beside yours. Claude keeps its own notes in `~/.claude/projects/<project>/memory/`, and loads the first 200 lines or 25 KB of `MEMORY.md` each session. "Remember that I prefer short answers" writes there; "add this to CLAUDE.md" writes to your file. Use `/init` for a starter, `/memory` to edit, `/context` to confirm what loaded. ([memory](https://code.claude.com/docs/en/memory))
 
 <Quiz
   id="m6-memory-scope"
@@ -129,19 +129,19 @@ There is a second memory system running beside yours: Claude keeps its own notes
     'In the PRD, next to the feature that needs the database',
   ]}
   answer={1}
-  explain="It is a fact about this repo, so it belongs in the committed project file every clone gets. User scope would push your rule onto unrelated projects; local scope would hide it from your teammates; a PRD is read once, while project memory is read at the start of every session."
+  explain="It is a fact about this repo, so it belongs in the committed project file every clone gets. User scope pushes your rule onto unrelated projects; local scope hides it from your teammates; a PRD is read once, project memory at the start of every session."
   xp={10}
 />
 
 ## A memory file is not a PRD
 
-Module 4 gave you a PRD: what we are building, for whom, and what "done" means. It answers a question once. Your memory file answers a different question — how this repository works — and it answers it forever, in every session, including the ones that have nothing to do with the feature you specced. Paste the PRD into `CLAUDE.md` and you will pay for a finished feature's user stories in every future session about an unrelated CSS bug. Link the PRD from the memory file instead.
+A PRD ([module 04](/en/learn/idea-to-prd/)) answers one question once: what we are building and what "done" means. Your memory file answers a different one forever — how this repository works. Paste the PRD into `CLAUDE.md` and every future session about an unrelated CSS bug pays for a finished feature's user stories. Link the PRD from the memory file instead.
 
-There is one more reason the file matters, and it is the one that convinces experienced developers. A project-root `CLAUDE.md` survives `/compact`: it is re-read from disk. Instructions you only said in chat do not. When the window fills and Claude Code summarises the conversation away, your file is the part of the context that comes back. ([memory](https://code.claude.com/docs/en/memory))
+One more reason, and it is the one that convinces experienced developers. A project-root `CLAUDE.md` survives `/compact`, because it is re-read from disk. Instructions you only said in chat do not. When the window fills and the conversation is summarised away, your file is the part that comes back. ([memory](https://code.claude.com/docs/en/memory))
 
 ## A working AGENTS.md you can steal
 
-Around 40 lines, and nothing in it is a fact the agent could read out of the code. Note the last two sections: a compaction instruction, and pointers instead of pasted docs.
+Around 40 lines, and nothing in it is readable from the code. Note the last two sections: a compaction instruction, and pointers instead of pasted docs.
 
 ```markdown
 # AGENTS.md — qairu-signup
@@ -184,19 +184,19 @@ Keep: the list of modified files, the current plan step, and the test commands.
 - Architecture: docs/architecture.md   - API conventions: docs/api.md   - Release steps: docs/release.md
 ```
 
-Read it against the exclude list. There is no folder tour, no pasted documentation, no "write clean code". Every line would cause a mistake if you removed it — which is exactly the test.
+Read it against the exclude list: no folder tour, no pasted documentation, no platitudes.
 
 <Callout type="warn" title="The file is advice, not a fence">
-The agent can read "never edit applied migrations" and still edit one. The memory docs call both memory systems "context, not enforced configuration". For anything that must always or never happen, back the line with a hook — a script that runs at a lifecycle event — or a deny rule in `.claude/settings.json`. ([memory](https://code.claude.com/docs/en/memory), [hooks](https://code.claude.com/docs/en/hooks-guide))
+The agent can read "never edit applied migrations" and still edit one. The docs call both memory systems "context, not enforced configuration". For anything that must always or never happen, back the line with a hook — a script that runs at a lifecycle event — or a deny rule in `.claude/settings.json`. ([memory](https://code.claude.com/docs/en/memory), [hooks](https://code.claude.com/docs/en/hooks-guide))
 </Callout>
 
 <Widget name="agents-md-builder" />
 
 ## The master prompt carries what the file cannot
 
-Your memory file holds what is always true. Your prompt holds what is true today. Beginners fail by trying to make one do the other job: a prompt that re-explains the stack every time, or a memory file stuffed with this week's task.
+Your memory file holds what is always true. Your prompt holds what is true today. Beginners make one do the other's job: a prompt that re-explains the stack every time, or a memory file stuffed with this week's task.
 
-A master prompt has an anatomy, and every line does one job. The mission and the reason for it, so the agent can make trade-offs on its own. The context it must read first, including an existing file whose shape it should copy. The constraints, including what is out of scope. A phased process where each phase has an exit. A definition of done that a command can prove. What to do when it gets stuck. And the shape of the answer you want back.
+Every line in the skeleton does one job. Fill the brackets and delete nothing.
 
 <Prompt title="Master-prompt skeleton" where="any agent · start of a task">
 ```text
@@ -216,20 +216,20 @@ LIMITS      [max turns / budget / time], then stop and report.
 ```
 </Prompt>
 
-`DONE MEANS` is the line that separates this from a wish. If the finish condition is not something a command can prove, the agent's only signal is that the work *looks* done — and then you are the test suite.
+`DONE MEANS` separates this from a wish. Without a check a command can run, "looks done" is the agent's only signal and you become the test suite ([module 10](/en/learn/test-and-quality/)).
 
-`IF STUCK` mirrors a rule from the docs themselves: after two failed corrections on the same issue, stop. A clean session with a better first prompt beats a long polluted one.
+`IF STUCK` mirrors a rule from the docs: after two failed corrections on the same issue, stop. A clean session with a better first prompt beats a long polluted one.
 
 ## When the answer is a subagent, not a longer file
 
-Sometimes the knowledge does not fit in a standing file and does not belong in the main conversation either. Anthropic's context post names three techniques for long-running work: compaction (summarise and restart the window), structured note-taking (the agent writes notes to a file outside the window), and sub-agent architectures.
+Sometimes the knowledge fits neither a standing file nor the main conversation. The post names three techniques for long-running work: compaction (summarise and restart the window), structured note-taking (notes to a file outside the window), and sub-agent architectures.
 
-That third one is the daily habit. A subagent is a helper with its own context window, its own system prompt and its own tool list. It does the noisy work — searching a large codebase, reading a log file, comparing three libraries — and returns a condensed summary to the lead. The raw material never enters your window. In Claude Code, "use subagents to investigate X" is enough to start one. ([subagents](https://code.claude.com/docs/en/sub-agents))
+The third is the daily habit. A subagent is a helper with its own context window. It does the noisy work — searching a large codebase, reading a log file — and returns a short summary. The raw material never enters your window. "Use subagents to investigate X" is enough to start one; the orchestration is [module 14](/en/learn/multi-agent/). ([subagents](https://code.claude.com/docs/en/sub-agents))
 
-The trade is real: you get the summary, not the evidence. So ask for what you will need inside it — file paths, line numbers, the exact failing command. And know the failure it prevents. Infinite exploration is another of the guide's five named failure patterns: an unscoped "investigate the codebase" fills the window before the real work starts.
+The trade: you get the summary, not the evidence. Ask for what you will need inside it — file paths, line numbers, the exact failing command. It prevents infinite exploration, another of the guide's five named patterns: an unscoped "investigate the codebase" fills the window before the real work starts.
 
 <Callout type="live" title="Teaching this live">
-Run `/context` on a real project before and after pasting a 300-line memory file into it. The percentage jump is the entire argument for this module, and it lands harder on a screen than in a sentence.
+Run `/context` on a real project before and after pasting a 300-line memory file into it. The percentage jump is the whole argument for this module, and it lands harder on a screen than in a sentence.
 </Callout>
 
 <ProjectStep n={6} title="Give QAIRU Event Sign-up a single source of truth">
@@ -237,9 +237,9 @@ Create `AGENTS.md` in your project root, and a `CLAUDE.md` containing one line: 
 
 Fill in four sections only, using the example above as the shape: **Commands** (install, dev server, how to run one test), **Workflow** (plan before non-trivial changes, show test output, never push to `main`), **Code rules that differ from defaults** (at least the bilingual-strings rule — every user-facing string exists in Kazakh and English), and **Gotchas** (what a new person would get wrong in the first hour).
 
-Then prove it works. Start a fresh session, run `/context` and find your file in the memory list. Ask for a small change — a new field on the sign-up form — and watch whether it comes back bilingual, with test steps, and without a new dependency. If it does not, your file is too long or your rule is not concrete enough. Cut, sharpen, try again.
+Then prove it works. In a fresh session, run `/context` and find your file in the memory list. Ask for a new field on the sign-up form. Does it come back bilingual, with test steps, and without a new dependency? If not, your file is too long or your rule is not concrete enough. Cut, sharpen, try again.
 
-Finally, paste the master-prompt skeleton into `docs/prompt-template.md` and commit both files. Module 7 will run a real agent against them.
+Finally, paste the master-prompt skeleton into `docs/prompt-template.md` and commit both files. [Module 07](/en/learn/the-agent/) will run a real agent against them.
 </ProjectStep>
 
 <Artifact title="CLAUDE.md / AGENTS.md starter + master-prompt skeleton" kind="prompt-pack">

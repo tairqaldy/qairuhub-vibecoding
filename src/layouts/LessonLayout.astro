@@ -33,14 +33,13 @@ const {
 
 const t = useT(lang);
 const actMeta = acts.find((a) => a.id === act);
-const toc = headings.filter((h) => h.depth === 2);
 const indexHref = href(lang, kind === 'module' ? 'learn' : 'labs');
 const num = String(order).padStart(2, '0');
 ---
 
 <BaseLayout lang={lang} title={title} description={description} act={act}>
   <article class="lesson">
-    <div class="shell">
+    <div class:list={['shell', { 'with-rail': kind === 'module' }]}>
       {kind === 'module' && <div class="rail-col"><ProgressRail lang={lang} current={slug} /></div>}
 
       <div class="main">
@@ -70,20 +69,10 @@ const num = String(order).padStart(2, '0');
           {isFallback && <p class="fallback">{t('lesson.fallbackNotice')}</p>}
         </header>
 
-        {
-          toc.length > 2 && (
-            <nav class="toc" aria-label={t('lesson.onThisPage')}>
-              <p>{t('lesson.onThisPage')}</p>
-              <ol>
-                {toc.map((h) => (
-                  <li>
-                    <a href={`#${h.slug}`}>{h.text}</a>
-                  </li>
-                ))}
-              </ol>
-            </nav>
-          )
-        }
+        <div class="sec-controls no-print" data-sec-controls hidden>
+          <button type="button" data-expand-all></button>
+          <span class="count" data-sec-count></span>
+        </div>
 
         <div class="prose-vc"><slot /></div>
 
@@ -122,6 +111,7 @@ const num = String(order).padStart(2, '0');
   .shell { width: min(1180px, 100% - 40px); margin-inline: auto; display: grid; gap: 48px; }
   .rail-col { display: none; }
   .main { min-width: 0; max-width: 760px; }
+  .shell:not(.with-rail) .main { margin-inline: auto; }
   .crumbs { display: flex; flex-wrap: wrap; gap: 8px; font: 400 12px/1 var(--font-mono); color: var(--color-faint); }
   .crumbs a { color: var(--color-muted); text-decoration: none; }
   .crumbs a:hover { color: #fff; }
@@ -148,8 +138,67 @@ const num = String(order).padStart(2, '0');
   .next { text-align: right; }
   @media (min-width: 720px) { .pager { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 1100px) {
-    .shell { grid-template-columns: 250px 1fr; }
+    .shell.with-rail { grid-template-columns: 250px 1fr; }
     .rail-col { display: block; }
     .lesson { padding-top: 56px; }
   }
 </style>
+
+<script>
+  const secs = Array.from(document.querySelectorAll<HTMLDetailsElement>('.sec'));
+  const controls = document.querySelector<HTMLElement>('[data-sec-controls]');
+  const btn = document.querySelector<HTMLButtonElement>('[data-expand-all]');
+  const count = document.querySelector<HTMLElement>('[data-sec-count]');
+  const KEY = 'vc:open:' + location.pathname;
+  const kk = document.documentElement.lang === 'kk';
+  const LABEL = kk ? { open: 'Бәрін ашу', close: 'Бәрін жабу' } : { open: 'Expand all', close: 'Collapse all' };
+
+  if (secs.length) {
+    controls!.hidden = false;
+
+    // restore whatever the reader had open last time on this page
+    try {
+      const saved: string[] = JSON.parse(sessionStorage.getItem(KEY) || '[]');
+      secs.forEach((s) => { if (s.dataset.section && saved.includes(s.dataset.section)) s.open = true; });
+    } catch {}
+
+    const paint = () => {
+      const open = secs.filter((s) => s.open).length;
+      if (count) count.textContent = open + '/' + secs.length;
+      if (btn) btn.textContent = open === secs.length ? LABEL.close : LABEL.open;
+    };
+
+    const save = () => {
+      try {
+        sessionStorage.setItem(KEY, JSON.stringify(secs.filter((s) => s.open).map((s) => s.dataset.section)));
+      } catch {}
+    };
+
+    secs.forEach((s) => s.addEventListener('toggle', () => { paint(); save(); }));
+
+    btn?.addEventListener('click', () => {
+      const openAll = secs.some((s) => !s.open);
+      secs.forEach((s) => (s.open = openAll));
+      paint(); save();
+    });
+
+    // a link to #some-heading must open the section that holds it
+    const openTarget = () => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      if (!id) return;
+      const el = document.getElementById(id);
+      const sec = el?.closest('details.sec') as HTMLDetailsElement | null;
+      if (sec && !sec.open) { sec.open = true; paint(); }
+      el?.scrollIntoView({ block: 'start' });
+    };
+    window.addEventListener('hashchange', openTarget);
+    openTarget();
+
+    // Ctrl+F should be able to find collapsed text
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') secs.forEach((s) => (s.open = true));
+    });
+
+    paint();
+  }
+</script>

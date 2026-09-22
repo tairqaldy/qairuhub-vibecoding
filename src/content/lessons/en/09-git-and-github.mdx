@@ -1,28 +1,30 @@
 ---
 title: Repo & Version Control
-subtitle: An agent can edit dozens of files while you read one sentence. Git is what makes letting it do that a reasonable decision.
+subtitle: An agent edits dozens of files while you read one sentence. Git is what makes letting it do that a reasonable decision.
 objective: put a project under git, commit at the right moments, and undo anything an agent does to it
-description: "Git for the agent era: repo, commit, branch, remote, pull request, plus revert vs reset and what to do when an agent wrecks your working tree."
+description: "Git for the agent era: repo, commit, branch, remote, pull request, revert vs reset, and what to do when an agent wrecks your working tree."
 artifact: Git + conventional commits cheat sheet
 ---
 
 <Lead>
-A coding agent edits faster than you can read. The question was never whether it will get something wrong. The question is what being wrong costs you — and with git the answer is *one command*.
+A coding agent edits faster than you can read. It will get something wrong. Git decides what that costs you — and the answer is *one command*.
 </Lead>
 
-Without version control, every agent run is a one-way door. You end up arguing with a machine about what it changed three prompts ago and slowly losing the version that worked. With version control, a bad run is a shrug: throw it away, write a better prompt, run again. Everything bold you are about to do — long runs, risky refactors, letting an agent near the database layer — is only sensible because you can get back.
+Without version control, every agent run is a one-way door. The version that worked slips away while you argue about what changed three prompts ago.
+
+With it, a bad run is a shrug: throw it away, write a better prompt, run again.
 
 ## Five words carry the whole system
 
-| Word | What it is | Picture it as |
-|---|---|---|
-| **Repo** | Your project folder plus its full history, stored in a hidden `.git` folder. Works offline, needs no account. | A binder that contains every previous version of every page |
-| **Commit** | One saved snapshot: the exact state of the files plus a message explaining the change. | A diary entry with a photo attached |
-| **Branch** | A parallel line of work. Build on it, and `main` stays untouched until you merge. | Photocopying the master document to scribble on |
-| **Remote** | A copy of the repo on a server — usually GitHub — that you push to and pull from. | The safe deposit box, off-site |
-| **Pull request** | A proposal to merge one branch into another. Shows exactly which lines changed and runs checks first. | Handing a draft to an editor before it goes to print |
+| Word | What it is |
+|---|---|
+| **Repo** | Your project folder plus its full history, in a hidden `.git` folder. Offline, no account needed. |
+| **Commit** | One snapshot: the state of every file, plus a message explaining the change. |
+| **Branch** | A parallel line of work. `main` stays untouched until you merge. |
+| **Remote** | A copy of the repo on a server, usually GitHub. You push to it, you pull from it. |
+| **Pull request** | A proposal to merge one branch into another. Shows which lines changed and runs checks first. |
 
-That is the vocabulary. Five commands cover most days.
+Five commands cover most days.
 
 <Terminal title="bash">
 ```bash
@@ -35,11 +37,11 @@ git log --oneline
 ```
 </Terminal>
 
-`git status` is the one you will run most. It answers "what has changed since the last snapshot, and what is about to go into the next one". `git add` stages the files that go into that snapshot, `git commit` takes it, and `git log --oneline` reads the history back one line per commit.
+`git status` is the one you run most: what changed since the last snapshot, and what goes into the next. `git add` stages files, `git commit` takes the snapshot, `git log --oneline` reads the history back.
 
-## From a folder on your laptop to an address on the internet
+## From your laptop to an address on the internet
 
-Create an empty repository on GitHub (no README, no licence — you already have files), copy the URL it shows you, then connect the two.
+Create an empty repository on GitHub — no README, no licence, you already have files. Copy the URL.
 
 <Terminal title="bash">
 ```bash
@@ -49,9 +51,9 @@ git push -u origin main
 ```
 </Terminal>
 
-After the first push, `git push` on its own is enough. The other direction is `git pull`: it brings down commits the remote has and you do not — work you did on another laptop, or a change a teammate merged while you slept. Run it before you start, not after you have already edited the same file. Now your history exists in two places, and later modules can point a host at that URL and deploy on every push.
+After the first push, `git push` alone is enough. `git pull` goes the other way, bringing down commits the remote has and you do not. Run it before you start work, not after you have edited the same file. Your history now lives in two places, and a host can deploy from that URL ([module 12](/en/learn/deploy/)).
 
-## .gitignore is the list of things that must never leave your laptop
+## .gitignore keeps files out of the repo
 
 A `.gitignore` file tells git which paths to pretend it cannot see. Four lines cover a typical project:
 
@@ -64,15 +66,15 @@ dist/
 ```
 </Terminal>
 
-`.env` holds your API keys — keeping secrets out of the repository is the entire point of environment variables. `node_modules/` is reinstallable and enormous, `dist/` is generated, and `.claude/worktrees/` is where Claude Code puts parallel working copies once you run two sessions at once.
+`.env` holds your API keys ([module 08](/en/learn/local-build/)) and must never be committed. `node_modules/` is reinstallable and enormous, `dist/` is generated, `.claude/worktrees/` holds Claude Code's parallel working copies.
 
 <Callout type="danger" title="A committed secret does not get uncommitted">
-Deleting a key from a file and committing again does not remove it. Every earlier snapshot still contains it, and if you pushed, it is on someone else's server too. If a key ever landed in a commit, treat it as public: issue a new key and revoke the old one. Write `.gitignore` before your first commit, not after.
+Deleting a key from a file and committing again does not remove it. Every earlier snapshot still holds it, and if you pushed, so does someone else's server. Treat any key that reached a commit as public: issue a new one, revoke the old. Write `.gitignore` before your first commit.
 </Callout>
 
 ## Write commit messages you can still read at 2 a.m.
 
-A commit message has one job: let a future reader — you, a teammate, or an agent in a fresh session — decide in two seconds whether this is the commit they want to undo. The conventional-commits style makes that automatic: a type, an optional scope, one line of plain description.
+A commit message has one job: let a future reader decide in two seconds whether this is the commit to undo. Conventional commits give it a shape — a type, an optional scope, one line of description.
 
 <Terminal title="git log --oneline" copy={false}>
 ```text
@@ -85,11 +87,13 @@ chore(deps): bump astro
 ```
 </Terminal>
 
-Six types carry almost everything: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`. Keep the first line short enough to scan in a list, and put the *why* in the body if it needs one. The payoff is that `git log --oneline` becomes a changelog you can revert line by line. Anthropic's [write-up on harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) arrives at the same habit from the agent's side: have it commit after each unit of progress with a message that describes the change, so a later session can find its way back to a state that worked.
+Six types carry almost everything: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`. Keep the first line short enough to scan, and put the *why* in the body. Then `git log --oneline` is a changelog you can revert line by line.
+
+Anthropic's [write-up on harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) gives the agent the same habit: commit after each unit of progress, so a later session can find its way back to a state that worked.
 
 ## Undo has three shapes, and only one is safe after a push
 
-This is the part to actually memorise. Match the situation to the command.
+Match the situation to the command.
 
 | What happened | What you run |
 |---|---|
@@ -99,18 +103,18 @@ This is the part to actually memorise. Match the situation to the command.
 | The last commit is bad and you have **not** pushed | `git reset --hard HEAD~1` — the commit is deleted |
 | The bad commit is already pushed or shared | `git revert HEAD` — a new commit undoes it |
 
-`git clean -fd` deletes untracked files permanently — git never recorded them, so nothing can be restored. Ignored files survive unless you add `-x`, so your `.env` is safe. Run `git clean -nd` first: `-n` lists what would go without touching anything.
+`git clean -fd` deletes untracked files permanently — git never recorded them, so nothing can be restored. Ignored files survive unless you add `-x`, so `.env` is safe. Run `git clean -nd` first: it lists what would go without touching anything.
 
 <Compare a="git reset --hard" b="git revert">
 <div slot="a">
-Rewinds the branch and deletes the commit. Perfect while the work is still only on your laptop. After a push it is a trap: your history and the remote's now disagree, the next push demands `--force`, and forcing over a branch others have pulled is how teams lose work.
+Rewinds the branch and deletes the commit. Fine while the work is only on your laptop. After a push it is a trap: the next push demands `--force`, and forcing over a branch others have pulled is how teams lose work.
 </div>
 <div slot="b">
-Adds a new commit that is the exact inverse of the bad one. Nothing is destroyed or rewritten, and the log honestly shows both the mistake and its undo. Safe before a push and after it. This is your default.
+Adds a new commit that is the exact inverse of the bad one. Nothing is destroyed, and the log shows both the mistake and its undo. Safe before a push and after. Your default.
 </div>
 </Compare>
 
-Revert works on any commit, not only the last: read `git log --oneline`, copy the short hash, run `git revert a1b2c3d`. If later work built on it, git stops and shows you the conflict instead of guessing.
+Revert works on any commit, not only the last: copy the short hash from `git log --oneline` and run `git revert a1b2c3d`. If later work built on it, git stops and shows you the conflict instead of guessing.
 
 <Widget name="git-sim" />
 
@@ -130,28 +134,26 @@ Revert works on any commit, not only the last: read `git log --oneline`, copy th
 
 ## Checkpoints are local undo. Git is permanent undo.
 
-Claude Code keeps its own safety net. Every prompt that starts a turn creates a checkpoint, and files are snapshotted before each edit; `Esc Esc` on an empty input, or `/rewind`, opens a menu that restores code and conversation, or just one of them. For "that last edit was wrong" it beats any git command.
+Claude Code has its own safety net: every prompt creates a checkpoint, and files are snapshotted before each edit. `Esc Esc` on an empty input, or `/rewind`, restores code, conversation, or just one of them. For "that last edit was wrong" it beats any git command.
 
-It is not a replacement for git, and the [checkpointing docs](https://code.claude.com/docs/en/checkpointing) say so. Checkpoints keep only the 100 most recent per session and are swept about 30 days after the session last saved one. More importantly, they do not track changes made by Bash commands such as `rm`, `mv` and `cp`, most subagent edits, edits made outside the session, or symlinked and hard-linked files.
+The [checkpointing docs](https://code.claude.com/docs/en/checkpointing) say checkpoints are not a replacement for git. Only the 100 most recent per session are kept, and they are swept about 30 days after the session last saved one. They do not track changes from Bash commands such as `rm`, `mv` and `cp`, most subagent edits, edits made outside the session, or symlinked and hard-linked files.
 
 <Callout type="warn" title="The failure case is exactly the uncovered one">
-The run that hurts is the one where the agent shells out — moves a folder, deletes a directory, regenerates files with a script. That is the category checkpoints do not cover. A commit covers all of it, because a commit does not care who changed the file or how.
+The run that hurts is the one where the agent shells out — moves a folder, deletes a directory, regenerates files with a script. Checkpoints do not cover that. A commit does, because it does not care who changed the file or how.
 </Callout>
 
 ## Commit before you press Enter
 
-Here is the rule to leave with: **`git status` should say "working tree clean" before you send a prompt that will touch more than one file.** Then commit each unit of work that passes its own check, before starting the next one.
-
-Two reasons, and neither is bookkeeping.
+**`git status` should say "working tree clean" before you send a prompt that will touch more than one file.** Then commit each unit of work that passes its check, before starting the next.
 
 <StatRow>
   <Stat value="93%" label="of permission prompts users approved anyway" source="Anthropic, Mar 2026" href="https://www.anthropic.com/engineering/claude-code-auto-mode" tone="warn" />
   <Stat value="17%" label="of genuinely over-eager actions the auto-mode classifier missed" source="Anthropic, Mar 2026" href="https://www.anthropic.com/engineering/claude-code-auto-mode" tone="warn" />
 </StatRow>
 
-First: approval fatigue is measured, not theoretical. When almost every prompt gets a yes, clicking "allow" has stopped being a decision. And the classifier Claude Code's auto mode uses to approve on your behalf still lets 17% of genuinely over-eager actions through. Neither layer is a wall. A commit before the run is the one guardrail that never gets tired.
+Approval fatigue is measured, not theoretical. When almost every prompt gets a yes, "allow" stops being a decision — and the classifier that approves on your behalf still lets 17% of over-eager actions through ([module 07](/en/learn/the-agent/)). A commit before the run never gets tired.
 
-Second: small commits make supervision cheap. A forty-line diff you will genuinely read. A two-thousand-line diff you will scroll and approve, which is not review — it is a signature.
+Small commits also make review cheap. A forty-line diff you will actually read. A two-thousand-line diff you will scroll and approve, which is a signature, not a review.
 
 <Prompt title="Git rules for your agent" where="Claude Code · AGENTS.md or the first message of a session">
 ```text
@@ -170,9 +172,9 @@ Git rules for this repo:
 
 ## One branch per task, one pull request per review
 
-Branch before the agent starts, not after: `git checkout -b feat/seat-counter`. If the run goes badly you delete the branch and `main` never knew. If it goes well, open a pull request — yes, even alone, even on a project nobody else will see. That is where you read the diff file by file, where automated checks run, and where a fresh agent session can review code it did not write.
+Branch before the agent starts, not after: `git checkout -b feat/seat-counter`. If the run goes badly you delete the branch and `main` never knew. If it goes well, open a pull request — even alone. That is where you read the diff file by file, where checks run, and where a fresh agent session can review code it did not write.
 
-Simon Willison's catalogue of agentic anti-patterns names the one that matters here: do not open a pull request containing code you have not reviewed yourself; keep them small and include the evidence that it works. [Anti-patterns](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/) and his chapter on [using git with coding agents](https://simonwillison.net/guides/agentic-engineering-patterns/using-git-with-coding-agents/) are what to read after this page.
+Simon Willison's rule: never open a pull request containing code you have not reviewed yourself. Keep them small, with the evidence that they work. His [anti-patterns](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/) and [using git with coding agents](https://simonwillison.net/guides/agentic-engineering-patterns/using-git-with-coding-agents/) are what to read next.
 
 <Myth
   n={9}
@@ -180,11 +182,11 @@ Simon Willison's catalogue of agentic anti-patterns names the one that matters h
   source="Simon Willison · anti-patterns"
   href="https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/"
 >
-You cannot recover from what you cannot read. Every move on this page starts with a judgement call: which changes were part of the task, which commit introduced the bug, is this diff the fix or a second bug. Willison's anti-patterns list states the same rule for pull requests — never open one containing code you have not reviewed yourself — and every undo here rests on that same ability. Git hands you the evidence; reading it is still your job. An agent that writes code you do not understand has not removed the work — it has moved it to the worst possible moment, the one where something is already broken.
+You cannot recover from what you cannot read. Every move on this page is a judgement call: which changes belonged to the task, which commit introduced the bug, is this diff the fix or a second bug. Git hands you the evidence; reading it is your job. An agent that writes code you do not understand has not removed the work — it moved it to the moment when something is already broken.
 </Myth>
 
 <Deeper title="One agent per worktree, when you start running two at once">
-A worktree is a second working directory on its own branch, sharing the same repo history — so two agent sessions never overwrite each other's files. Manually: `git worktree add ../qairu-feature-a -b feature-a`, plus `git worktree list` and `git worktree remove`. Claude Code wraps this as `claude --worktree feature-auth`, which creates `.claude/worktrees/feature-auth/` on a branch named `worktree-feature-auth` and removes clean worktrees on exit. It is a fresh checkout, so you install dependencies again and ignored files such as `.env` do not come along ([worktrees docs](https://code.claude.com/docs/en/worktrees)). Reach for this the first time two sessions collide, not on day one.
+A worktree is a second working directory on its own branch, sharing the same repo history, so two agent sessions never overwrite each other's files: `git worktree add ../qairu-feature-a -b feature-a`, with `git worktree list` and `git worktree remove`. Claude Code wraps this as `claude --worktree feature-auth`: it creates `.claude/worktrees/feature-auth/` on a branch named `worktree-feature-auth` and removes clean worktrees on exit. A fresh checkout, so dependencies install again and ignored files such as `.env` do not come along ([worktrees docs](https://code.claude.com/docs/en/worktrees)). When to run two sessions at all is [module 14](/en/learn/multi-agent/).
 </Deeper>
 
 <Prompt title="When the agent has gone off the rails" where="Claude Code · before you undo anything">
@@ -200,19 +202,19 @@ Stop. Do not change any more files.
 </Prompt>
 
 <Callout type="live" title="Do this one on stage">
-Make a throwaway commit, run `git reset --hard HEAD~1` in front of the room, and show `git log` with the commit simply gone. Then make another, run `git revert HEAD`, and show the log keeping both entries. The visible difference between "deleted" and "undone" is what makes people commit before the next agent run.
+Make a throwaway commit, run `git reset --hard HEAD~1` in front of the room, and show `git log` with the commit simply gone. Then make another, run `git revert HEAD`, and show the log keeping both entries. Seeing "deleted" next to "undone" is what makes people commit.
 </Callout>
 
 <ProjectStep n={9} title="Put QAIRU Event Sign-up under git, then break it on purpose">
-Five moves. The first three set the repo up. The last two are the ones you will repeat for the rest of the course.
+Five moves. The last two you repeat all course.
 
-1. In the project folder: `git init`. Open the `.gitignore` you wrote in module 8 and add `dist/` and `.claude/worktrees/` next to `.env` and `node_modules/` — before anything else.
-2. `git add .` then `git commit -m "chore: first working version"`. Check it: `git status` says clean, `git log --oneline` shows one line.
-3. Create an empty repo on GitHub, then `git remote add origin` with the URL it gives you, `git branch -M main`, `git push -u origin main`. Refresh the page — your project now has an address.
-4. The drill. Run `git checkout -b feat/seat-counter`, then ask your agent to add a "12 seats left" counter to the sign-up page. Let it finish, then `git add .` and `git commit -m "feat(signup): seats-left counter"`.
-5. Now undo it: `git revert HEAD`. Reload the page — the counter is gone, and `git log --oneline` shows both the change and its reversal. Finish with `git checkout main`. Your working version was never in danger, and you have now practised the exact move you will need on a bad day.
+1. In the project folder: `git init`. Open the `.gitignore` from module 8 and add `dist/` and `.claude/worktrees/` — before anything else.
+2. `git add .` then `git commit -m "chore: first working version"`. Check: `git status` says clean, `git log --oneline` shows one line.
+3. Create an empty repo on GitHub, then `git remote add origin` with its URL, `git branch -M main`, `git push -u origin main`. Refresh the page — your project has an address.
+4. The drill. `git checkout -b feat/seat-counter`, then ask your agent to add a "12 seats left" counter to the sign-up page. When it finishes: `git add .` and `git commit -m "feat(signup): seats-left counter"`.
+5. Now undo it: `git revert HEAD`. Reload the page — the counter is gone, and `git log --oneline` shows the change and its reversal. Finish with `git checkout main`. That is the move you will need on a bad day.
 </ProjectStep>
 
 <Artifact title="Git + conventional commits cheat sheet" kind="cheatsheet">
-Set-up, the five daily commands, the undo table by situation, and the commit-message types — on one page you can keep open beside the terminal.
+Set-up, the five daily commands, the undo table and the commit types — one page beside the terminal.
 </Artifact>

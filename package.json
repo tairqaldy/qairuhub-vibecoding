@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/build-index.mjs",
     "preview": "npm run build && wrangler dev",
     "typecheck": "astro check",
     "check:i18n": "node scripts/check-i18n.mjs",
@@ -17,9 +17,11 @@
     "shots": "node scripts/shots.mjs",
     "og": "node scripts/make-og.mjs",
     "evidence": "node scripts/capture-evidence.mjs",
-    "images": "node scripts/optimize-images.mjs"
+    "images": "node scripts/optimize-images.mjs",
+    "index": "node scripts/build-index.mjs"
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.1",
     "@astrojs/mdx": "^8.0.1",
     "@astrojs/react": "^6.0.6",
     "@astrojs/sitemap": "^3.7.4",

@@ -70,6 +70,9 @@ export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
 
+  // the assistant endpoint is not a page and handles its own access
+  if (url.pathname.startsWith('/api/')) return next();
+
   if (!GATED.test(url.pathname)) return next();
 
   const token = readCookie(request.headers.get('Cookie'), COOKIE);

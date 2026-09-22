@@ -1,8 +1,8 @@
 ---
 title: Set Up Your Machine
-subtitle: Three installs, one account, three commands that prove them. Do it tonight, not in the room while fifty laptops fight over one router.
+subtitle: Three installs, one account, three commands that prove them. Do it tonight, not in a room where fifty laptops fight over one router.
 objective: install Node, git and an editor, prove each one works with a command, and open a project folder you own
-description: Node, git, VS Code and a GitHub account on Windows, macOS and Linux — the exact command that proves each install worked, and the Windows mistakes that eat the first hour.
+description: Node, git, VS Code and a GitHub account on Windows, macOS and Linux — the command that proves each install, and the Windows mistakes that eat the first hour.
 artifact: Setup verification card
 prerequisites: []
 doneWhen: You can run node -v and git --version in a freshly opened terminal, get a version number from each, and open your own project folder in your editor.
@@ -12,25 +12,25 @@ doneWhen: You can run node -v and git --version in a freshly opened terminal, ge
 Nothing in this lab is clever. It is the twenty minutes that decides whether the next three hours are about building software or about *why nothing works*.
 </Lead>
 
-Every step below ends with a command that prints something. If it prints, that install is real. If it does not print, you have a specific problem with a specific fix, and this page has it.
+Every step ends with a command that prints something. If it prints, that install is real. If it does not, the fix is on this page.
 
 ## Three installs, one account, and your agent is not on the list
 
-You are installing **Node**, **git** and **VS Code**, and creating a **GitHub account**. That is the whole bench. The agent comes in Lab 01, and it is deliberately not here.
+You are installing **Node**, **git** and **VS Code**, and creating a **GitHub account**. That is the whole bench. The agent comes in [Lab 01](/en/labs/claude-code-first-session/), and it is deliberately not here.
 
-Claude Code's own setup docs are blunt about why: the native installer works on Windows 10 1809 or newer with 4 GB of RAM, and needs no admin rights, no WSL and no Node.js at all ([setup](https://code.claude.com/docs/en/setup)). There is even a desktop app whose Code tab needs no terminal ([desktop quickstart](https://code.claude.com/docs/en/desktop-quickstart)).
+Claude Code's native installer needs no admin rights, no WSL and no Node.js at all — just Windows 10 1809 or newer and 4 GB of RAM ([setup](https://code.claude.com/docs/en/setup)). There is even a desktop app whose Code tab needs no terminal ([desktop quickstart](https://code.claude.com/docs/en/desktop-quickstart)).
 
-So none of this is for the agent. It is for your project. The QAIRU Event Sign-up app you build across this course needs Node to run, git to remember what changed, and an editor so you can read what the agent wrote.
+So these installs are for your project, not the agent. The QAIRU Event Sign-up app you build across this course needs Node to run, git to remember what changed, and an editor so you can read what the agent wrote.
 
 ## Where the terminal lives, and which one you have
 
-A terminal is a window that runs commands. You need one open before anything else.
+A terminal is a window that runs commands. Open one before anything else.
 
-- **Windows** — press Start, type `terminal`, open Windows Terminal. Do not have it? Type `powershell` instead, or install it with `winget install Microsoft.WindowsTerminal`. It is free and open source ([microsoft/terminal](https://github.com/microsoft/terminal)), and later you will want its split panes: `Alt+Shift+D` puts the agent on the left and the logs on the right.
+- **Windows** — press Start, type `terminal`, open Windows Terminal. Do not have it? Type `powershell` instead, or install it with `winget install Microsoft.WindowsTerminal`. It is free and open source ([microsoft/terminal](https://github.com/microsoft/terminal)). Later you will want its split panes: `Alt+Shift+D` puts the agent on the left and the logs on the right.
 - **macOS** — `Cmd+Space`, type `terminal`, Enter.
 - **Linux** — `Ctrl+Alt+T` on most desktops.
 
-Now read the line where your cursor sits. On Windows it tells you which shell you are in, and pasting a command into the wrong one is a standard first-hour failure — Anthropic's own docs list the two error messages it produces ([setup](https://code.claude.com/docs/en/setup)).
+Now read the line where your cursor sits. On Windows it names your shell. Paste a command into the wrong one and you get one of two errors that Anthropic's own docs list ([setup](https://code.claude.com/docs/en/setup)).
 
 | The line looks like | You are in | So |
 |---|---|---|
@@ -43,11 +43,11 @@ Now read the line where your cursor sits. On Windows it tells you which shell yo
 <Steps>
 
 <Step title="Install Node — and npm arrives with it">
-Go to the official Node.js download page and take the **LTS** build for your operating system: the `.msi` installer on Windows, the `.pkg` installer on macOS, or the instructions that page gives for your distribution on Linux. Accept the defaults.
+Take the **LTS** build for your operating system from the official Node.js download page: the `.msi` installer on Windows, the `.pkg` installer on macOS, or the instructions that page gives for your distribution on Linux. Accept the defaults.
 
-LTS means long-term support: the boring version, which is the one you want. Anything from version 20 up works here. Take the newest LTS anyway — if you ever install Claude Code through npm instead of its native installer, that route wants Node.js 22 or newer ([setup](https://code.claude.com/docs/en/setup)).
+LTS means long-term support: the boring version, which is the one you want. Anything from version 20 up works here. Take the newest LTS anyway — installing Claude Code through npm instead of its native installer wants Node.js 22 or newer ([setup](https://code.claude.com/docs/en/setup)).
 
-Then **close the terminal you had open and open a new one.** Not superstition: it is the single most common reason a fresh install looks broken. A running terminal keeps the environment it started with and never notices an installer changing it.
+Then **close the terminal you had open and open a new one.** A running terminal keeps the environment it started with and never notices an installer changing it. This is the most common reason a fresh install looks broken.
 
 <Terminal title="check" copy={false}>
 
@@ -61,13 +61,13 @@ v22.20.0
 
 </Terminal>
 
-Your numbers will be different and probably higher. What matters is the shape: `node -v` answers with a `v` and digits, and `npm -v` answers with digits. npm is the package manager that comes bundled with Node — you do not install it separately.
+Your numbers will be different and probably higher. What matters is the shape: `node -v` answers with a `v` and digits, `npm -v` with digits. npm ships with Node — you do not install it separately.
 </Step>
 
 <Step title="Install git">
-**Windows:** download and run [Git for Windows](https://git-scm.com/downloads/win). Take the defaults. Anthropic's docs call this optional for Claude Code and then recommend it anyway: with Git for Windows present, Claude Code uses Git Bash for its Bash tool; without it, it falls back to a PowerShell tool ([setup](https://code.claude.com/docs/en/setup)). You need git from Lab 02 regardless, so install it now.
+**Windows:** download and run [Git for Windows](https://git-scm.com/downloads/win). Take the defaults. Anthropic's docs call git optional for Claude Code and then recommend it anyway: with Git for Windows present, Claude Code uses Git Bash for its Bash tool; without it, a PowerShell tool ([setup](https://code.claude.com/docs/en/setup)). You need git from Lab 02 regardless.
 
-**macOS:** run `git --version`. If git is missing, macOS offers to install the developer command line tools — accept, wait, run the command again.
+**macOS:** run `git --version`. If git is missing, macOS offers the developer command line tools — accept, wait, run the command again.
 
 **Linux (Debian/Ubuntu):** `sudo apt install git`.
 
@@ -80,16 +80,16 @@ git version 2.51.0
 
 </Terminal>
 
-Again: the exact number is not the point. The words `git version` followed by digits are.
+Again, the exact number does not matter. The words `git version` followed by digits do.
 </Step>
 
 <Step title="Install VS Code and open a folder with it">
-VS Code is a free editor, open source at its core ([microsoft/vscode](https://github.com/microsoft/vscode)). Download the build for your operating system from Microsoft and install it, or on Windows run `winget install Microsoft.VisualStudioCode`.
+VS Code is a free editor, open source at its core ([microsoft/vscode](https://github.com/microsoft/vscode)). Download the build for your operating system from Microsoft, or on Windows run `winget install Microsoft.VisualStudioCode`.
 
-Then do the one thing that actually matters: **File → Open Folder**, and pick a folder. Not a file — a folder. Everything in this course, and everything an agent does, is scoped to a folder. If you open loose files instead, nothing else in the course will line up.
+Then do the one thing that matters: **File → Open Folder**, and pick a folder. Not a file — a folder. Everything in this course, and everything an agent does, is scoped to a folder.
 
 <Callout type="warn" title="The extension is not the command">
-Later you may add the Claude Code extension: Extensions view (`Ctrl+Shift+X`), search "Claude Code", then Command Palette (`Ctrl+Shift+P`) → "Claude Code" → Open in New Tab. Know this first — the extension bundles its own private copy of the CLI and does **not** put `claude` on your PATH ([VS Code integration](https://code.claude.com/docs/en/vs-code)). People install it, type `claude` in a terminal, get "not recognized", and conclude the install failed. It did not. They are two separate installs.
+Later you may add the Claude Code extension: Extensions view (`Ctrl+Shift+X`), search "Claude Code", then Command Palette (`Ctrl+Shift+P`) → "Claude Code" → Open in New Tab. Know this first: the extension carries its own private copy of the CLI and does **not** put `claude` on your PATH ([VS Code integration](https://code.claude.com/docs/en/vs-code)). People install it, type `claude` in a terminal, get "not recognized", and conclude the install failed. It did not. They are two separate installs.
 </Callout>
 </Step>
 
@@ -116,9 +116,9 @@ cd qairu-event
 
 </Terminal>
 
-If you chain those onto one line, PowerShell separates commands with `;` and Bash with `&&` — the same split behind two of the error messages in the next section.
+Chain those onto one line and the separator differs: `;` in PowerShell, `&&` in Bash. That split is behind two of the error messages in the next section.
 
-This matters more than it looks. Launching an agent in your home folder or on the Desktop hands it every file you own to read and index. `cd` into the project first, every time.
+Launching an agent in your home folder or on the Desktop hands it every file you own to read and index. `cd` into the project first, every time.
 </Step>
 
 <Step title="Prove all of it in one fresh terminal">
@@ -133,33 +133,33 @@ git --version
 
 </Terminal>
 
-Two version numbers, no errors. Then open this folder in VS Code — File → Open Folder, or type `code .` if your installer added that shortcut — and confirm you can see the (empty) file tree on the left.
+Two version numbers, no errors. Then open this folder in VS Code — File → Open Folder, or type `code .` if your installer added that shortcut — and check that the (empty) file tree shows on the left.
 
-That is the whole definition of done. Two numbers and a folder.
+Done is two numbers and a folder.
 </Step>
 
 </Steps>
 
 ## When Windows argues back
 
-Most of this room is on Windows; most tutorials are written by people who are not. Read the message instead of retrying the command. Every row below comes from Anthropic's [setup](https://code.claude.com/docs/en/setup) and [install troubleshooting](https://code.claude.com/docs/en/troubleshoot-install) pages, and every one generalises past Claude Code to almost anything you install this year.
+Most of this room is on Windows; most tutorials are written by people who are not. Read the message instead of retrying the command. Every row below comes from Anthropic's [setup](https://code.claude.com/docs/en/setup) and [install troubleshooting](https://code.claude.com/docs/en/troubleshoot-install) pages, and every one applies far past Claude Code.
 
 | The message | What actually happened | Fix |
 |---|---|---|
-| `'x' is not recognized` | that folder is not on your PATH — or your terminal predates the install | open a **new** terminal first; if it still fails, the folder really is missing from PATH |
-| `The token '&&' is not a valid statement separator` | a CMD command was pasted into PowerShell | use `;` between commands, or switch shells |
-| `'irm' is not recognized` | a PowerShell command was pasted into CMD | open PowerShell and run it there |
+| `'x' is not recognized` | that folder is not on your PATH — or your terminal predates the install | open a **new** terminal; if it still fails, the folder really is missing from PATH |
+| `The token '&&' is not a valid statement separator` | a CMD command pasted into PowerShell | use `;` between commands, or switch shells |
+| `'irm' is not recognized` | a PowerShell command pasted into CMD | open PowerShell and run it there |
 | `running scripts is disabled on this system` | PowerShell's execution policy is blocking a script shim; the docs list this exact error for npm's shims | run the same command in CMD or Git Bash, where no PowerShell policy applies |
 | `Claude Code does not support 32-bit Windows` | you opened "PowerShell (x86)" | close it, open plain PowerShell or Windows Terminal |
 | `syntax error near unexpected token '<'`, or curl returns 403 | an install script returned an HTML page — a network or region block | try another network; Kazakhstan itself is supported, see below |
 
 <Callout type="tip" title="The PATH rule, in one line">
-PATH is the list of folders your terminal searches for programs. An installer can add to it; a terminal window already open never re-reads it. So the fix for "I installed it and it says not recognized" is, in order: close the window, open a new one, run the command again.
+PATH is the list of folders your terminal searches for programs. An installer can add to it; an already-open terminal never re-reads it. So the fix for "I installed it and it says not recognized" is: close the window, open a new one, run the command again.
 </Callout>
 
 ## The accounts to make tonight
 
-All four of these cost zero and none of them asks for a card.
+All four cost zero. None of them asks for a card.
 
 | Account | Where | Why you want it |
 |---|---|---|
@@ -168,18 +168,16 @@ All four of these cost zero and none of them asks for a card.
 | Claude | [claude.ai](https://claude.ai) | a free account is enough to follow this course in a browser; Claude Code itself needs a paid plan, see below |
 | A spare Google account and a free ChatGPT account | — | free agents live behind them: Antigravity's Individual plan at $0 ([pricing](https://antigravity.google/pricing), 18+ only per its [FAQ](https://antigravity.google/docs/faq/)) and Codex, included on the free ChatGPT tier with a small allowance ([plans](https://learn.chatgpt.com/docs/pricing)) |
 
-Two honest notes before you budget anything.
-
 Kazakhstan is on Anthropic's supported-countries list for both Claude.ai and the API ([supported countries](https://www.anthropic.com/supported-countries)), so no VPN is needed. But the free Claude plan does **not** include Claude Code — that needs Pro, Max, Team, Enterprise or Console billing ([setup](https://code.claude.com/docs/en/setup)). Pro is $20 a month, or $17 a month billed annually ([pricing](https://claude.com/pricing)). One month covers this masterclass.
 
-And "student plan" does not mean "the same product, free". GitHub's pack gives Copilot Student, not Copilot Pro. Students can no longer pick GPT-5.3-Codex, GPT-5.4, Claude Opus or Claude Sonnet by hand — those models are reachable only through Auto mode — and the plan's allowance is 200 AI credits a month, where one credit is one cent of usage. The announcement collected 6,796 thumbs-down reactions ([GitHub community discussion](https://github.com/orgs/community/discussions/189268), [Copilot plans](https://github.com/features/copilot/plans)). Free is still free; it is just smaller than the marketing implies.
+And "student plan" does not mean "the same product, free". GitHub's pack gives Copilot Student, not Copilot Pro. Students can no longer pick GPT-5.3-Codex, GPT-5.4, Claude Opus or Claude Sonnet by hand — those models come only through Auto mode — and the allowance is 200 AI credits a month, where one credit is one cent of usage. The announcement collected 6,796 thumbs-down reactions ([GitHub community discussion](https://github.com/orgs/community/discussions/189268), [Copilot plans](https://github.com/features/copilot/plans)). Free is still free, just smaller than the marketing implies.
 
 <Deeper title="Free hosting tiers: which ones to open now, which ones to avoid">
-You deploy in Module 12. Open the right account now rather than reading pricing pages at midnight.
+You deploy in [module 12](/en/learn/deploy/). Open the right account now, not at midnight.
 
 - **Cloudflare Pages** — the safe default here. Free tier: 500 builds a month, 100 projects, and no bandwidth cap listed for static assets ([limits](https://developers.cloudflare.com/pages/platform/limits/)).
 - **Vercel Hobby** — generous, but **non-commercial, personal use only**, and exceeding a limit usually means waiting 30 days ([Hobby plan](https://vercel.com/docs/plans/hobby)).
-- **Netlify Free** — credit-based: 300 credits a month, a hard limit with no rollover, and one production deploy costs 15 credits. Twenty deploys exhaust the month, after which your projects are paused until the next cycle ([credit pricing](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/)). A course where you deploy often is the wrong fit for it.
+- **Netlify Free** — 300 credits a month, a hard limit with no rollover, and one production deploy costs 15 credits. Twenty deploys exhaust the month, after which your projects are paused until the next cycle ([credit pricing](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/)). Wrong fit for a course where you deploy often.
 - **Databases, later:** Render's free Postgres expires 30 days after creation with no backups ([free tier](https://render.com/docs/free)), and a free Supabase project is paused after one week of inactivity ([pricing](https://supabase.com/pricing)). Read those two sentences again before you put anything you care about in either.
 
 The zero-cost stack that holds up for a student in Kazakhstan: GitHub for the repo, Cloudflare Pages for the site, a managed database only when you actually need one.
@@ -214,7 +212,7 @@ I did not name.
 
 </Prompt>
 
-That prompt is small on purpose. Naming your OS, pasting real output instead of describing it, and closing off the "just reinstall everything" answer are three habits you will reuse on every prompt in this course.
+That prompt is small on purpose. Name your OS, paste real output instead of describing it, cut off the "just reinstall everything" answer — three habits you reuse on every prompt in this course.
 
 <Quiz
   id="lab0-newterminal"
@@ -226,12 +224,12 @@ That prompt is small on purpose. Naming your OS, pasting real output instead of 
     'Node only works from inside VS Code',
   ]}
   answer={1}
-  explain="A terminal reads its environment once, when it opens, and never notices an installer adding a folder to PATH afterwards. Close the window, open a new one and run the command again; only if it still fails is the install directory genuinely missing from PATH."
+  explain="A terminal reads its environment once, when it opens, and never notices an installer adding a folder to PATH. Close the window, open a new one and run the command again; only if it still fails is the install directory genuinely missing from PATH."
   xp={10}
 />
 
 <Callout type="live" title="If you are running this lab in a room">
-Do not let fifty laptops download Node over one router. Send this page out the day before and open the doors twenty minutes early for a setup desk. On the day, run the shell table out loud first: have everyone read their own prompt line before anyone types a command. Then walk the room and look at screens — the two failures you will see most are a terminal opened before the install and a command pasted into the wrong Windows shell, and both are faster to spot than to describe.
+Do not let fifty laptops download Node over one router. Send this page out the day before and open the doors twenty minutes early for a setup desk. On the day, run the shell table out loud first: everyone reads their own prompt line before anyone types a command. Then walk the room and look at screens — the two failures you will see most are a terminal opened before the install and a command pasted into the wrong Windows shell, and both are faster to spot than to describe.
 </Callout>
 
 <Checklist

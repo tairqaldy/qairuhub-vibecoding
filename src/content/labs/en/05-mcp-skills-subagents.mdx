@@ -1,8 +1,8 @@
 ---
 title: "MCP, Skills & Subagents"
-subtitle: Three ways to extend the agent, one question that tells you which one you need, and the exact commands for all three.
+subtitle: Three ways to extend the agent, the question that tells you which one you need, and the commands for all three.
 objective: add a working MCP server, write a project skill, delegate a review to a subagent, and prove what each one changed
-description: "Extend Claude Code with one real MCP server, one small skill and one subagent. Exact commands for Windows, macOS and Linux, with the before and after in each case."
+description: "Extend Claude Code with one MCP server, one skill and one subagent. Commands for Windows, macOS and Linux, with the before and after in each case."
 artifact: Extend-the-agent cheatsheet — which of the three to reach for, and the command
 prerequisites:
   - Lab 02 finished — a QAIRU Event Sign-up folder that is a git repo with at least one commit
@@ -12,14 +12,14 @@ doneWhen: "`claude mcp list` prints Connected, `/cc-docs` answers from the docum
 ---
 
 <Lead>
-By now your agent knows your project. It still does not know your *tools*, your repeated chores, or how to keep its own noise out of its own head. Three features fix exactly those three things — and they are not interchangeable.
+Your agent knows your project. It does not know your *tools*, your weekly chores, or how to keep its own noise out of your context window. Three features fix those three things, and they are not interchangeable.
 </Lead>
 
-Twenty-five minutes. One MCP server, one skill, one delegated review. After each, you check what actually changed — because "I installed a thing" is not a result.
+Twenty-five minutes. One MCP server, one skill, one delegated review. After each one you check what changed. "I installed a thing" is not a result.
 
-## Three problems, three tools, and the question that separates them
+## Three problems, three tools
 
-The ladder Claude Code is built on: CLAUDE.md is always loaded, skills load on demand, hooks fire deterministically, subagents get a separate context window, and MCP brings in external tools ([features overview](https://code.claude.com/docs/en/features-overview)).
+Claude Code stacks them: CLAUDE.md always loads, skills load on demand, hooks fire deterministically, subagents get their own context window, and MCP brings in external tools ([features overview](https://code.claude.com/docs/en/features-overview)).
 
 | You are missing | Reach for | What it is |
 |---|---|---|
@@ -27,7 +27,7 @@ The ladder Claude Code is built on: CLAUDE.md is always loaded, skills load on d
 | A chore you re-explain every week: a review format, a release note | **Skill** | A folder with a `SKILL.md`; only its description sits in context |
 | Work that would flood your conversation: logs, a big search, a diff review | **Subagent** | A helper with its own context window that hands back a summary |
 
-The question that sorts almost every case: **is the missing thing outside your machine (MCP), inside your head (skill), or inside your context window (subagent)?**
+One question sorts almost every case: **is the missing thing outside your machine (MCP), inside your head (skill), or inside your context window (subagent)?**
 
 <StatRow>
   <Stat value="~100" label="tokens a skill costs until you call it" source="Anthropic, 16 Oct 2025" href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills" tone="good" />
@@ -37,7 +37,7 @@ The question that sorts almost every case: **is the missing thing outside your m
 
 ## Add one MCP server: the Claude Code docs
 
-One sentence first: an MCP server gives the agent a tool it did not have — here, a searchable copy of the current Claude Code documentation, so it stops answering from memory. Hosted over HTTP, no authentication, nothing to install.
+An MCP server gives the agent a tool it did not have. This one is a searchable copy of the current Claude Code documentation, so the agent stops answering from memory. Hosted over HTTP, no authentication, nothing to install.
 
 <Steps>
 <Step title="Add it from your normal shell, not from inside a session">
@@ -54,7 +54,7 @@ The line for your server should end in `Connected`. If not, run `claude mcp list
 </Step>
 
 <Step title="Ask it something it can only answer from the docs">
-Start `claude`, then run `/mcp` — you get status, reconnect, authenticate and disable for every server. Now prompt:
+Start `claude`, then run `/mcp`: status, reconnect, authenticate and disable, for every server. Now prompt:
 
 <Prompt title="Proof-of-tool prompt" where="Claude Code · after adding the server">
 ```text
@@ -63,15 +63,15 @@ and when I would need it. Quote the doc, do not guess.
 ```
 </Prompt>
 
-Approve the tool call. Watch the label: it carries the server name, so you can always see when an answer came through a tool instead of out of the model.
+Approve the tool call. The label carries the server name, so you can see when an answer came through a tool instead of out of the model.
 </Step>
 
 <Step title="Check what it cost you">
-Run `/context`. The server barely registers — MCP tool definitions are deferred by default, so only the tool names and the server's instructions load until a tool is used ([costs](https://code.claude.com/docs/en/costs)). The caveat: a CLI tool you already have, such as `gh`, is still cheaper than an MCP server doing the same job. Add servers you use; disable the rest.
+Run `/context`. The server barely registers: MCP tool definitions are deferred by default, so only the tool names and the server's instructions load until a tool runs ([costs](https://code.claude.com/docs/en/costs)). A CLI tool you already have, like `gh`, is still cheaper than an MCP server doing the same job. Add servers you use; disable the rest.
 </Step>
 
 <Step title="Decide who else gets it">
-Scope is a flag, and the default is narrow.
+Scope is a flag. The default is narrow.
 
 - no flag → `local`: you, this project. Stored in `~/.claude.json` (`%USERPROFILE%\.claude.json` on Windows).
 - `--scope project` → writes `.mcp.json` in the repo root; teammates get an approval prompt.
@@ -87,7 +87,7 @@ claude mcp add playwright -- npx -y @playwright/mcp@latest
 ```
 </Terminal>
 
-Everything after `--` is the command that starts a local server; forgetting `--` is the classic mistake. Now ask the agent to open your sign-up page and tell you whether the form actually submits — that is self-verification through a real browser.
+Everything after `--` is the command that starts a local server. Forgetting `--` is the classic mistake. Now ask the agent to open your sign-up page and tell you whether the form submits. That is self-verification through a real browser.
 
 The first start downloads packages and can time out. PowerShell: `$env:MCP_TIMEOUT = "60000"; claude`.
 </Step>
@@ -99,9 +99,9 @@ A repo's `.mcp.json` servers run when you run `claude -p` in that repo, with no 
 
 ## Write one skill: `/cc-docs`
 
-One sentence: a skill is a folder with a `SKILL.md` that teaches the agent a procedure once, so you stop re-typing it — and it stays out of your context window until you call it.
+A skill is a folder with a `SKILL.md`. It teaches the agent a procedure once, so you stop re-typing it, and it stays out of your context window until you call it.
 
-In Lab 03 you wrote `/preflight`, a skill that takes no input. This one takes an argument and drives the server you just added, so the two halves of this lab wire together.
+In [lab 03](/en/labs/claude-md-and-permissions/) you wrote `/preflight`, which takes no input. This one takes an argument and drives the server you just added.
 
 <Steps>
 <Step title="Make the folder">
@@ -138,11 +138,11 @@ Quote the docs. If the server does not answer, say so instead of
 answering from memory.
 ```
 
-`$ARGUMENTS` is whatever you type after the command name, so `/cc-docs plan mode` and `/cc-docs Ctrl+B` both run out of one file. `argument-hint` records what to type after the name. There is no `disable-model-invocation` line here on purpose: this skill only reads, so it is safe to let the agent reach for it on its own.
+`$ARGUMENTS` is whatever you type after the command name, so `/cc-docs plan mode` and `/cc-docs Ctrl+B` both run out of one file. `argument-hint` says what to type there. There is no `disable-model-invocation` line, on purpose: this skill only reads, so the agent may reach for it on its own.
 </Step>
 
 <Step title="Restart and confirm it loaded">
-Skills are picked up at start, so exit and run `claude` again. Type `/` and find `cc-docs` in the list, or run `/skills` to see everything currently loaded.
+Skills are picked up at start, so exit and run `claude` again. Type `/` and find `cc-docs`, or run `/skills` to see everything loaded.
 </Step>
 
 <Step title="Run it, then ask the same thing in plain English">
@@ -152,7 +152,7 @@ Skills are picked up at start, so exit and run `claude` again. Type `/` and find
 ```
 </Terminal>
 
-You get three parts, in that order, pulled through the server you added ten minutes ago. Now type `how does plan mode work?` as a normal question and compare. The skill did not make the model smarter. It made the output the same shape every time, which is what lets you skim an answer instead of reading it.
+Three parts, in that order, pulled through the server you added ten minutes ago. Now type `how does plan mode work?` as a normal question and compare. The skill did not make the model smarter. It made the output the same shape every time, so you can skim an answer instead of reading it.
 </Step>
 
 <Step title="Or let the agent write the next one">
@@ -172,7 +172,7 @@ Manual invocation only. Show me the SKILL.md before writing it.
 </Callout>
 
 <Deeper title="Why not just put all of this in CLAUDE.md?">
-Because CLAUDE.md loads at the start of **every** session, so every line costs context every time — keep it under 200 lines. Skills use progressive disclosure instead: about 100 tokens of metadata are always loaded, the body (recommended under 5,000 tokens) only when relevant, referenced files only when needed ([Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)).
+CLAUDE.md loads at the start of **every** session, so every line costs context every time; keep it under 200 lines ([module 06](/en/learn/context-ssot/)). Skills load progressively instead: about 100 tokens of metadata always, the body (under 5,000 tokens is the recommendation) only when relevant, referenced files only when needed ([Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)).
 
 Skills are an open standard, not a Claude-only feature ([agentskills.io](https://agentskills.io)). Custom slash commands are merged into them now: `.claude/commands/deploy.md` and `.claude/skills/deploy/SKILL.md` both give you `/deploy`.
 
@@ -181,9 +181,9 @@ A skill is executable instruction: install only from sources you trust, and read
 
 ## Delegate one review to a subagent
 
-One sentence: a subagent is a second Claude with its own context window, system prompt, tool list and permissions — it does the noisy work and returns a summary, so your main conversation stays clean.
+A subagent is a second Claude with its own context window, system prompt, tool list and permissions. It does the noisy work and returns a summary, so your main conversation stays clean.
 
-Built-in ones are already there: Explore (read-only search), Plan (research during plan mode) and general-purpose. Now define your own.
+Three are built in already: Explore (read-only search), Plan (research during plan mode) and general-purpose. Now define your own.
 
 <Steps>
 <Step title="Commit first — this one matters">
@@ -194,7 +194,7 @@ git commit -m "before delegating to a subagent"
 ```
 </Terminal>
 
-Subagent edits are usually **not** restored by `/rewind`. Checkpoints are local undo; git is permanent undo. Commit before you delegate, every time.
+`/rewind` usually does **not** restore subagent edits, so the checkpoints from [lab 04](/en/labs/undo-anything/) will not save you here. Commit before you delegate, every time.
 </Step>
 
 <Step title="Write the subagent file">
@@ -211,9 +211,9 @@ You are a senior security engineer. Look for injection, auth flaws,
 secrets in code, insecure data handling. Give line references and fixes.
 ```
 
-`name` and `description` are the only required fields. Everything else is a dial: `tools`, `disallowedTools`, `model`, `permissionMode`, `maxTurns`, `isolation: worktree`. For simple helpers, `model: haiku` cuts the bill.
+`name` and `description` are the only required fields. The rest are dials: `tools`, `disallowedTools`, `model`, `permissionMode`, `maxTurns`, `isolation: worktree`. For simple helpers, `model: haiku` cuts the bill.
 
-Note for anyone following an older tutorial: since v2.1.198 `/agents` no longer opens a management panel — it points you at these file locations.
+If an older tutorial tells you otherwise: since v2.1.198 `/agents` no longer opens a management panel. It points you at these file locations.
 </Step>
 
 <Step title="Hand it the diff">
@@ -237,13 +237,13 @@ You can force it with an `@`-mention of the agent name, or run a whole session a
 </Step>
 
 <Step title="Watch where the work happened">
-While it runs, `/tasks` lists running work and `Ctrl+B` sends it to the background. When it returns, run `/context`: it barely moved, because the grep output and the file reads lived in the subagent's window, not yours. Then run `/usage` — on a subscription it attributes usage to skills, subagents and MCP servers separately, so today's three additions all show up in one place.
+While it runs, `/tasks` lists running work and `Ctrl+B` sends it to the background. When it returns, run `/context`: it barely moved. The grep output and the file reads lived in the subagent's window, not yours. Then run `/usage`, which on a subscription splits usage across skills, subagents and MCP servers — today's three additions in one place.
 </Step>
 </Steps>
 
 <Compare a="Before: one agent, one window" b="After: a reviewer with fresh eyes">
 <div slot="a">The agent that wrote the code reviews the code. Its grep output fills your window, and it is defending work it produced ten minutes ago.</div>
-<div slot="b">A separate context reviews a diff it did not write. The subagent absorbs the noise and returns findings — the writer/reviewer pattern from Anthropic's best practices.</div>
+<div slot="b">A separate context reviews a diff it did not write. It absorbs the noise and returns findings — the writer/reviewer pattern from Anthropic's best practices.</div>
 </Compare>
 
 <Deeper title="When a subagent is the wrong answer">

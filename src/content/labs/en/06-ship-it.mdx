@@ -1,6 +1,6 @@
 ---
 title: "Ship It: Deploy With Your Agent"
-subtitle: Twenty-five minutes from a folder on your laptop to a link anyone can open — then hand the same job to the agent and check its work.
+subtitle: Twenty-five minutes from a folder on your laptop to a link anyone can open. Then hand the same job to an agent and check its work.
 objective: take a folder on your laptop to a public HTTPS URL, delegate that deploy to an agent, and verify every claim it makes about it
 description: Create the repo with gh, push, deploy to Cloudflare Pages with wrangler, open your own URL on your phone — then delegate the deploy and audit what the agent actually did.
 prerequisites:
@@ -13,21 +13,21 @@ artifact: Ship-it runbook — the deploy commands, the one dashboard step, and t
 ---
 
 <Lead>
-Right now your project is a folder. In twenty-five minutes it will be a URL. You will do it *by hand first*, because you cannot supervise an agent doing something you have never done yourself — and supervising is the whole job.
+Right now your project is a folder. In twenty-five minutes it will be a URL. You do it *by hand first*, because you cannot supervise an agent doing something you have never done. Supervising is the job.
 </Lead>
 
-Do the first half alone. Do the second half with Claude Code, and then spend the last five minutes proving that what it told you is true. The order matters: an agent that says "deployed successfully" is making a claim, and by the end of this page you will know four different ways that claim can be wrong.
+Do the first half alone. Do the second half with Claude Code. Spend the last five minutes proving that what it told you is true. "Deployed successfully" is a claim, and by the end of this page you will know four ways that claim can be wrong.
 
 ## Part one: six steps you do yourself
 
 <Callout type="warn" title="Thirty seconds that save you a bad week">
-Before the first push, open `.gitignore` and make sure `.env` is in it. A public repo is public the instant it exists, and a key that has ever been committed is compromised even after you delete it. If you are not certain, run `git status` and read every filename in the list before you commit.
+Before the first push, open `.gitignore` and check that `.env` is in it. A public repo is public the instant it exists. A key that has ever been committed is compromised even after you delete it. Run `git status` and read every filename in the list before you commit.
 </Callout>
 
 <Steps>
 
 <Step title="Log in to GitHub from the terminal">
-The GitHub CLI turns account work into commands, which means your agent can do it later too. It is also cheaper on context than a GitHub MCP server — Anthropic's own cost guidance is that CLI tools like `gh` stay cheaper than an MCP server for the same job ([costs docs](https://code.claude.com/docs/en/costs)).
+The GitHub CLI turns account work into commands, so your agent can do it later too. It also costs less context than a GitHub MCP server — Anthropic's cost guidance says CLI tools like `gh` stay cheaper than an MCP server for the same job ([costs docs](https://code.claude.com/docs/en/costs)).
 
 <Terminal title="bash">
 
@@ -38,7 +38,7 @@ gh auth status
 
 </Terminal>
 
-`gh auth login` walks you through a browser login and a one-time code. `gh auth status` prints the account you are actually logged in as — check it, because half the "permission denied" problems in this lab are a second GitHub account you forgot about.
+`gh auth login` walks you through a browser login and a one-time code. `gh auth status` prints the account you are actually logged in as. Check it: half the "permission denied" problems in this lab are a second GitHub account you forgot about.
 </Step>
 
 <Step title="Create the repo and push, in one command">
@@ -55,13 +55,13 @@ gh repo create qairu-event --public --source=. --remote=origin --push
 
 </Terminal>
 
-Read the flags once and you will never have to look them up again. `--source=.` means "this folder is the repo". `--remote=origin` wires the connection up under the usual name. `--push` sends the commits immediately. `--public` matters for money: GitHub's standard Actions runners are free on public repositories, while a free private repo gets 2,000 minutes a month ([GitHub billing docs](https://docs.github.com/en/billing/concepts/product-billing/github-actions)).
+Read the flags once and you never look them up again. `--source=.` means "this folder is the repo". `--remote=origin` names the connection. `--push` sends the commits immediately. `--public` matters for money: GitHub's standard Actions runners are free on public repositories, while a free private repo gets 2,000 minutes a month ([GitHub billing docs](https://docs.github.com/en/billing/concepts/product-billing/github-actions)).
 
-On Windows PowerShell, chain with `;` instead of `&&` if you put these on one line. Each command on its own line works everywhere.
+On Windows PowerShell, chain with `;` instead of `&&`. One command per line works everywhere.
 </Step>
 
 <Step title="Build the folder that is the website">
-A static site is not magic. It is a folder. Build it, then open the folder and look at it — that single act removes most of the fear from deploying.
+A static site is a folder. Build it, then open the folder and look inside. That one act removes most of the fear from deploying.
 
 <Terminal title="bash">
 
@@ -72,9 +72,9 @@ ls dist
 
 </Terminal>
 
-If `dist/` does not appear, your project builds somewhere else — `build/`, `out/`, `public/`. Find the real folder name now, because you are about to type it into the deploy command, and the most common failed first deploy is a perfectly successful upload of the wrong directory.
+If `dist/` does not appear, your project builds somewhere else — `build/`, `out/`, `public/`. Find the real name now. You are about to type it into the deploy command, and the most common failed first deploy is a perfectly successful upload of the wrong folder.
 
-No build step at all? The QAIRU Event Sign-up page from Lab 02 is one `index.html` and nothing else, which is already a website. Give it a folder of its own so you upload the page and not your whole repo:
+No build step at all? The QAIRU Event Sign-up page from [lab 02](/en/labs/plan-mode-build/) is one `index.html`, and that is already a website. Give it a folder of its own so you upload the page and not your whole repo:
 
 <Terminal title="bash">
 
@@ -99,9 +99,9 @@ npx wrangler pages deploy dist --project-name=qairu-event
 
 </Terminal>
 
-The first run sends you to a browser to authorise Wrangler against your Cloudflare account, and offers to create the project if it does not exist yet. Then it uploads `dist/` and prints a URL ending in `pages.dev`, already on HTTPS, already served from data centres worldwide.
+The first run sends you to a browser to authorise Wrangler, and offers to create the project if it does not exist yet. Then it uploads `dist/` and prints a URL ending in `pages.dev`, already on HTTPS, already served worldwide.
 
-If you want to confirm which account you are uploading into before you type anything else:
+To confirm which account you are uploading into before you type anything else:
 
 <Terminal title="bash">
 
@@ -113,17 +113,17 @@ npx wrangler whoami
 </Step>
 
 <Step title="Open it on your phone, on mobile data">
-Not on your laptop. Your laptop has a cached localhost and a browser that will lie to you cheerfully. Turn off wifi on your phone, type the `pages.dev` URL, and load it.
+Not on your laptop. Your laptop has a cached localhost and a browser that will lie to you. Turn off wifi on your phone, type the `pages.dev` URL, and load it.
 
-This is the only step in the lab that counts as proof. Everything before it is a claim; this is a request from a machine that is not yours, over a network that is not yours, reaching a server that is not yours.
+This is the only step in the lab that counts as proof. Everything before it is a claim. This is a request from a machine that is not yours, over a network that is not yours, reaching a server that is not yours.
 </Step>
 
 <Step title="Attach a custom domain — and this one is not a command">
-There is no `wrangler` flag for this one. Open the Cloudflare dashboard, find your Pages project, open **Custom domains**, and add the name. Cloudflare creates the DNS record and issues the SSL certificate for you. Then DNS has to spread — minutes to hours, depending on who is asking from where.
+There is no `wrangler` flag for this one. Open the Cloudflare dashboard, find your Pages project, open **Custom domains**, and add the name. Cloudflare creates the DNS record and issues the SSL certificate (what those are: [module 12](/en/learn/deploy/)). Then DNS has to spread — minutes to hours.
 
-Write this step down somewhere, because in a few minutes you are handing this job to an agent that cannot open a browser. It will route around the gap and report the `pages.dev` URL as finished.
+Write this step down. In a few minutes you hand this job to an agent that cannot open a browser. It will route around the gap and report the `pages.dev` URL as finished.
 
-Cloudflare's free plan allows 100 custom domains per project, so the limit is never the reason this fails ([Pages limits](https://developers.cloudflare.com/pages/platform/limits/)). The reason it fails is that nobody clicked.
+Cloudflare's free plan allows 100 custom domains per project, so the limit is never why this fails ([Pages limits](https://developers.cloudflare.com/pages/platform/limits/)). It fails because nobody clicked.
 
 No domain yet? The GitHub Student Developer Pack includes a free one for a year — a `.me` from Namecheap, a `.TECH`, or a `.dev`/`.app` from Name.com ([education.github.com/pack](https://education.github.com/pack)).
 </Step>
@@ -133,14 +133,14 @@ No domain yet? The GitHub Student Developer Pack includes a free one for a year 
 <Deeper title="What the free tier actually gives you, in numbers">
 Cloudflare Pages Free: 500 builds per month, 1 concurrent build, a 20-minute build timeout, 20,000 files per site, 25 MiB per file, 100 custom domains per project and 100 projects per account. No bandwidth cap is listed for static assets.
 
-If you add a function later, Workers Free gives 100,000 requests a day and 10 ms of CPU per invocation, with no charge for egress. The paid tier starts at $5 a month.
+Add a function later and Workers Free gives 100,000 requests a day and 10 ms of CPU per invocation, with no charge for egress. The paid tier starts at $5 a month.
 
-Sources: [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/), [Pages limits](https://developers.cloudflare.com/pages/platform/limits/). The practical meaning for a student project: serving your page costs nothing and will keep costing nothing. It is functions and databases that spend a budget, not HTML.
+Sources: [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/), [Pages limits](https://developers.cloudflare.com/pages/platform/limits/). For a student project: serving your page costs nothing and will keep costing nothing. Functions and databases spend a budget, not HTML.
 </Deeper>
 
 ## Part two: hand the same job to the agent
 
-Now you know what the deploy looks like when it goes right, which means you can recognise it going wrong. Delegate it.
+You know what the deploy looks like when it goes right. Now you can recognise it going wrong. Delegate it.
 
 <Prompt title="Deploy this project" where="Claude Code · plan mode">
 
