@@ -8,13 +8,13 @@ Built overnight, 21–22 September 2026.
 
 | | |
 |---|---|
-| **Live now** | **https://vibecoding-1vl.pages.dev** |
-| Intended domain | https://vibecoding.qairuhub.com — **needs one 2-minute step from you, see below** |
+| **Live** | **https://vibecoding.qairuhub.com** |
+| Also reachable | https://vibecoding-1vl.pages.dev |
 | Repo | https://github.com/tairqaldy/qairuhub-vibecoding |
 | Cloudflare project | Pages → `vibecoding` (account: Tairkaldybayev@gmail.com) |
 | API | https://vibecoding-api-production.up.railway.app |
 | Railway project | `vibecoding-api` + Postgres (account: taircaldy.yt@mail.ru) |
-| Your statistics | https://vibecoding-1vl.pages.dev/en/admin/ |
+| Your statistics | https://vibecoding.qairuhub.com/en/admin/ |
 
 ---
 
@@ -39,7 +39,7 @@ from a clean one, the XP is there.
 
 ### Your statistics
 
-Open **`/en/admin/`** and paste your admin key once — it stays in that browser only.
+Open **https://vibecoding.qairuhub.com/en/admin/** and paste your admin key once — it stays in that browser only.
 
 Your key is in **`api/.env.railway.local`** on this machine (git-ignored), and in the Railway
 dashboard under the `vibecoding-api` service variables as `ADMIN_KEY`.
@@ -58,29 +58,16 @@ cannot show names, emails or individual progress** — the API does not return t
 
 ---
 
-## The one thing I could not do
+## The domain
 
-**Add the DNS record for `vibecoding.qairuhub.com`.**
+`vibecoding.qairuhub.com` is live, proxied through Cloudflare with a valid certificate.
+The CNAME (`vibecoding` → `vibecoding-1vl.pages.dev`, proxy on) was added on 22 Sep 2026;
+no existing DNS record was touched — the zone went from 13 to 14 records.
 
-The custom domain is already attached to the Pages project (I did that through the
-Cloudflare API), and it is sitting at status `pending` waiting for a DNS record. My
-Cloudflare token has `zone:read` but not `dns:edit`, and you were not signed in to the
-Cloudflare dashboard in Chrome — I will not enter credentials on your behalf.
-
-**Do this:**
-
-1. Open https://dash.cloudflare.com → `qairuhub.com` → **DNS** → **Records** → **Add record**
-2. Type `CNAME`, Name `vibecoding`, Target `vibecoding-1vl.pages.dev`, Proxy **on** (orange cloud)
-3. Save. TLS is issued automatically, usually within a few minutes.
-
-Then check:
-
-```bash
-curl -sI https://vibecoding.qairuhub.com/en/ | head -1
-```
-
-If you would rather I do it next time, create an API token with **Zone → DNS → Edit** on
-qairuhub.com and put it in `.env` as `CLOUDFLARE_API_TOKEN`.
+**If the site does not open on your current network**, that is a stale negative DNS cache on
+the hotspot you are connected to (172.20.10.1), not a problem with the site. It resolves
+correctly on 1.1.1.1 and 8.8.8.8 and returns 200 from three different Cloudflare edges.
+It clears itself within the hour, or set the Wi-Fi adapter DNS to 1.1.1.1 to skip the wait.
 
 ---
 
@@ -153,7 +140,6 @@ announcement, Willison's two posts, Karpathy's Sequoia write-up, The Register on
 
 | | |
 |---|---|
-| DNS record for the custom domain | **you, 2 minutes** — steps above |
 | Kazakh review pass | ~30 minutes, you. Start with `/kk/try/` and `/kk/learn/the-tweet/` — they set the tone |
 | OWASP LLM Top 10 screenshot | their site returns 403 to automated requests; the link is there, the image is not |
 | X/Twitter screenshots | X blocks automated requests and needs a session, so those posts are `<Post>` cards with links rather than images. If you want the real thing, screenshot a few by hand into `public/img/evidence/` and add an `<Evidence>` block — `scripts/insert-evidence.mjs` keeps both locales in sync for you |
