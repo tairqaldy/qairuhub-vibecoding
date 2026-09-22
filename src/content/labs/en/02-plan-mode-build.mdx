@@ -13,14 +13,12 @@ doneWhen: git log --oneline shows your commit, the page opens in a browser, and 
 ---
 
 <Lead>
-In twenty-five minutes you go from an empty folder to a working sign-up page. The most valuable thing you do is not typing. It is *reading a plan*, and changing one line of it before a single file exists.
+In twenty-five minutes you go from an empty folder to a working sign-up page. The valuable part is not typing. It is *reading a plan* and changing one line of it before a single file exists.
 </Lead>
 
-Anthropic's guide gives the order in four words: explore, plan, implement, commit. Plan mode does the first two ([best practices](https://code.claude.com/docs/en/best-practices)). One bad line of plan becomes hundreds of bad lines of code, so review the plan, not only the diff ([advanced context engineering](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents/blob/main/ace-fca.md)).
+Anthropic's guide gives the order in four words: explore, plan, implement, commit. Plan mode does the first two ([best practices](https://code.claude.com/docs/en/best-practices)). One bad line of plan becomes hundreds of bad lines of code, so review the plan, not only the diff ([advanced context engineering](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents/blob/main/ace-fca.md)). A plan is short enough to read end to end. Its diff is not.
 
-A plan is short enough to read end to end. Its diff is not. Read the cheap one.
-
-You build the first real version of **QAIRU Event Sign-up**: one page, one event, a form that reserves a seat, a counter that runs down. One file, no framework, no build step.
+You build **QAIRU Event Sign-up**: one page, one event, a reservation form, a counter that runs down. One file, no framework, no build step.
 
 ## Nine steps from an empty folder to a commit
 
@@ -47,9 +45,9 @@ claude --permission-mode plan
 ```
 </Terminal>
 
-The first run in a new folder asks you to trust the workspace; accept. Then read the status bar under the input box. It must say `plan mode on`.
+The first run in a new folder asks you to trust the workspace; accept. The status bar under the input box must then say `plan mode on`.
 
-Already in a session? Press `Shift+Tab` until it does. On Pro, Max and Team plans a terminal session starts in **auto** mode: Manual, accept edits, plan — three presses. A session that started in Manual needs two ([which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in)). On some Windows setups the shortcut is `Alt+M`.
+Already in a session? Press `Shift+Tab` until it does: three presses from **auto**, the default on Pro, Max and Team plans, two from Manual ([which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in)). On some Windows setups the shortcut is `Alt+M`.
 </Step>
 
 <Step title="Hand it the whole job in one prompt">
@@ -90,11 +88,11 @@ Three questions.
 2. **Does it say what it will not touch?** An agent with no stated boundary reorganises things you never asked about.
 3. **Is there a step I could not explain to the person next to me?** That is the one that hurts later.
 
-Two bad answers means **"No, keep planning"**, with the reason: `Steps 3 and 5 have no browser check. Rewrite them with what I click and what I should see.`
+Two bad answers: **"No, keep planning"**, with the reason — `Steps 3 and 5 have no browser check. Rewrite them with what I click and what I should see.`
 </Step>
 
 <Step title="Change one line before you approve">
-Press `Ctrl+G`. The proposed plan opens in your text editor. Add this, save, close.
+Press `Ctrl+G`. The plan opens in your editor. Add this, save, close.
 
 <Prompt title="The line you add yourself" where="Your editor · via Ctrl+G">
 ```text
@@ -107,11 +105,11 @@ The agent will not invent that constraint for you. Now the plan is partly yours 
 </Step>
 
 <Step title="Approve it the slow way">
-Claude offers three answers: use auto mode, approve edits manually, or keep planning. Where auto mode is unavailable the first reads "Yes, auto-accept edits".
+Claude offers three answers: auto mode, manual approval, or keep planning. Where auto mode is unavailable the first reads "Yes, auto-accept edits".
 
-Pick **"Yes, manually approve edits"**. Read **one** diff end to end: the JavaScript that handles the form submit, where the rules you wrote either exist or do not. Approve the rest at any speed. Simon Willison's main anti-pattern is the same rule one size up: never open a pull request with code you have not read ([anti-patterns](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/)).
+Pick **"Yes, manually approve edits"**. Read **one** diff end to end: the JavaScript that handles the form submit, where the rules you wrote either exist or do not. Approve the rest at any speed. Simon Willison's rule, one size up: never open a pull request with code you have not read ([anti-patterns](https://simonwillison.net/guides/agentic-engineering-patterns/anti-patterns/)).
 
-Expected: `PLAN.md` written first, then `index.html`, and nothing else in the folder.
+Expected: `PLAN.md` first, then `index.html`, nothing else.
 </Step>
 
 <Step title="Run it yourself">
@@ -123,13 +121,13 @@ npx -y serve
 ```
 </Terminal>
 
-It prints a local address such as `http://localhost:3000`. Read the port off your own screen. Open it and try to break the page, in this order: reserve a seat (counter drops, name appears at the top), reload (the name is still there), submit an empty form (a visible message, not silence), press KK / EN (every visible string changes).
+It prints a local address such as `http://localhost:3000`. Read the port off your own screen. Open it and try to break the page: reserve a seat (counter drops, name appears at the top), reload (the name is still there), submit an empty form (a visible message, not silence), press KK / EN (every string changes).
 
 Offline, or `npx` hangs? Open `index.html` from your file manager. Fine today, but get used to `http://` — that is how the page runs once it leaves your laptop.
 </Step>
 
 <Step title="Find the one thing that does not work, and say it precisely">
-There is always one. Never write "it's broken". Write symptom, location, definition of done.
+There is always one. Not "it's broken": symptom, location, definition of done.
 
 <Prompt title="Fix prompt" where="Claude Code · manual approve mode">
 ```text
@@ -144,7 +142,7 @@ Expected: a small diff and a list of test steps. If it starts rewriting half the
 </Step>
 
 <Step title="Commit before you like it too much">
-Type `!` at the start of an empty line for shell mode, so the output lands in the conversation where Claude can see it.
+Type `!` at the start of an empty line for shell mode: the output lands in the conversation where Claude can see it.
 
 <Terminal title="Claude Code · shell mode">
 ```bash
@@ -160,26 +158,26 @@ Then show me git log --oneline and git status.
 ```
 </Prompt>
 
-Expected: one commit, one line, something like `feat(signup): event landing page with seat counter`, and a clean `git status`. Commit after every unit of progress, so a later session — or you tomorrow — can return to a state that worked ([harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)).
+Expected: one commit, something like `feat(signup): event landing page with seat counter`, and a clean `git status`. Commit after every unit of progress, so you can get back to a state that worked ([harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)).
 </Step>
 
 </Steps>
 
-## Four ways this goes wrong, and the move for each
+## Four ways this goes wrong
 
 - **It explores forever.** Unscoped investigation reads hundreds of files and fills the context window — the guide calls it "infinite exploration". Scope it to named files, or hand it to a subagent.
 - **You have corrected the same thing twice.** Stop: the context is now mostly failed attempts. `/clear` and write a better first prompt ([best practices](https://code.claude.com/docs/en/best-practices)).
 - **It says done and it is not.** Ask for evidence, not assertions: the command it ran and the output it got.
 - **It is quietly cheating.** Kent Beck's warning signs: it loops, it adds functionality nobody asked for, or it disables and deletes tests to get green ([augmented coding](https://newsletter.kentbeck.com/p/augmented-coding-beyond-the-vibes)).
 
-Want the last ten minutes back? `Esc` `Esc` on an empty input opens the rewind menu ([lab 04](/en/labs/undo-anything/)). It will not undo what a Bash command did. That is what your commit is for.
+Want the last ten minutes back? `Esc` `Esc` on an empty input opens the rewind menu ([lab 04](/en/labs/undo-anything/)). It will not undo a Bash command. That is what your commit is for.
 
 <Callout type="warn" title="What you built is not a sign-up system yet">
-The reservations live in the visitor's own browser. Nobody else sees them, and clearing site data erases them. This is a page, not a service. Put no real event on it, and ask nobody for a real email address until it has somewhere safe to put one.
+The reservations live in the visitor's own browser. Nobody else sees them, and clearing site data erases them. This is a page, not a service: no real event on it yet, and no real email addresses until you have somewhere safe to put them.
 </Callout>
 
 <Deeper title="When to skip the plan entirely">
-Exploration and the plan both spend context. The rule from the docs: if you can describe the change in one sentence, skip the plan and ask. A typo, a log line, a rename. Planning pays when the approach is uncertain, the change spans files, or the code is unfamiliar ([best practices](https://code.claude.com/docs/en/best-practices)).
+Exploration and the plan both spend context. If you can describe the change in one sentence — a typo, a log line, a rename — skip the plan and ask. Planning pays when the approach is uncertain, the change spans files, or the code is unfamiliar ([best practices](https://code.claude.com/docs/en/best-practices)).
 </Deeper>
 
 <Deeper title="Making plan mode the default for a project">
@@ -188,15 +186,15 @@ Want a plan first every time in a repo? Put `{"permissions": {"defaultMode": "pl
 
 <Quiz
   id="lab2-plan-step"
-  question="Your plan has six steps. Step 4 reads: 'Implement the reservation form and make sure it works.' What is actually wrong with it?"
+  question="Your plan has six steps. Step 4 reads: 'Implement the reservation form and make sure it works.' What is wrong with it?"
   options={[
-    'Nothing — that is what a plan step is supposed to look like',
+    'Nothing — that is what a plan step looks like',
     'It is too long; plan steps should be a single verb',
     'It names no check you could run, so "works" means whatever the agent decides it means',
     'It fails to specify which framework to use',
   ]}
   answer={2}
-  explain="A step you cannot verify is a step the agent grades itself on, and an agent stops when the work looks done. Send it back: rewrite step 4 with what I click and what I should see."
+  explain="A step you cannot verify is one the agent grades itself on, and it stops when the work looks done. Send it back: rewrite step 4 with what I click and what I should see."
   xp={10}
 />
 
@@ -206,7 +204,7 @@ Want a plan first every time in a repo? Put `{"permissions": {"defaultMode": "pl
   items={[
     'git init ran before Claude touched the folder',
     'The status bar said plan mode on before I described the job',
-    'I sent the plan back at least once, or I can say why it did not need it',
+    'I sent the plan back once, or I can say why it did not need it',
     'I added my own line to the plan with Ctrl+G before approving',
     'I read one diff end to end instead of skimming all of them',
     'I opened the page in a browser and tried to break the form',
@@ -216,11 +214,11 @@ Want a plan first every time in a repo? Put `{"permissions": {"defaultMode": "pl
 />
 
 <Callout type="live" title="If you are running this lab in a room">
-Do steps 1 to 4 on the projector and stop at the plan. Read it aloud, then ask the room what it is missing before you press `Ctrl+G`. Someone always finds the bilingual strings, the empty-list state, or the double submit. Type their line into the plan in front of them. Five minutes later they watch it reach the code.
+Do steps 1 to 4 on the projector and stop at the plan. Read it aloud and ask the room what is missing before you press `Ctrl+G`. Someone always finds the bilingual strings, the empty-list state, or the double submit. Type their line in, and five minutes later they watch it reach the code.
 
 Budget: 4 minutes setup, 6 plan and edit, 8 build and approvals, 4 browser, 3 fix and commit.
 </Callout>
 
 <Artifact title="The explore → plan → code → commit loop" kind="checklist">
-Nine moves, three questions to ask any plan, four failures and their fixes — the loop you run for every feature from here on.
+Nine moves, three questions for any plan, four failures and their fixes — the loop you run for every feature from here on.
 </Artifact>

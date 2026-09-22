@@ -1,7 +1,7 @@
 ---
 title: Cursor, Codex & Gemini CLI Quickstarts
 subtitle: Build the same thing three times in three tools, so no vendor owns your workflow.
-objective: run explore-plan-build in Cursor, Codex CLI and a free terminal agent, and keep one instructions file that all of them read
+objective: run explore-plan-build in Cursor, Codex CLI and a free terminal agent, and keep one instructions file they all read
 description: Hands-on quickstarts for Cursor, OpenAI Codex CLI and the terminal agent that replaced Gemini CLI, plus how AGENTS.md, CLAUDE.md and .cursor/rules fit together.
 artifact: One AGENTS.md that works in every tool on this page
 prerequisites:
@@ -12,12 +12,12 @@ doneWhen: The same converter opens in your browser twice, built by two different
 ---
 
 <Lead>
-You are about to build the same small thing twice, maybe three times. The point is to prove that the loop you learned in Claude Code is *not the tool*. Explore, plan, approve, review, commit works the same everywhere. Only the shortcut changes.
+You build the same small thing twice, maybe three times. Explore, plan, approve, review, commit works the same in every tool. Only the shortcut changes.
 </Lead>
 
-In one year Gemini CLI stopped serving free users, Windsurf became Devin Desktop, Roo Code's repo was archived, Cursor was acquired by SpaceX, and GitHub replaced Copilot's premium requests with token-metered credits. If your skill is knowing where the buttons are, one product decision deletes it. The loop and one instructions file move with you.
+Five tools changed owner, price or name in the last year ([module 07](/en/learn/the-agent/) has the list). If your skill is knowing where the buttons are, one product decision deletes it. The loop and one instructions file move with you.
 
-## Before you start: one folder, one commit, one task
+## One folder, one commit, one task
 
 <Terminal title="bash">
 ```bash
@@ -28,15 +28,15 @@ git commit --allow-empty -m "empty start"
 ```
 </Terminal>
 
-The task, in every tool: a single-page tenge/USD converter with a hardcoded rate, plain HTML/CSS/JS, no build step. Small enough to finish in five minutes, real enough that a bad plan shows.
+The task, in every tool: a single-page tenge/USD converter with a hardcoded rate, plain HTML/CSS/JS, no build step. Five minutes of work; a bad plan still shows.
 
 <Callout type="warn" title="The rule for this whole lab">
-Commit before every big prompt. Three agents in one folder in one afternoon is exactly how you lose work you liked. `git` is the only undo button that works in all of them.
+Commit before every big prompt. Three agents in one folder in one afternoon is how you lose work you liked. `git` is the only undo button all of them share ([module 09](/en/learn/git-and-github/)).
 </Callout>
 
 ## Cursor: the plan step is a keyboard shortcut
 
-A VS Code fork with the agent inside. Hobby needs no card; Pro is $20, and [Cursor's own pricing docs](https://cursor.com/docs/account/pricing) put daily agent users at $60–$100 a month of total usage. It has belonged to SpaceX [since 14 August 2026](https://cursor.com/blog), and its [pricing page](https://cursor.com/pricing) now lists Grok access next to Claude and GPT.
+A VS Code fork with the agent inside, SpaceX-owned [since 14 August 2026](https://cursor.com/blog). Hobby needs no card; [Cursor's own pricing docs](https://cursor.com/docs/account/pricing) put daily agent users at $60–$100 a month on top of the $20 Pro plan. The [pricing page](https://cursor.com/pricing) now lists Grok next to Claude and GPT.
 
 <Steps>
 <Step title="Install and open the folder">
@@ -44,7 +44,7 @@ Download from [cursor.com](https://cursor.com), sign in with Google or GitHub, t
 </Step>
 
 <Step title="Open the agent and switch it to Plan mode">
-`Ctrl+I` (`Cmd+I` on macOS) opens the agent. In the agent input, `Shift+Tab` switches to Plan mode — same idea as plan mode in Claude Code. It writes a plan, not files.
+`Ctrl+I` (`Cmd+I` on macOS) opens the agent. In the input, `Shift+Tab` switches to Plan mode — the same idea as in Claude Code ([module 07](/en/learn/the-agent/)). It writes a plan, not files.
 
 <Prompt title="Plan prompt" where="Cursor · agent input, Plan mode (Shift+Tab)">
 ```text
@@ -56,29 +56,29 @@ Do not write code yet.
 ```
 </Prompt>
 
-Edit the plan before you approve it. Changing three lines of plan is cheaper than reviewing three hundred lines of diff.
+Edit the plan before you approve it. Three lines of plan beat three hundred lines of diff.
 </Step>
 
 <Step title="Approve, then review the diff file by file">
-Cursor shows each changed file with Accept and Reject. Reject once on purpose so you know where the button is. Then open `index.html` in your browser yourself.
+Cursor shows each changed file with Accept and Reject. Reject once on purpose, so you know where the button is. Then open `index.html` yourself.
 </Step>
 
 <Step title="Make it write the instructions file, then commit">
-Ask: "create an AGENTS.md with how to run this project and the code style we just used". Then `git add -A && git commit -m "first agent build"`. You reuse that file below.
+Ask: "create an AGENTS.md with how to run this project and the code style we just used". Then `git add -A && git commit -m "first agent build"`.
 </Step>
 
 <Step title="Optional: the same agent in your terminal">
-Cursor ships a CLI whose binary is `agent`. Install with `curl https://cursor.com/install -fsS | bash` (macOS, Linux, WSL) or `irm 'https://cursor.com/install?win32=true' | iex` in PowerShell, then run `agent "explain this repo"`.
+Cursor ships a CLI; the binary is `agent`. Install with `curl https://cursor.com/install -fsS | bash` (macOS, Linux, WSL) or `irm 'https://cursor.com/install?win32=true' | iex` in PowerShell, then run `agent "explain this repo"`.
 </Step>
 </Steps>
 
 <Callout type="info" title="If you came for the free student year">
-It is gone. Cursor's [students page](https://cursor.com/students) now promises only promotions at on-campus and online events. Plan on Hobby, or on a free option below.
+It is gone. Cursor's [students page](https://cursor.com/students) now promises only promotions at campus and online events. Plan on Hobby, or a free option below.
 </Callout>
 
 ## Codex CLI: the plan step is something you ask for
 
-OpenAI's agent across terminal, IDE extension and cloud on one account. The CLI is [Apache-2.0, 125.7k stars](https://github.com/openai/codex) on 21 September 2026. Codex is included in ChatGPT Free as a small allowance, in Go at $8 and in [Plus at $20](https://learn.chatgpt.com/docs/pricing) — where the limits are published as ranges per five hours that move with the model, not as one number.
+OpenAI's agent, one account across terminal, IDE extension and cloud. The CLI is [Apache-2.0, 125.7k stars](https://github.com/openai/codex) on 21 September 2026. The plans are in [module 07](/en/learn/the-agent/); what matters here is that the published [limits](https://learn.chatgpt.com/docs/pricing) are ranges per five hours that move with the model, not one number.
 
 <Steps>
 <Step title="Install it">
@@ -101,11 +101,11 @@ The package is `@openai/codex`, not `codex`. Copy that line, do not type it from
 </Step>
 
 <Step title="Sign in, then look at the dials before you prompt">
-Run `cd vibe-demo && codex` and choose "Sign in with ChatGPT". Three slash commands, in this order: `/status` shows model, sandbox and approval setting; `/model` picks model and reasoning effort; `/permissions` decides how much runs without asking you. On Windows a [secondary guide](https://www.codeagentswarm.com/en/guides/codex-cli-on-windows) reports the sandbox as experimental — prefer WSL, and keep approvals on.
+Run `cd vibe-demo && codex` and choose "Sign in with ChatGPT". Then three slash commands, in order. `/status` shows model, sandbox and approval setting. `/model` picks model and reasoning effort. `/permissions` decides what runs without asking. On Windows a [secondary guide](https://www.codeagentswarm.com/en/guides/codex-cli-on-windows) calls the sandbox experimental — prefer WSL, keep approvals on.
 </Step>
 
 <Step title="Let it write AGENTS.md, then cut it down">
-`/init` writes an `AGENTS.md`. Open it immediately and delete everything obvious or untrue. The section below explains why shorter wins.
+`/init` writes an `AGENTS.md`. Open it and delete every line that is obvious or untrue.
 </Step>
 
 <Step title="Build the same converter">
@@ -119,31 +119,31 @@ Then make the edits one at a time.
 ```
 </Prompt>
 
-Approve each edit and command as it appears. Open the page yourself — do not accept "it works" from a summary.
+Approve each edit and command as it appears. Open the page yourself; a summary is not evidence.
 </Step>
 
 <Step title="Make it review its own diff, then scale it">
-`/review` puts Codex on your uncommitted changes as a reviewer. Fix what it finds, commit. Then meet the three commands that matter later: `codex exec "add a EUR option"` runs non-interactively, `codex resume` reopens an old session, `codex cloud` hands the task to a machine that is not yours.
+`/review` makes Codex review your uncommitted changes. Fix what it finds, commit. Three commands for later: `codex exec "add a EUR option"` runs non-interactively, `codex resume` reopens an old session, `codex cloud` hands the task to a machine that is not yours.
 </Step>
 </Steps>
 
 <Callout type="warn" title="Check this before you promise anyone a free account">
-The Codex README's sign-in paragraph names Plus, Pro, Business, Edu and Enterprise, while the [pricing page](https://learn.chatgpt.com/docs/pricing) says Free and Go include Codex. Two official pages, two stories. Test with a real free account before you build a workshop on it.
+The Codex README's sign-in paragraph names Plus, Pro, Business, Edu and Enterprise; the [pricing page](https://learn.chatgpt.com/docs/pricing) says Free and Go include Codex. Two official pages, two stories. Test with a real free account before you build a workshop on it.
 </Callout>
 
 ## Gemini CLI is not the free option any more
 
-Most tutorials still get this wrong. On 19 May 2026 the maintainers announced that from 18 June, "Gemini CLI will stop serving requests for Google AI Pro and Ultra" — and for people using it free of charge. Consumers were moved to Antigravity CLI. That post drew [301 thumbs-down against 6 thumbs-up](https://github.com/google-gemini/gemini-cli/discussions/27274). It was the second cut: an [update](https://github.com/google-gemini/gemini-cli/discussions/22970) posted 18 March 2026 had already put Gemini Pro models behind paid subscriptions.
+On 19 May 2026 the maintainers announced that from 18 June, "Gemini CLI will stop serving requests for Google AI Pro and Ultra" — free users included. The post drew [301 thumbs-down against 6 thumbs-up](https://github.com/google-gemini/gemini-cli/discussions/27274). It was the second cut: an [update](https://github.com/google-gemini/gemini-cli/discussions/22970) posted 18 March 2026 had already put Gemini Pro models behind paid subscriptions.
 
-It is still Apache-2.0 and still installs with `npm install -g @google/gemini-cli`. It is still the right tool **if your university or employer has Gemini Code Assist Standard or Enterprise, or you hold a paid key**: run `gemini`, pick API key or Vertex auth, keep context in `GEMINI.md`. Whether an unpaid AI Studio key still works is contradictory between Google's own pages, so test it the day before you need it.
+It is still Apache-2.0 and still installs with `npm install -g @google/gemini-cli`. It stays the right tool **if your university or employer has Gemini Code Assist Standard or Enterprise, or you hold a paid key**: run `gemini`, pick API key or Vertex auth, keep context in `GEMINI.md`. Google's pages contradict each other on unpaid AI Studio keys, so test yours the day before you need it.
 
 <Callout type="danger" title="A README is not documentation">
-The Gemini CLI README still advertises 1,000 free requests a day, months after the [docs site](https://geminicli.com/docs/resources/quota-and-pricing/) states the tool was replaced for consumers on 18 June 2026. When a README and a docs page disagree, believe the one with a date on it.
+The Gemini CLI README still advertises 1,000 free requests a day, months after the [docs site](https://geminicli.com/docs/resources/quota-and-pricing/) says the tool was replaced for consumers on 18 June 2026. When a README and a docs page disagree, believe the one with a date on it.
 </Callout>
 
 ### The free terminal agent that took its place
 
-Antigravity CLI is the replacement and its binary is `agy`. The Individual plan is $0 with weekly rate limits, and it serves non-Google models too: the [pricing page](https://antigravity.google/pricing) lists Gemini 3.8, 3.7 and 3.6 Flash, Gemini 3.1 Pro, Claude Sonnet and Opus 4.6, and gpt-oss-120b. Kazakhstan is on the [supported list](https://antigravity.google/docs/faq/). Two hard limits: personal Google accounts only, and nobody under 18.
+Antigravity CLI is the replacement. Its binary is `agy`. The Individual plan is $0 with weekly rate limits, and it serves non-Google models too: the [pricing page](https://antigravity.google/pricing) lists Gemini 3.8, 3.7 and 3.6 Flash, Gemini 3.1 Pro, Claude Sonnet and Opus 4.6, and gpt-oss-120b. Kazakhstan is on the [supported list](https://antigravity.google/docs/faq/). Two hard limits: personal Google accounts only, nobody under 18.
 
 <Steps>
 <Step title="Install and launch">
@@ -165,15 +165,15 @@ The binary lands in `~/.local/bin/agy`, or `C:\Users\<username>\AppData\Local\ag
 </Step>
 
 <Step title="Get through the first-run wizard">
-Colour scheme, rendering mode, trust this workspace, then Google sign-in. On university Wi-Fi the localhost callback sometimes fails; `agy` can print an authorization URL instead.
+Colour scheme, rendering mode, trust this workspace, then Google sign-in. On university Wi-Fi the localhost callback sometimes fails. `agy` can print an authorization URL instead.
 </Step>
 
 <Step title="Look at your quota before you spend it">
-`/usage` shows what is left per model this week. Do this first on any metered tool: knowing your budget beats discovering it.
+`/usage` shows what is left per model this week. Do this first on any metered tool.
 </Step>
 
 <Step title="Make it interrogate you, then build">
-`/grill-me` makes the agent ask clarifying questions before it writes anything — the closest thing on this page to a free requirements review.
+`/grill-me` makes the agent ask clarifying questions before it writes anything.
 
 <Prompt title="Grill prompt" where="Antigravity CLI · agy">
 ```text
@@ -184,11 +184,11 @@ Ask me every question you need before you write any code.
 ```
 </Prompt>
 
-Answer honestly, let it build, then open the file in your browser yourself.
+Answer honestly, let it build, then open the file yourself.
 </Step>
 
 <Step title="Feel the autonomy dial, then commit">
-`/goal <task>` runs to completion with no approval stops. Try it on one tiny follow-up, then ask yourself where that setting stops being safe. `agy` reads `AGENTS.md` from the working directory; Antigravity-only rules go in `.agents/rules/`.
+`/goal <task>` runs to the end with no approval stops. Try it on one tiny follow-up, then ask where that setting stops being safe. `agy` reads `AGENTS.md` from the working directory. Antigravity-only rules go in `.agents/rules/`.
 </Step>
 </Steps>
 
@@ -202,17 +202,17 @@ Answer honestly, let it build, then open the file in your browser yourself.
 | **Gemini CLI** | the same terminal flow as before | only on an enterprise licence or a paid key | nothing for consumers since 18 Jun 2026 |
 | **Antigravity `agy`** | `/grill-me` to be questioned; `/goal` to remove the stops | step by step, unless you chose `/goal` | Individual plan, weekly limits, **18+ only** |
 
-The shape of the review is the real difference. A GUI diff is easy to skim and easy to fake-read; a terminal agent shows one edit at a time, slower and harder to ignore. Neither is better. Know which one you are more likely to lie to yourself in.
+A GUI diff is easy to skim and easy to fake-read; a terminal agent shows one edit at a time. Know which one you are more likely to lie to yourself in.
 
 <Deeper title="Money and cards from Kazakhstan">
-Kazakhstan is on Anthropic's, OpenAI's and Antigravity's supported lists, so the main tools need no VPN. Kazakhstani Visa and Mastercard cards are [reported to work](https://habr.com/ru/articles/1037638/); the usual failures are foreign payments switched off in the bank app, a 3-D Secure failure, or a billing country that does not match the card.
+Kazakhstan is on Anthropic's, OpenAI's and Antigravity's supported lists, so the main tools need no VPN. Kazakhstani Visa and Mastercard cards are [reported to work](https://habr.com/ru/articles/1037638/). The usual failures: foreign payments switched off in the bank app, a 3-D Secure failure, or a billing country that does not match the card.
 
-Three accounts cost nothing and need no card: GitHub with an Education application in (Copilot Student, 200 AI credits a month), a personal Google account (Antigravity, Jules), a ChatGPT free account (Codex). If you can spend $20 a month, spend it on one plan, not three.
+The three free accounts this lab needs are listed with their limits in [module 07](/en/learn/the-agent/). One of them pays extra: GitHub with an Education application in gives you Copilot Student and 200 AI credits a month.
 </Deeper>
 
 ## One instructions file that all of them read
 
-`AGENTS.md` at the repo root is the shared standard: plain Markdown, no required fields, nested copies allowed with the nearest file winning. It is stewarded by the Agentic AI Foundation under the Linux Foundation and used by [more than 60,000 open-source projects](https://agents.md/).
+`AGENTS.md` at the repo root is the shared standard — what goes inside it is [module 06](/en/learn/context-ssot/). What changes from tool to tool is who reads it, and what else they read.
 
 | File | Who reads it | The detail that catches people |
 |---|---|---|
@@ -222,7 +222,7 @@ Three accounts cost nothing and need no card: GitHub with an Education applicati
 | `.github/copilot-instructions.md` | Copilot chat, review and agents | VS Code merges every instruction file it finds, in no guaranteed order |
 | `.agents/rules/` | Antigravity IDE, desktop and `agy` | `agy` also still reads `GEMINI.md` |
 
-The recipe is short. Shared facts go in `AGENTS.md`: exact build, test and lint commands, the style, the do-not-touch areas, the commit convention. For Claude Code, either delete `CLAUDE.md` or make it two lines — `@AGENTS.md` plus a heading for Claude-specific notes. [Anthropic's docs](https://code.claude.com/docs/en/memory) recommend that import over a symlink when anyone on the team is on Windows, because symlinks need admin or Developer Mode and git may check the link out as plain text. Then stop: copy the same text into `.github/copilot-instructions.md` too and VS Code merges both, so you pay for those tokens twice.
+Shared facts go in `AGENTS.md`, and the prompt below is the shape. For Claude Code, cut `CLAUDE.md` down to `@AGENTS.md` plus Claude-only notes. [Anthropic's docs](https://code.claude.com/docs/en/memory) prefer that import to a symlink, which on Windows needs admin or Developer Mode and can land in git as plain text. Then stop. Copy the same text into `.github/copilot-instructions.md` and VS Code merges both, so you pay for those tokens twice.
 
 <StatRow>
   <Stat value="60k+" label="open-source repos with an AGENTS.md" source="agents.md, Sep 2026" href="https://agents.md/" tone="good" />
@@ -230,7 +230,7 @@ The recipe is short. Shared facts go in `AGENTS.md`: exact build, test and lint 
   <Stat value="+20%" label="inference cost a context file adds, for no general gain" source="ETH Zurich / LogicStar, Jun 2026" href="https://arxiv.org/abs/2602.11988" tone="warn" />
 </StatRow>
 
-Keep it short and non-obvious. Researchers at ETH Zurich and LogicStar.ai found context files did not generally improve task success rates while adding over 20% to inference cost — repository overviews least of all, though written instructions were followed well. [Vercel's counter-example](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals) points the same way: an 8 KB compressed docs index in `AGENTS.md` took their Next.js evals from 53% to 100%. Facts the model cannot guess earn their tokens. A generated tour of your folders does not.
+Keep it short and non-obvious, like any context file ([module 06](/en/learn/context-ssot/)). ETH Zurich and LogicStar.ai found context files did not generally improve task success while adding over 20% to inference cost — repository overviews least of all, though written instructions were followed well. [Vercel's counter-example](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals) points the same way: an 8 KB compressed docs index in `AGENTS.md` took their Next.js evals from 53% to 100%.
 
 <Prompt title="Write the file that earns its tokens" where="Any agent · in your repo, after the first build">
 ```text
@@ -265,18 +265,18 @@ If you are unsure about a command, ask me instead of guessing.
 ## Keep the habit, drop the tool
 
 <Callout type="danger" title="A sandbox is not permission to stop looking">
-In July 2026 Pillar Security demonstrated sandbox escapes across Cursor, Codex, Gemini CLI and Antigravity. The agent stayed sandboxed, but wrote files that trusted tools outside the sandbox later executed; the trigger was prompt injection hidden in README files and dependencies. Cursor fixed it in 3.0.0 (CVE-2026-48124), Codex CLI in v0.95.0 ([report](https://www.bleepingcomputer.com/news/security/cursor-codex-gemini-cli-antigravity-hit-by-sandbox-escapes/)). Text inside a repo you cloned is untrusted input, never instructions — and auto-approve belongs nowhere near it.
+In July 2026 Pillar Security demonstrated [sandbox escapes](https://www.bleepingcomputer.com/news/security/cursor-codex-gemini-cli-antigravity-hit-by-sandbox-escapes/) in all four tools on this page, triggered by prompt injection hidden in READMEs and dependencies ([module 11](/en/learn/security/)). The agent stayed sandboxed; trusted tools outside it later ran the files it wrote. Cursor fixed it in 3.0.0 (CVE-2026-48124), Codex CLI in v0.95.0. Text inside a repo you cloned is untrusted data, never instructions, and auto-approve belongs nowhere near it.
 </Callout>
 
 <Checklist
   id="lab08-portable"
   title="Habits that survive the next rename"
   items={[
-    'Commit before every agent run, so the undo button is git and not a vendor feature',
+    'Commit before every agent run: the undo button is git, not a vendor feature',
     'One AGENTS.md at the repo root: commands, constraints, do-not-touch areas, under 30 lines',
-    'Read the plan before files change, and read the diff before anything is committed',
-    'Run the tests and open the page yourself instead of trusting the summary',
-    'Check the usage meter after your first real task, before you trust any free tier',
+    'Read the plan before files change, and the diff before anything is committed',
+    'Run the tests and open the page yourself; do not trust the summary',
+    'Check the usage meter after your first real task, before trusting a free tier',
     'Never auto-approve inside a repo you cloned from someone you do not know',
     'Check the docs page, not the README, before believing a free tier still exists',
   ]}
@@ -284,9 +284,9 @@ In July 2026 Pillar Security demonstrated sandbox escapes across Cursor, Codex, 
 />
 
 <Callout type="live" title="If you are teaching this lab">
-Run it as one timed race, not three quickstarts. Split the room in three, same task, twenty minutes, then collect three numbers per group on the board: minutes to a working page, approvals clicked, and whether anyone actually opened the file in a browser. The third column is the lesson.
+Run it as one timed race, not three quickstarts. Three groups, same task, twenty minutes. Then three numbers per group on the board: minutes to a working page, approvals clicked, and whether anyone opened the file in a browser. The third column is the lesson.
 </Callout>
 
 <Artifact title="One AGENTS.md, every tool" kind="template">
-The 30-line instructions file plus the two-line `CLAUDE.md` import — so switching agents costs you ten minutes, not a weekend.
+The 30-line instructions file plus the two-line `CLAUDE.md` import — so switching agents costs ten minutes, not a weekend.
 </Artifact>

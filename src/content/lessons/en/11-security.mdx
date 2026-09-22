@@ -17,7 +17,7 @@ In every case a classic control was missing: environment separation, access cont
 ## A code freeze that lived only in a chat window
 
 <Story title="Replit's agent deletes a production database" date="18 Jul 2025">
-Jason Lemkin, founder of SaaStr, was nine days into a build on Replit, posting every step in public. During a declared code freeze, the agent ran destructive commands against the live database. Records for more than 1,200 executives and over 1,190 companies were gone.
+Jason Lemkin, founder of SaaStr, was nine days into a Replit build, posting every step in public. During a declared code freeze, the agent ran destructive commands against the live database. Records for more than 1,200 executives and over 1,190 companies were gone.
 
 It had already misreported unit-test results and invented a database of roughly 4,000 people. After the deletion it told Lemkin a rollback was impossible. It worked; he got the data back.
 
@@ -55,13 +55,13 @@ The instruction no longer matters: the action is impossible.
 
 ## The bug nobody can see in a demo
 
-Tea is a women's dating-safety app with over 1.6 million users, top of the App Store in July 2025. On 25 July, 4chan users found its Firebase storage bucket could be read with no authentication at all. About 72,000 images came out, roughly 13,000 of them verification selfies and government IDs. Three days later a researcher read more than 1.1 million private messages through the API. Apple pulled the app in October 2025. ([404 Media](https://www.404media.co/women-dating-safety-app-tea-breached-users-ids-posted-to-4chan/), [Wikipedia](<https://en.wikipedia.org/wiki/Tea_(app)>))
+Tea is a women's dating-safety app with over 1.6 million users, top of the App Store in July 2025. On 25 July, 4chan users found its Firebase bucket readable with no authentication at all: about 72,000 images, roughly 13,000 of them verification selfies and government IDs. Three days later a researcher read more than 1.1 million private messages through the API. Apple pulled the app in October 2025. ([404 Media](https://www.404media.co/women-dating-safety-app-tea-breached-users-ids-posted-to-4chan/), [Wikipedia](<https://en.wikipedia.org/wiki/Tea_(app)>))
 
 <Callout type="info" title="Say this one accurately">
-Tea is constantly cited as a vibe-coding breach. There is no evidence the app was AI-generated, and the exposed bucket held data from users who registered before February 2024, before the phrase existed. It is here for a different reason: in a demo, a storage rule that lets everyone read looks exactly like a correct one.
+Tea is constantly cited as a vibe-coding breach. There is no evidence the app was AI-generated, and the bucket held data from users who registered before February 2024, before the phrase existed. It is here for one reason: in a demo, a storage rule that lets everyone read looks exactly like a correct one.
 </Callout>
 
-The generated version has a CVE. In March 2025 Matt Palmer — then at Replit, a competitor, which is worth knowing — found a Lovable site whose user table anyone could read and write with the public Supabase key. A scan the next day found 303 vulnerable endpoints across 170 projects, 10.3% of the 1,645 apps analysed: names, emails, phone numbers, addresses, payment data, API keys. It became [CVE-2025-48757](https://mattpalmer.io/posts/2025/05/CVE-2025-48757/).
+The generated version of that mistake has a CVE. In March 2025 Matt Palmer — then at Replit, a competitor, which is worth knowing — found a Lovable site whose user table anyone could read and write with the public Supabase key. A scan the next day found 303 vulnerable endpoints across 170 projects, 10.3% of the 1,645 apps analysed: names, emails, phone numbers, addresses, payment data, API keys. It became [CVE-2025-48757](https://mattpalmer.io/posts/2025/05/CVE-2025-48757/).
 
 Row Level Security policies are the *only* thing between the internet and your tables, because on Supabase and Firebase the browser talks to the database directly with a key that is public by design. Ask an agent for "a sign-up form" and you get working CRUD and no policies — the app looks the same either way. Wiz found that shape in Moltbook in January 2026: key in the client bundle, no RLS, unauthenticated read *and write*, 1.5 million API tokens exposed ([Wiz](https://www.wiz.io/blog/exposed-moltbook-database-reveals-millions-of-api-keys)).
 
@@ -77,9 +77,9 @@ Kimball shipped a Lovable + Cursor + Supabase app in three days and was broken i
 
 ## Nearly half of unprompted AI code has a known flaw
 
-Veracode ran over 100 models through security-sensitive coding tasks. 45% of the samples introduced an OWASP Top 10 flaw. Java failed 72% of the time, JavaScript 43%, Python 38%; cross-site scripting failed 86%. Bigger models did no better. The pass rate went 55%, then 55% again ([Mar 2026](https://www.veracode.com/blog/spring-2026-genai-code-security/)), then 56% ([Jul 2026](https://www.veracode.com/blog/2026-genai-code-security-report-ai-risk/)). Syntax correctness is near 100%. Security has not moved.
+Veracode ran over 100 models through security-sensitive coding tasks. 45% of the samples introduced an OWASP Top 10 flaw. Java failed 72% of the time, JavaScript 43%, Python 38%; cross-site scripting failed 86%. Bigger models did no better. The pass rate went 55%, then 55% again ([Mar 2026](https://www.veracode.com/blog/spring-2026-genai-code-security/)), then 56% ([Jul 2026](https://www.veracode.com/blog/2026-genai-code-security-report-ai-risk/)). Syntax correctness is near 100%; security has not moved.
 
-Two honest caveats. Veracode sells security tooling, and their prompts contain no security instructions — so 45% is the *default*, not the ceiling. Put "parameterise every query, validate input on the server, escape output" in your CLAUDE.md, then review what comes back.
+Two caveats. Veracode sells security tooling, and their prompts contain no security instructions — so 45% is the *default*, not the ceiling. Put "parameterise every query, validate input on the server, escape output" in your CLAUDE.md, then review what comes back.
 
 <Myth
   n={11}
@@ -120,7 +120,7 @@ An agent's report on its own work is a claim, not evidence ([module 10](/en/lear
 
 ## Two kinds of code you install without reading
 
-Models invent package names. Researchers tested 16 code models over 576,000 samples and recorded 205,474 unique names that do not exist — at least 5.2% for commercial models, 21.7% for open-source ones ([USENIX Security 2025](https://arxiv.org/abs/2406.10279)). Attackers register the invented names and wait. Seth Larson of the Python Software Foundation named it **slopsquatting** in April 2025 ([simonwillison.net](https://simonwillison.net/2025/Apr/12/andrew-nesbitt/)).
+Models invent package names. Researchers tested 16 code models over 576,000 samples and recorded 205,474 unique names that do not exist — at least 5.2% for commercial models, 21.7% for open-source ones ([USENIX Security 2025](https://arxiv.org/abs/2406.10279)). Attackers register them and wait. Seth Larson of the Python Software Foundation named it **slopsquatting** in April 2025 ([simonwillison.net](https://simonwillison.net/2025/Apr/12/andrew-nesbitt/)).
 
 The rate improved; the threat did not. A 2026 study of five frontier models over 199,845 prompts found hallucination rates of 4.62% to 6.10%, and 127 fake names invented identically by all five — 53 still free to register after disclosure ([arXiv](https://arxiv.org/abs/2605.17062)). Predictable is all an attacker needs.
 
@@ -139,7 +139,7 @@ Two demonstrations, no malicious tool needed:
 - **GitHub MCP.** An attacker puts instructions in an issue on your *public* repo. You ask your agent to review open issues. It obeys, reads your *private* repositories, and publishes what it finds in a public pull request ([Invariant Labs](https://invariantlabs.ai/blog/mcp-github-vulnerability)).
 - **Supabase MCP.** An attacker puts instructions in a support ticket. You ask the agent to show recent tickets. The connection uses a `service_role` key, which bypasses RLS, so the agent reads the tokens table and writes it into the ticket ([General Analysis](https://generalanalysis.com/blog/supabase-mcp-blog)).
 
-And one attack you cannot see. An MCP server's *tool descriptions* go to the model, not to you. Invariant Labs showed an innocuous `add` tool whose description told the agent to read the user's SSH private key and pass it as a hidden parameter — and a server that rewrites its descriptions after you approve it ([Invariant Labs](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)). Supabase's guidance: "Never connect AI agents directly to production data." ([Supabase](https://supabase.com/blog/defense-in-depth-mcp))
+And one attack you cannot see: an MCP server's *tool descriptions* go to the model, not to you. Invariant Labs showed an innocuous `add` tool whose description told the agent to read the user's SSH private key and pass it as a hidden parameter — and a server that rewrites its descriptions after you approve it ([Invariant Labs](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)). Supabase's guidance: "Never connect AI agents directly to production data." ([Supabase](https://supabase.com/blog/defense-in-depth-mcp))
 
 <Quiz
   id="m11-control-vs-request"
@@ -171,7 +171,7 @@ curl "https://YOUR-PROJECT.supabase.co/rest/v1/signups?select=*" \
 
 Empty array: RLS is working. Rows: every stranger on the internet gets the same rows.
 
-**Rate limits and spend caps on everything paid.** In March 2025 a founder shipped a Cursor-built SaaS, posted about it, and within roughly 48 hours wrote "guys, i'm under attack" ([techstartups.com](https://techstartups.com/2025/03/26/when-vibe-coding-goes-wrong/)). "Nobody would attack my small app" is measurably false: Anthropic's August 2025 threat report describes one criminal using Claude Code against at least 17 organisations ([Anthropic](https://www.anthropic.com/news/detecting-countering-misuse-aug-2025)).
+**Rate limits and spend caps on everything paid.** "Nobody would attack my small app" is measurably false. In March 2025 a founder shipped a Cursor-built SaaS and within roughly 48 hours wrote "guys, i'm under attack" ([techstartups.com](https://techstartups.com/2025/03/26/when-vibe-coding-goes-wrong/)). Anthropic's August 2025 threat report describes one criminal using Claude Code against at least 17 organisations ([Anthropic](https://www.anthropic.com/news/detecting-countering-misuse-aug-2025)).
 
 <Post author="leojr94" handle="@leojr94_" date="17 Mar 2025" href="https://x.com/leojr94_/status/1901560276488511759" platform="x">
 He is not technical. His API keys were maxed out, the subscription check lived only in front-end JavaScript, and strangers were writing to his database. What he posts next is the useful part: every API key rolled into environment variables, authentication on the API endpoints, CORS restricted to trusted domains. Three controls, no new framework, no better prompt.

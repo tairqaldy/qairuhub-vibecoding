@@ -30,7 +30,7 @@ Kazakhstan is on Anthropic's [supported countries list](https://www.anthropic.co
 </StatRow>
 
 <Callout type="info" title="If you have no money this month">
-Install **Antigravity CLI** instead. Its Individual plan is $0 with weekly rate limits, and the [pricing page](https://antigravity.google/pricing) lists Gemini 3.8 Flash, Gemini 3.1 Pro and Claude Sonnet and Opus 4.6 under it. Kazakhstan is supported. You need a personal Google account and you must be 18 or over ([FAQ](https://antigravity.google/docs/faq/)).
+Install **Antigravity CLI** instead. Its Individual plan is $0 with weekly rate limits, and the [pricing page](https://antigravity.google/pricing) lists Gemini 3.8 Flash, Gemini 3.1 Pro and Claude Sonnet and Opus 4.6 under it. Kazakhstan is supported; you need a personal Google account and must be 18 or over ([FAQ](https://antigravity.google/docs/faq/)).
 
 ```powershell
 irm https://antigravity.google/cli/install.ps1 | iex
@@ -40,12 +40,12 @@ irm https://antigravity.google/cli/install.ps1 | iex
 curl -fsSL https://antigravity.google/cli/install.sh | bash
 ```
 
-Then `cd` into your project and run `agy`. One warning, so nobody wastes an evening: Gemini CLI stopped serving free users and Google AI Pro/Ultra subscribers on 18 June 2026 ([the announcement](https://github.com/google-gemini/gemini-cli/discussions/27274)), so every tutorial calling it the free option is out of date. GitHub Copilot has a Free plan — 2,000 completions a month, limited chat and agent use ([plans](https://github.com/features/copilot/plans)) — and a student plan through GitHub Education with 200 AI credits a month and no model choice ([GitHub discussion](https://github.com/orgs/community/discussions/189268)).
+Then `cd` into your project and run `agy`. One warning: Gemini CLI stopped serving free users and Google AI Pro/Ultra subscribers on 18 June 2026 ([the announcement](https://github.com/google-gemini/gemini-cli/discussions/27274)), so every tutorial calling it the free option is out of date. GitHub Copilot's Free plan gives 2,000 completions a month with limited chat and agent use ([plans](https://github.com/features/copilot/plans)); GitHub Education adds 200 AI credits a month with no model choice ([GitHub discussion](https://github.com/orgs/community/discussions/189268)).
 
-Every lab after this one works on those tools. The commands differ — `agy` reads `AGENTS.md`, Claude Code reads `CLAUDE.md` — but the thinking is identical.
+Every lab after this one works on those tools. Only the commands differ: `agy` reads `AGENTS.md`, Claude Code reads `CLAUDE.md`.
 </Callout>
 
-One more route: ask your mentor about `/passes`. The [commands docs](https://code.claude.com/docs/en/commands) describe it as sharing "a free week of Claude Code with friends" from an eligible account. Which accounts qualify is not documented, so ask rather than assume.
+One more route: ask your mentor about `/passes`. The [commands docs](https://code.claude.com/docs/en/commands) describe it as sharing "a free week of Claude Code with friends" from an eligible account. Which accounts qualify is undocumented, so ask.
 
 <Steps>
 
@@ -70,7 +70,7 @@ curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del in
 ```
 </Terminal>
 
-That is the native installer; it updates itself in the background. No Node, no WSL — native Windows works. Git for Windows is optional, but install it from [git-scm.com](https://git-scm.com/downloads/win) anyway: with it, Claude runs its Bash tool through Git Bash instead of PowerShell ([setup docs](https://code.claude.com/docs/en/setup)).
+The native installer updates itself in the background. No Node, no WSL — native Windows works. Git for Windows is optional, but install it from [git-scm.com](https://git-scm.com/downloads/win) anyway: with it, Claude runs its Bash tool through Git Bash instead of PowerShell ([setup docs](https://code.claude.com/docs/en/setup)).
 </Step>
 
 <Step title="Open a NEW terminal and check the install">
@@ -103,7 +103,7 @@ Two more errors, one cause each: `The token '&&' is not a valid statement separa
 </Step>
 
 <Step title="Give it something real to read">
-Never run `claude` in your home folder or on your Desktop — from there it can index everything you own. Always `cd` into a project first. Have a small project already? Use it. Otherwise build this one. It takes three minutes, and it is small enough to check the agent's answer against the code yourself.
+Never run `claude` in your home folder or on your Desktop — from there it can index everything you own. `cd` into a project first. Have a small project? Use it. Otherwise build this one: three minutes, and small enough to check the agent's answer yourself.
 
 <Terminal title="PowerShell">
 ```powershell
@@ -175,11 +175,11 @@ claude --permission-mode manual
 ```
 </Terminal>
 
-On Pro, Max and Team plans, a plain `claude` now starts in **auto** mode, where a second classifier model reviews actions instead of asking you ([permission modes](https://code.claude.com/docs/en/permission-modes), and [module 07](/en/learn/the-agent/)). For your first four labs, force Manual: it reads, and it asks before anything else. You see what the agent wanted to do.
+On Pro, Max and Team plans a plain `claude` starts in **auto** mode: a second classifier model reviews actions instead of asking you ([permission modes](https://code.claude.com/docs/en/permission-modes), [module 07](/en/learn/the-agent/)). For your first four labs, force Manual. It reads, and it asks before anything else, so you see what the agent wanted to do.
 
 On first launch a browser opens for login. Credentials are stored, so this happens once; `/login` switches accounts, `/logout` signs out. The first run in any folder also brings a workspace-trust dialog.
 
-The header shows the version, the current model and the working directory. Check the directory. If it is not `qairu-cards`, press `Ctrl+C` twice and `cd` properly. The status bar underneath should read `manual mode on`.
+The header shows the version, the model and the working directory. If the directory is not `qairu-cards`, press `Ctrl+C` twice and `cd` properly. The status bar should read `manual mode on`.
 
 <Callout type="danger" title="One environment variable can start billing you">
 If `ANTHROPIC_API_KEY` is set in your environment, Claude Code skips the browser login and asks you to approve that key instead — silently moving you from your subscription to per-token billing ([quickstart](https://code.claude.com/docs/en/quickstart)). If you did not set it deliberately, unset it before you start.
@@ -194,13 +194,13 @@ Do these in order, inside the session, before you ask for anything real.
 - `! git status` — shell mode. You run the command yourself and the output drops into the conversation.
 - `Shift+Tab` — cycles permission modes. Press it a few times and read the status bar each time: `manual mode on`, `accept edits on`, `plan mode on`. Land back on Manual.
 
-Two keys to memorise: **`Esc`** interrupts Claude mid-action and keeps the work so far, and **`Ctrl+O`** opens the transcript viewer, which shows every tool call in detail. All of it is in the [interactive mode docs](https://code.claude.com/docs/en/interactive-mode).
+Two keys to memorise: **`Esc`** interrupts Claude mid-action and keeps the work so far; **`Ctrl+O`** opens the transcript viewer, with every tool call in detail. All of it is in the [interactive mode docs](https://code.claude.com/docs/en/interactive-mode).
 
-Finally run `/usage`. It shows your plan bars and where the tokens went. On a subscription, ignore the dollar figure — the docs say it only means something for API users ([costs](https://code.claude.com/docs/en/costs)).
+Finally run `/usage` for your plan bars and where the tokens went. On a subscription the dollar figure means nothing ([costs](https://code.claude.com/docs/en/costs)).
 </Step>
 
 <Step title="Make it explore before it edits">
-Type or paste this exactly. It forbids edits, scopes the reading to one small project, asks for claims you can check, and ends by making the agent ask you something.
+Type or paste this exactly. It forbids edits, scopes the reading, asks for claims you can check, and makes the agent ask you something at the end.
 
 <Prompt title="Explore before edit" where="Claude Code · Manual mode">
 ```text
@@ -217,11 +217,11 @@ Then stop and ask me one question about what I want to build next.
 ```
 </Prompt>
 
-You will see it search and read files. It gathers context on demand — you never paste code in yourself.
+You will see it search and read files. It gathers context on demand; you never paste code in yourself.
 </Step>
 
 <Step title="Judge the answer with a rubric, not a feeling">
-A good answer does four things. Check them off:
+A good answer does four things:
 
 1. **Names all three files**, and says `words.js` holds the data while `index.html` holds the markup and the behaviour together.
 2. **Finds the README mismatch.** The README promises a Next button. The code has no button — only the Right Arrow key. If it missed this, it skimmed.
@@ -237,18 +237,18 @@ you read to decide it? Give me the file name and the lines you relied on.
 ```
 </Prompt>
 
-The docs call this the trust-then-verify gap: plausible code that misses the edge cases. The fix is to give the agent a check it can run — a test, a script, a screenshot ([module 10](/en/learn/test-and-quality/)). Their rule is one line: cannot verify it, do not ship it ([best practices](https://code.claude.com/docs/en/best-practices)).
+The docs call this the trust-then-verify gap: plausible code that misses the edge cases. The fix is a check the agent can run — a test, a script, a screenshot ([module 10](/en/learn/test-and-quality/)). Their rule: cannot verify it, do not ship it ([best practices](https://code.claude.com/docs/en/best-practices)).
 </Step>
 
 <Step title="/clear versus /compact — the difference that saves your session">
-Run `/context`. It shows what is filling the window right now: the conversation, every file read, command output, memory files. Sonnet 5 and Opus 5 hold a million tokens and auto-compact at about 967K by default ([model config](https://code.claude.com/docs/en/model-config)), but quality still drops as the window fills ([module 02](/en/learn/ai-in-plain-language/)). A big window buys you time, not quality.
+Run `/context`. It shows what is filling the window: the conversation, every file read, command output, memory files. Sonnet 5 and Opus 5 hold a million tokens and auto-compact at about 967K by default ([model config](https://code.claude.com/docs/en/model-config)), but quality drops as the window fills ([module 02](/en/learn/ai-in-plain-language/)). A big window buys time, not quality.
 
 - **`/compact`** summarises the conversation and frees space, keeping the thread. Steer it: `/compact keep the file list and the README mismatch`. Use it on the same task, gone long.
 - **`/clear`** starts a new conversation with empty context. It costs nothing. Use it when the next thing has nothing to do with the last thing.
 
-Do it in that order now. Compact with an instruction, run `/context` again and watch the number drop. Then `/rename first-session` so `/resume` finds this conversation tomorrow, and `/clear`. In the empty session, try `/compact` once more: it answers `Not enough messages to compact.` — compacting is about a conversation, not about the tool.
+Do it in that order. Compact with an instruction, run `/context` again and watch the number drop. Then `/rename first-session`, so `/resume` finds this tomorrow, and `/clear`. In the empty session try `/compact` again: `Not enough messages to compact.` Compacting is about a conversation, not about the tool.
 
-One rule of thumb worth copying down: if you have corrected Claude twice on the same thing, do not correct it a third time. `/clear` and write a better prompt.
+One rule worth copying down: if you have corrected Claude twice on the same thing, do not correct it a third time. `/clear` and write a better prompt.
 </Step>
 
 <Step title="Leave, and prove you can come back">
@@ -267,15 +267,15 @@ claude -c
 
 ## Why a read-only first session is not a warm-up
 
-It is the actual skill. Three of the five failure patterns the [Claude Code docs](https://code.claude.com/docs/en/best-practices) name are failures of context, not of code: unrelated tasks piled into one conversation, the same correction repeated until the window is full of failed attempts, and unscoped exploration that reads hundreds of files to answer a question you could have scoped in one sentence.
+It is the actual skill. Three of the five failure patterns the [Claude Code docs](https://code.claude.com/docs/en/best-practices) name are failures of context, not of code: unrelated tasks piled into one conversation, the same correction repeated until the window is full of failed attempts, and unscoped exploration that reads hundreds of files ([module 06](/en/learn/context-ssot/)).
 
-An agent that has read your project answers differently from one that is guessing, and the prose looks the same either way. That is why step 7 exists: one extra prompt catches the most expensive class of mistake in this course.
+An agent that has read your project answers differently from one that is guessing, and the prose looks the same either way. That is why step 7 exists.
 
-One thing beginners forget: the tool documents itself. Typing `how do I do X in Claude Code?` inside the session works, and it beats searching.
+One thing beginners forget: the tool documents itself. `how do I do X in Claude Code?` inside the session beats searching.
 
 <Quiz
   id="lab1-clear-compact"
-  question="You have spent forty minutes with the agent on the flashcard page. It now understands the files well. You want to start a completely different task — writing a deploy script. What do you do first?"
+  question="Forty minutes in, the agent understands the flashcard page well. Now you want a completely different task: writing a deploy script. What do you do first?"
   options={[
     'Run /compact so it keeps what it learned about the project',
     'Run /clear, because the new task shares nothing with the old conversation',
@@ -293,17 +293,17 @@ One thing beginners forget: the tool documents itself. Typing `how do I do X in 
   items={[
     'claude --version prints a version number in a newly opened terminal',
     'claude doctor runs without reporting a problem',
-    'The session header showed qairu-cards as the working directory, and the status bar said manual mode on',
-    'The agent listed all three files and caught the README promising a Next button that does not exist',
+    'The session header showed qairu-cards, and the status bar said manual mode on',
+    'The agent listed all three files and caught the README promising a Next button',
     'You asked it what it read to decide, and it gave file names',
-    'You can say out loud when to use /clear and when to use /compact',
+    'You can say out loud when to use /clear and when /compact',
     'claude -c reopened the conversation after you exited',
   ]}
   xp={20}
 />
 
 <Callout type="live" title="If you are teaching this page">
-Do step 6 on the projector before anyone types. Read the answer aloud, stop at the README question, and ask who spotted the missing Next button before the agent did. Most will not have. That is the moment to say the quiet part: this time the agent read more carefully than you, next time it will not, and you cannot tell which time you are in — except by asking it what it read.
+Do step 6 on the projector before anyone types. Read the answer aloud, stop at the README question, and ask who spotted the missing Next button before the agent did. Most will not have. Then say the quiet part: this time the agent read more carefully than you. Next time it will not, and the only way to tell is to ask what it read.
 </Callout>
 
 <Artifact title="The explore-before-edit prompt" kind="prompt-pack">

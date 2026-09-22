@@ -7,7 +7,7 @@ artifact: Deployment runbook — the command sequence, the secrets check and the
 ---
 
 <Lead>
-Right now your sign-up page exists on exactly one computer on Earth: yours. Close the lid and it is gone. Deploying copies it onto machines that never sleep and gives it a name people can type. On this stack that is *four commands* — plus one thing you cannot do from the terminal.
+Your sign-up page exists on exactly one computer on Earth: yours. Close the lid and it is gone. Deploying copies it onto machines that never sleep and gives it a name people can type. On this stack that is *four commands* — plus one thing you cannot do from the terminal.
 </Lead>
 
 Working on your machine is not done. Deployed is done.
@@ -22,7 +22,7 @@ Modern hosts watch your repository and deploy on every `git push`: pull the code
 
 **Static** means the site is built once into a folder of plain HTML, CSS and JavaScript, and that folder is copied to machines around the world. Nothing runs per visitor, which makes it the cheapest, fastest and hardest to break. This site is static: `npm run build` turns the source into `dist/`, and `dist/` *is* the website.
 
-**Server-rendered** means a program runs for each request: it checks who you are, reads the database, calls a paid API. That code runs out of the visitor's sight, the only place a secret can live. It comes in two shapes — one long-running server, or small serverless functions (Cloudflare Workers, Vercel Functions) that wake per request and sleep again.
+**Server-rendered** means a program runs for each request: it checks who you are, reads the database, calls a paid API. That code runs out of the visitor's sight, the only place a secret can live. Two shapes: one long-running server, or small serverless functions (Cloudflare Workers, Vercel Functions) that wake per request and sleep again.
 
 Keep as much static as you can; push the dynamic part into the smallest possible function. A static page costs you nothing. A function spends budget every time someone loads it — [Cloudflare's free Workers tier](https://developers.cloudflare.com/workers/platform/pricing/) allows 100,000 requests a day and 10 ms of CPU per invocation, while Pages lists no bandwidth cap at all for static assets.
 
@@ -57,7 +57,7 @@ Real numbers, September 2026. The last column is the one that matters.
 For a student in Kazakhstan the choice is nearly made: a public GitHub repo, Cloudflare Pages or Workers, and D1, Neon or Supabase for data. None asks for a card. Netlify is the trap — twenty deploys and the month is gone, and you will deploy twenty times in one evening. Firebase is the other: Cloud Functions need the pay-as-you-go plan, which needs a card on file.
 
 <Callout type="live" title="Before you promise anything on stage">
-Count the hands for cards that work for international payments before you pick a host to demo. Everything in the stack above works without one.
+Count the hands for international payment cards before you pick a host to demo. Everything in the stack above works without one.
 </Callout>
 
 <Myth
@@ -66,7 +66,7 @@ Count the hands for cards that work for international payments before you pick a
   source="Render, Netlify and Supabase free-tier docs"
   href="https://render.com/docs/free"
 >
-Free tiers are prototype infrastructure, and the table above is the fine print: Render sleeps after 15 minutes and deletes your free Postgres 30 days after you create it, Supabase pauses a project after a week of quiet, Netlify pauses every project you own the moment the 300 credits are gone.
+Free tiers are prototype infrastructure, and the table above is the fine print: Render sleeps after 15 minutes and deletes your free Postgres after 30 days, Supabase pauses a project after a week of quiet, Netlify pauses everything you own when the 300 credits are gone.
 
 **Deployed** means reachable. **Production** means someone is relying on it, which needs a tier that will not switch itself off while you sleep. That is $5 a month on Cloudflare or Railway Hobby, $20–$25 for Vercel Pro or Supabase Pro. Pay it the day a real person depends on the thing.
 </Myth>
@@ -236,7 +236,7 @@ npx wrangler pages deploy dist --project-name=qairu-event
 
 Small commits are what make this fast. If one commit holds an agent's whole afternoon across forty files, reverting throws the good work out with the bad ([module 09](/en/learn/git-and-github/)).
 
-Then do the part almost nobody does: run that sequence today, while the site is fine. A rollback you have never tested is a plan, not a safety net.
+Do the part almost nobody does: run that sequence today, while the site is fine. A rollback you have never tested is a plan, not a safety net.
 
 <Prompt title="Set up the deploy" where="Claude Code · plan mode">
 
@@ -280,7 +280,7 @@ custom domain. Do not claim the site is live until that list is done.
 <ProjectStep n={12} title="Put the sign-up page on a URL you can send to someone">
 Build it, push it, deploy it. Open the `pages.dev` URL on your phone, not on your laptop, where a tab still pointed at localhost will lie to you.
 
-Set any secret the page needs in the Cloudflare dashboard, not in the code. If you claimed a Student Pack domain, attach it and wait for DNS.
+Set any secret in the Cloudflare dashboard, not in the code. If you claimed a Student Pack domain, attach it and wait for DNS.
 
 **Done when:** a person who has never touched your laptop can open your link and reserve a seat, and you can point at the commit you would roll back to.
 </ProjectStep>

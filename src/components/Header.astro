@@ -98,7 +98,7 @@ const isActive = (to: string) => path.startsWith(href(lang, to));
   .brand-by { display: none; font: 500 11px/1 var(--font-mono); color: var(--color-faint); letter-spacing: 0.08em; white-space: nowrap; }
   @media (min-width: 420px) { .brand-by { display: inline; } }
   .nav-desktop { display: none; gap: 4px; }
-  .nav-desktop a { padding: 8px 14px; border-radius: 999px; text-decoration: none; font-size: 15px; font-weight: 500; color: var(--color-muted); transition: color 0.2s, background 0.2s; }
+  .nav-desktop a { white-space: nowrap; padding: 8px 12px; border-radius: 999px; text-decoration: none; font-size: 15px; font-weight: 500; color: var(--color-muted); transition: color 0.2s, background 0.2s; }
   .nav-desktop a:hover { color: #fff; background: rgb(255 255 255 / 0.06); }
   .nav-desktop a[aria-current='page'] { color: #fff; background: rgb(255 255 255 / 0.09); }
   .tools { display: flex; align-items: center; gap: 10px; }
@@ -126,7 +126,7 @@ const isActive = (to: string) => path.startsWith(href(lang, to));
   .nav-mobile a { padding: 14px 4px; font: 350 26px/1.2 var(--font-display); text-decoration: none; color: #fff; border-bottom: 1px solid var(--color-line); animation: rise 0.5s var(--ease-out-expo) both; animation-delay: calc(var(--i) * 45ms); }
   .nav-mobile a[aria-current='page'] { color: var(--color-signal); }
   @media (min-width: 560px) { .xp { display: inline-flex; } }
-  @media (min-width: 960px) {
+  @media (min-width: 1040px) {
     .nav-desktop { display: flex; }
     .burger, .nav-mobile { display: none !important; }
     .brand { margin-right: 24px; }
