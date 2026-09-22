@@ -16,6 +16,23 @@ export interface User {
   name: string;
   lang: 'en' | 'kk';
   createdAt?: string;
+  /** Set by the API for the organiser's address. The edge gate is the real check. */
+  admin?: boolean;
+}
+
+/** One row of the live roster, from GET /admin/users. */
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  lang: 'en' | 'kk';
+  created_at: string;
+  last_seen_at: string | null;
+  xp: number;
+  last_page: string | null;
+  modules: number;
+  labs: number;
+  quizzes: number;
 }
 
 /* ------------------------------------------------------------------ token */
@@ -119,6 +136,23 @@ export const fetchMe = () =>
 
 export const pushProgress = (body: { earned: Record<string, number>; lastPage?: string; name?: string }) =>
   call<{ earned: Record<string, number>; xp: number }>('/progress', { method: 'PUT', body: JSON.stringify(body) }, true);
+
+export interface Stats {
+  users: number;
+  activeLast7Days: number;
+  byLanguage: Record<string, number>;
+  avgXp: number;
+  maxXp: number;
+  completions: { id: string; n: number }[];
+  signupsByDay: { d: string; n: number }[];
+}
+
+/** Admin reads. Uses the signed-in organiser's token; the key is the fallback. */
+const admin = <T,>(path: string, adminKey?: string) =>
+  call<T>(path, adminKey ? { headers: { 'X-Admin-Key': adminKey } } : {}, !adminKey);
+
+export const fetchRoster = (adminKey?: string) => admin<{ users: AdminUser[]; total: number }>('/admin/users', adminKey);
+export const fetchStats = (adminKey?: string) => admin<Stats>('/stats', adminKey);
 
 export const track = (kind: string, ref?: string, lang?: string) =>
   call('/event', { method: 'POST', body: JSON.stringify({ kind, ref, lang }) }, true).catch(() => {});

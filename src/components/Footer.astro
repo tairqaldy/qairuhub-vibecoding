@@ -19,8 +19,8 @@ const t = useT(lang);
       <a href={href(lang, 'learn')}>{t('nav.learn')}</a>
       <a href={href(lang, 'labs')}>{t('nav.labs')}</a>
       <a href={href(lang, 'materials')}>{t('nav.materials')}</a>
-      <a href={href(lang, 'workshop')}>{t('nav.workshop')}</a>
-      <a href={href(lang, 'present')}>{t('nav.present')}</a>
+      <a href={href(lang, 'workshop')} data-admin-only hidden>{t('nav.workshop')}</a>
+      <a href={href(lang, 'present')} data-admin-only hidden>{t('nav.present')}</a>
       <a href={href(lang, 'glossary')}>{t('nav.glossary')}</a>
     </nav>
     <nav aria-label="QairuHub">

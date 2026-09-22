@@ -76,7 +76,11 @@ it works on stage with no wifi, and for a student who cannot pay for anything. K
 The course requires an account; the hook does not.
 
 - **Public:** `/`, `/{lang}/`, `/{lang}/try/`, `/{lang}/glossary/`, `/{lang}/login/`, static assets
-- **Gated:** `/{lang}/learn|labs|tools|materials|workshop|present|admin`
+- **Signed in:** `/{lang}/learn|labs|tools|materials`
+- **Organiser only:** `/{lang}/workshop|present|admin` — the run-of-show, the slides and the
+  analytics. The API puts a signed `admin` claim in the JWT for addresses in `ADMIN_EMAILS`
+  (default: the project owner). The edge requires a *verified* signature for these, so a
+  missing `JWT_SECRET` fails closed instead of opening the dashboard.
 
 Gating is enforced at the edge in `functions/_middleware.js`, a Cloudflare Pages Function that
 verifies the session JWT's HMAC signature before any HTML is served. It rejects `alg: none`,
@@ -87,7 +91,9 @@ replace it with one.
 
 - `POST /auth/signup`, `POST /auth/login` — argon2id hashes, JWT out, throttled per email and per IP
 - `GET /me` · `PUT /progress` · `POST /event` — Bearer token
-- `GET /stats` — aggregate only, behind `ADMIN_KEY`; returns no names, emails or per-user rows
+- `GET /stats` — aggregate counts · `GET /admin/users` — the roster: name, email, XP,
+  modules and labs done, last seen. Both accept either the `X-Admin-Key` header or a Bearer
+  token whose `admin` claim is true. The roster is personal data; no other endpoint returns it.
 
 Deploy the API with `cd api && railway up --service vibecoding-api --ci`.
 

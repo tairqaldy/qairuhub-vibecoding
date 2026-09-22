@@ -109,7 +109,8 @@ const stepModule = (n: number) => modules.find((m) => m.cycleStep === n);
   .go { margin-left: auto; color: var(--color-faint); transition: transform 0.3s var(--ease-out-expo), color 0.3s; }
   a.item:hover .go { transform: translateX(4px); color: var(--color-signal); }
 
-  @media (min-width: 900px) { .cycle { grid-template-columns: 1fr 1fr; gap: 48px; } }
+  /* compact hides the step list, so the ring should take the whole width */
+  @media (min-width: 900px) { .cycle:not(.compact) { grid-template-columns: 1fr 1fr; gap: 48px; } }
   .compact .list { display: none; }
 </style>
 

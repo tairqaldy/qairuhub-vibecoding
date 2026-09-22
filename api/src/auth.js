@@ -12,8 +12,21 @@ const key = new TextEncoder().encode(SECRET);
 /** Tokens last 30 days; `v` lets us invalidate every token a user holds by bumping token_version. */
 export const TOKEN_DAYS = 30;
 
+// Who may see the workshop pack, the slides and the analytics. One address by
+// default; ADMIN_EMAILS overrides it with a comma-separated list.
+const ADMINS = new Set(
+  (process.env.ADMIN_EMAILS ?? 'tairkaldybayev@gmail.com')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean),
+);
+
+export const isAdmin = (email) => ADMINS.has(String(email ?? '').trim().toLowerCase());
+
 export async function signToken(user) {
-  return new SignJWT({ name: user.name, v: user.token_version ?? 0 })
+  // `admin` is a signed claim so the Cloudflare edge can gate the workshop
+  // routes without calling this API on every page view.
+  return new SignJWT({ name: user.name, v: user.token_version ?? 0, admin: isAdmin(user.email) })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(String(user.id))
     .setIssuedAt()

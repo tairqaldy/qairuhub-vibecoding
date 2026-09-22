@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { q } from './db.js';
 import { migrate } from './migrate.js';
-import { checkPassword, hashPassword, normEmail, readToken, signToken, validateCredentials, TOKEN_DAYS } from './auth.js';
+import { checkPassword, hashPassword, isAdmin, normEmail, readToken, signToken, validateCredentials, TOKEN_DAYS } from './auth.js';
 
 const app = new Hono();
 
@@ -61,7 +61,7 @@ async function tooManyAttempts(ident, limit = 10) {
 const noteAttempt = (ident, ok) =>
   q('INSERT INTO auth_attempts (ident, ok) VALUES ($1, $2)', [ident, ok]).catch(() => {});
 
-const publicUser = (u) => ({ id: String(u.id), email: u.email, name: u.name, lang: u.lang, createdAt: u.created_at });
+const publicUser = (u) => ({ id: String(u.id), email: u.email, name: u.name, lang: u.lang, createdAt: u.created_at, admin: isAdmin(u.email) });
 
 async function requireUser(c) {
   const header = c.req.header('authorization') ?? '';
@@ -209,9 +209,51 @@ app.post('/event', async (c) => {
 });
 
 /** Aggregate statistics. Requires the owner token, and returns no personal data. */
-app.get('/stats', async (c) => {
+/**
+ * Admin access, two ways in: the shared ADMIN_KEY header, which keeps scripts
+ * and curl working, or a Bearer token belonging to an address on the admin
+ * list, so the dashboard just works once the organiser is signed in.
+ */
+async function requireAdmin(c) {
   const key = c.req.header('x-admin-key');
-  if (!process.env.ADMIN_KEY || key !== process.env.ADMIN_KEY) return c.json({ error: 'unauthorized' }, 401);
+  if (process.env.ADMIN_KEY && key && key === process.env.ADMIN_KEY) return true;
+  const user = await requireUser(c);
+  return Boolean(user && isAdmin(user.email));
+}
+
+/**
+ * Per-person rows for running a live session: who signed up, how far they got,
+ * when they were last seen. This is personal data — it is why the endpoint is
+ * behind the admin check and why nothing else on the API ever returns it.
+ */
+app.get('/admin/users', async (c) => {
+  if (!(await requireAdmin(c))) return c.json({ error: 'unauthorized' }, 401);
+
+  const { rows } = await q(`
+    SELECT u.id::text                                                   AS id,
+           u.name,
+           u.email,
+           u.lang,
+           u.created_at,
+           u.last_seen_at,
+           coalesce(p.xp, 0)::int                                       AS xp,
+           p.last_page,
+           (SELECT count(*)::int FROM jsonb_object_keys(coalesce(p.earned, '{}'::jsonb)) k
+             WHERE k LIKE 'module:%')                                   AS modules,
+           (SELECT count(*)::int FROM jsonb_object_keys(coalesce(p.earned, '{}'::jsonb)) k
+             WHERE k LIKE 'lab:%')                                      AS labs,
+           (SELECT count(*)::int FROM jsonb_object_keys(coalesce(p.earned, '{}'::jsonb)) k
+             WHERE k LIKE 'quiz:%')                                     AS quizzes
+      FROM users u
+      LEFT JOIN progress p ON p.user_id = u.id
+     ORDER BY coalesce(p.xp, 0) DESC, u.created_at DESC
+     LIMIT 500`);
+
+  return c.json({ users: rows, total: rows.length });
+});
+
+app.get('/stats', async (c) => {
+  if (!(await requireAdmin(c))) return c.json({ error: 'unauthorized' }, 401);
 
   const [users, active, lang, xp, modules, signupsByDay] = await Promise.all([
     q('SELECT count(*)::int n FROM users'),

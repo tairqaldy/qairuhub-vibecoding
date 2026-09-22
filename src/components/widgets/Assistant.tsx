@@ -2,59 +2,69 @@ import { useEffect, useRef, useState } from 'react';
 import type { Lang } from '@/data/curriculum';
 
 /**
- * The site assistant. Docks to the right edge, answers only from this site's
- * material, and always offers the pages behind the answer so the reader can go
- * and read the real thing.
+ * The site assistant. Docks to the right edge and answers anything: the course
+ * material first, with links to the page it came from, and general programming,
+ * debugging or career questions when the site does not cover them.
+ *
+ * The site is a multi-page app, so the conversation is kept in sessionStorage.
+ * Without that, every link the reader clicks would wipe the thread mid-question.
  */
+
+const KEY = 'vc:ask:v1';
 
 const copy = {
   en: {
     open: 'Ask',
-    title: 'Ask about anything here',
-    sub: 'Answers come from this site only, with links to the page they came from.',
+    title: 'Ask anything',
+    sub: 'The course, your code, your error, or where to start.',
     placeholder: 'Ask a question, paste an error, or ask for code…',
     send: 'Send',
-    thinking: 'Reading the site…',
+    thinking: 'Thinking…',
     sources: 'Read this',
-    clear: 'New question',
+    clear: 'New chat',
     close: 'Close',
-    disclaimer: 'It can be wrong. The linked pages are the source of truth.',
+    copy: 'Copy',
+    copied: 'Copied',
+    disclaimer: 'It can be wrong. Linked pages are the source of truth.',
     error: 'Something went wrong. Try again in a moment.',
     offline: 'Could not reach the assistant. Check your connection.',
-    empty: 'Nothing on the site matches that yet.',
+    empty: 'I did not get an answer out that time. Ask again?',
     suggestions: [
       'What is vibe coding, exactly?',
       'How do I install Claude Code?',
-      'Why did my agent delete a file?',
-      'What is a context window?',
-      'Which tool should I start with?',
+      'Explain this error: EADDRINUSE',
+      'Write me a Python script to rename files',
+      'I have never coded. Where do I start?',
     ],
   },
   kk: {
     open: 'Сұра',
-    title: 'Мұндағы кез келген нәрсе туралы сұра',
-    sub: 'Жауаптар тек осы сайттың материалынан алынады әрі қай беттен екені сілтемемен беріледі.',
+    title: 'Кез келген нәрсені сұра',
+    sub: 'Курс, өз кодың, қатең немесе неден бастау керегі.',
     placeholder: 'Сұрақ қой, қатені жапсыр немесе код сұра…',
     send: 'Жіберу',
-    thinking: 'Сайтты оқып жатыр…',
+    thinking: 'Ойланып жатыр…',
     sources: 'Мынаны оқы',
-    clear: 'Жаңа сұрақ',
+    clear: 'Жаңа әңгіме',
     close: 'Жабу',
+    copy: 'Көшіру',
+    copied: 'Көшірілді',
     disclaimer: 'Ол қателесуі мүмкін. Шындық көзі — сілтемедегі беттер.',
     error: 'Бірдеңе дұрыс болмады. Сәлден соң қайтала.',
     offline: 'Көмекшіге қосыла алмадық. Байланысыңды тексер.',
-    empty: 'Бұған сәйкес ештеңе әзірге сайтта жоқ.',
+    empty: 'Бұл жолы жауап шықпады. Қайта сұрап көресің бе?',
     suggestions: [
       'Vibe coding деген не?',
       'Claude Code-ты қалай орнатамын?',
-      'Agent неге файлды өшіріп жіберді?',
-      'Контекст терезесі деген не?',
-      'Қай құралдан бастаған дұрыс?',
+      'Мына қатені түсіндір: EADDRINUSE',
+      'Файл атын өзгертетін Python скрипт жаз',
+      'Мен ешқашан код жазбағанмын. Неден бастаймын?',
     ],
   },
 };
 
 interface Source {
+  n: number;
   title: string;
   section: string | null;
   url: string;
@@ -66,6 +76,16 @@ interface Msg {
   sources?: Source[];
 }
 
+function load(): Msg[] {
+  try {
+    const raw = sessionStorage.getItem(KEY);
+    const v = raw ? JSON.parse(raw) : null;
+    return Array.isArray(v) ? v.slice(-40) : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function Assistant({ lang }: { lang: Lang }) {
   const t = copy[lang];
   const [open, setOpen] = useState(false);
@@ -74,6 +94,28 @@ export default function Assistant({ lang }: { lang: Lang }) {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Restore the thread after mount, never during render — sessionStorage does
+  // not exist while Astro pre-renders this component to HTML.
+  useEffect(() => {
+    setMsgs(load());
+    try {
+      if (sessionStorage.getItem(KEY + ':open') === '1') setOpen(true);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (msgs.length) sessionStorage.setItem(KEY, JSON.stringify(msgs.slice(-40)));
+      else sessionStorage.removeItem(KEY);
+    } catch {}
+  }, [msgs]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(KEY + ':open', open ? '1' : '0');
+    } catch {}
+  }, [open]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -94,14 +136,14 @@ export default function Assistant({ lang }: { lang: Lang }) {
   useEffect(() => {
     const el = bodyRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [msgs, busy]);
+  }, [msgs, busy, open]);
 
   async function ask(question: string) {
     const text = question.trim();
     if (!text || busy) return;
     setQ('');
     setBusy(true);
-    const history = msgs.slice(-4).map((m) => ({ role: m.role, content: m.content }));
+    const history = msgs.slice(-6).map((m) => ({ role: m.role, content: m.content }));
     setMsgs((m) => [...m, { role: 'user', content: text }]);
 
     try {
@@ -116,7 +158,7 @@ export default function Assistant({ lang }: { lang: Lang }) {
         ...m,
         { role: 'assistant', content: data.answer || t.empty, sources: data.sources ?? [] },
       ]);
-    } catch (e) {
+    } catch {
       const offline = typeof navigator !== 'undefined' && !navigator.onLine;
       setMsgs((m) => [...m, { role: 'assistant', content: offline ? t.offline : t.error }]);
     } finally {
@@ -161,7 +203,9 @@ export default function Assistant({ lang }: { lang: Lang }) {
 
           {msgs.map((m, i) => (
             <div key={i} className={`vc-ask-msg vc-ask-${m.role}`}>
-              <div className="vc-ask-bubble">{m.content}</div>
+              <div className="vc-ask-bubble">
+                {m.role === 'assistant' ? <Rich text={m.content} copy={t.copy} copied={t.copied} /> : m.content}
+              </div>
               {m.sources && m.sources.length > 0 && (
                 <div className="vc-ask-src">
                   <p>{t.sources}</p>
@@ -169,7 +213,10 @@ export default function Assistant({ lang }: { lang: Lang }) {
                     {dedupe(m.sources).map((s) => (
                       <li key={s.url + (s.section ?? '')}>
                         <a href={s.url}>
-                          <span className="vc-ask-src-t">{s.title}</span>
+                          <span className="vc-ask-src-t">
+                            <span className="vc-ask-src-n">{s.n}</span>
+                            {s.title}
+                          </span>
                           {s.section && <span className="vc-ask-src-s">{s.section}</span>}
                         </a>
                       </li>
@@ -223,6 +270,103 @@ export default function Assistant({ lang }: { lang: Lang }) {
           <p className="vc-ask-note">{t.disclaimer}</p>
         </form>
       </aside>
+    </>
+  );
+}
+
+/* --------------------------------------------------------------- rendering */
+
+/**
+ * Just enough Markdown for an answer: fenced code with a copy button, inline
+ * code, bold, and list items. Everything else stays literal text, which is
+ * safer than a full parser inside a widget nobody can debug on stage.
+ */
+function Rich({ text, copy, copied }: { text: string; copy: string; copied: string }) {
+  const parts = String(text).split(/```/);
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <Code key={i} raw={part} copy={copy} copied={copied} />
+        ) : (
+          <Prose key={i} text={part} />
+        ),
+      )}
+    </>
+  );
+}
+
+function Code({ raw, copy, copied }: { raw: string; copy: string; copied: string }) {
+  const [done, setDone] = useState(false);
+  // a fence may open with a language tag on the first line
+  const nl = raw.indexOf('\n');
+  const first = nl === -1 ? '' : raw.slice(0, nl).trim();
+  const isLang = /^[a-z0-9+#-]{1,16}$/i.test(first);
+  const lang = isLang ? first : '';
+  const code = (isLang ? raw.slice(nl + 1) : raw).replace(/^\n+|\n+$/g, '');
+
+  return (
+    <div className="vc-ask-code">
+      <div className="vc-ask-code-bar">
+        <span>{lang || 'code'}</span>
+        <button
+          type="button"
+          onClick={() => {
+            navigator.clipboard?.writeText(code).then(
+              () => {
+                setDone(true);
+                setTimeout(() => setDone(false), 1600);
+              },
+              () => {},
+            );
+          }}
+        >
+          {done ? copied : copy}
+        </button>
+      </div>
+      <pre>
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+function Prose({ text }: { text: string }) {
+  const lines = text.split('\n');
+  return (
+    <>
+      {lines.map((line, i) => {
+        if (!line.trim()) return <span key={i} className="vc-ask-gap" />;
+        const bullet = /^\s*([-*•]|\d+\.)\s+/.exec(line);
+        const body = bullet ? line.slice(bullet[0].length) : line;
+        return (
+          <p key={i} className={bullet ? 'vc-ask-li' : undefined}>
+            {bullet && <span className="vc-ask-bullet">{/^\d/.test(bullet[1]) ? bullet[1] : '·'}</span>}
+            <Inline text={body} />
+          </p>
+        );
+      })}
+    </>
+  );
+}
+
+function Inline({ text }: { text: string }) {
+  // `code`, **bold** and bare URLs, in one pass so the pieces cannot nest wrong
+  const parts = text.split(/(`[^`]+`|\*\*[^*]+\*\*|https?:\/\/[^\s<>()]+)/g);
+  return (
+    <>
+      {parts.map((p, i) => {
+        if (!p) return null;
+        if (p.startsWith('`') && p.endsWith('`') && p.length > 2) return <code key={i}>{p.slice(1, -1)}</code>;
+        if (p.startsWith('**') && p.endsWith('**') && p.length > 4) return <b key={i}>{p.slice(2, -2)}</b>;
+        if (/^https?:\/\//.test(p))
+          return (
+            <a key={i} href={p} target="_blank" rel="noopener noreferrer">
+              {p}
+            </a>
+          );
+        return <span key={i}>{p}</span>;
+      })}
     </>
   );
 }

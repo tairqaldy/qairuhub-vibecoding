@@ -12,6 +12,10 @@
  */
 
 const GATED = /^\/(en|kk)\/(learn|labs|tools|materials|workshop|present|admin)(\/|$)/;
+// The run-of-show, the slides and the analytics are for whoever is teaching,
+// not for the room. The `admin` claim is signed by the API, so it cannot be
+// set by editing a cookie.
+const ADMIN_ONLY = /^\/(en|kk)\/(workshop|present|admin)(\/|$)/;
 const COOKIE = 'vc_session';
 
 function readCookie(header, name) {
@@ -32,24 +36,29 @@ const b64urlToBytes = (s) => {
   return out;
 };
 
+/**
+ * Returns the payload for a usable token, or null.
+ * `signed` says whether the HMAC was actually checked — admin routes require it,
+ * so a missing JWT_SECRET can never hand someone the analytics.
+ */
 async function verify(token, secret) {
   const parts = token.split('.');
-  if (parts.length !== 3) return false;
+  if (parts.length !== 3) return null;
   const [h, p, s] = parts;
 
   let payload;
   try {
     payload = JSON.parse(new TextDecoder().decode(b64urlToBytes(p)));
   } catch {
-    return false;
+    return null;
   }
-  if (!payload?.exp || payload.exp * 1000 < Date.now()) return false;
-  if (payload.iss && payload.iss !== 'vibecoding.qairuhub.com') return false;
+  if (!payload?.exp || payload.exp * 1000 < Date.now()) return null;
+  if (payload.iss && payload.iss !== 'vibecoding.qairuhub.com') return null;
 
   // Structure and expiry are valid. Without a secret we stop here.
   if (!secret) {
     console.warn('[gate] JWT_SECRET is not set — signature not verified');
-    return true;
+    return { ...payload, signed: false };
   }
 
   try {
@@ -60,9 +69,10 @@ async function verify(token, secret) {
       false,
       ['verify'],
     );
-    return await crypto.subtle.verify('HMAC', key, b64urlToBytes(s), new TextEncoder().encode(`${h}.${p}`));
+    const ok = await crypto.subtle.verify('HMAC', key, b64urlToBytes(s), new TextEncoder().encode(`${h}.${p}`));
+    return ok ? { ...payload, signed: true } : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -76,12 +86,23 @@ export async function onRequest(context) {
   if (!GATED.test(url.pathname)) return next();
 
   const token = readCookie(request.headers.get('Cookie'), COOKIE);
-  if (token && (await verify(token, env.JWT_SECRET))) return next();
-
+  const session = token ? await verify(token, env.JWT_SECRET) : null;
   const lang = url.pathname.startsWith('/kk/') ? 'kk' : 'en';
+
+  if (session) {
+    if (!ADMIN_ONLY.test(url.pathname)) return next();
+    if (session.signed && session.admin === true) return next();
+    // Signed in, but this is not their page. Send them to the course rather
+    // than to the login form, which they would just bounce off.
+    return away(new URL(`/${lang}/learn/`, url.origin));
+  }
+
   const to = new URL(`/${lang}/login/`, url.origin);
   to.searchParams.set('next', url.pathname + url.search);
+  return away(to);
+}
 
+function away(to) {
   return new Response(null, {
     status: 302,
     headers: {

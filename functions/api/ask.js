@@ -1,21 +1,25 @@
 /**
  * The site assistant.
  *
- * Answers ONLY from this site's own material. The flow is: retrieve the most
- * relevant passages from the build-time index, then ask a model to answer using
- * just those passages and cite them. If no model is bound, it still returns the
- * passages and their links, so the feature degrades to a very good search rather
- * than breaking.
+ * It is a real assistant first and a site search second. Every question runs
+ * through BM25 over this site's own index. When the site genuinely covers the
+ * topic, it answers from those passages and cites them. When it does not, it
+ * still answers properly — general programming, a pasted stack trace, career
+ * doubt — and says the answer is not from the site. A learner should never hit
+ * a dead end in the middle of a question.
  *
  * POST /api/ask  { q, lang, page?, history? }
  *   -> { answer, sources: [{title, url, section}], grounded, model }
  */
 
 import { clean } from './_clean.js';
+import { build, search } from './_search.js';
 
-const MAX_Q = 600;
-const TOP_K = 6;
-const CTX_CHARS = 7000;
+const MAX_Q = 2000;
+const TOP_K = 8;
+const CTX_CHARS = 9000;
+// Below this BM25 score the top passage is a coincidence, not an answer.
+const GROUND_MIN = 6;
 
 /* ------------------------------------------------------------------ index */
 
@@ -31,118 +35,111 @@ async function loadIndex(request, env) {
   return INDEX;
 }
 
-/** Unicode-aware tokeniser: keeps Cyrillic and Latin words, drops punctuation. */
-function tokenize(s) {
-  return (s.toLowerCase().match(/[\p{L}\p{N}][\p{L}\p{N}+#._-]*/gu) ?? []).filter((w) => w.length > 1);
-}
-
-// Words too common in this corpus to carry signal.
-const STOP = new Set(
-  ('the a an and or but if then of to in on for with that this it is are was be you your i we they not no ' +
-   'can will do does what how why when where which as at by from into about more most all any some other ' +
-   'және бұл сол бір ол не үшін мен де да ма ме бар жоқ болады керек деп қалай неге сен сенің осы ' +
-   'то что как это для при или же так вот').split(/\s+/),
-);
-
-function build(docs) {
-  const N = docs.length;
-  const df = new Map();
-  const prepared = docs.map((d) => {
-    const terms = tokenize(`${d.title ?? ''} ${d.section ?? ''} ${d.text ?? ''}`).filter((t) => !STOP.has(t));
-    const tf = new Map();
-    for (const t of terms) tf.set(t, (tf.get(t) ?? 0) + 1);
-    for (const t of tf.keys()) df.set(t, (df.get(t) ?? 0) + 1);
-    // title and section terms get extra weight, they describe the passage best
-    const strong = new Set(tokenize(`${d.title ?? ''} ${d.section ?? ''}`).filter((t) => !STOP.has(t)));
-    return { d, tf, len: terms.length || 1, strong };
-  });
-  const avg = prepared.reduce((s, p) => s + p.len, 0) / (N || 1);
-  return { prepared, df, N, avg };
-}
-
-/** BM25 with a title boost. */
-function search(index, query, lang, limit) {
-  const { prepared, df, N, avg } = index;
-  const qt = [...new Set(tokenize(query).filter((t) => !STOP.has(t)))];
-  if (!qt.length) return [];
-  const k1 = 1.5;
-  const b = 0.75;
-
-  const scored = [];
-  for (const p of prepared) {
-    if (p.d.lang !== lang) continue;
-    let score = 0;
-    for (const t of qt) {
-      const f = p.tf.get(t);
-      if (!f) continue;
-      const n = df.get(t) ?? 0;
-      const idf = Math.log(1 + (N - n + 0.5) / (n + 0.5));
-      score += idf * ((f * (k1 + 1)) / (f + k1 * (1 - b + (b * p.len) / avg)));
-      if (p.strong.has(t)) score += idf * 0.9;
-    }
-    if (score > 0) scored.push({ score, d: p.d });
-  }
-
-  scored.sort((x, y) => y.score - x.score);
-
-  // at most two passages from the same page, so answers cite a spread of sources
-  const perUrl = new Map();
-  const out = [];
-  for (const s of scored) {
-    const n = perUrl.get(s.d.url) ?? 0;
-    if (n >= 2) continue;
-    perUrl.set(s.d.url, n + 1);
-    out.push(s);
-    if (out.length >= limit) break;
-  }
-  return out;
-}
-
 /* ------------------------------------------------------------------ prompt */
 
 const SYSTEM = {
-  en: `You are the assistant for vibecoding.qairuhub.com, a free masterclass on vibecoding and AI coding agents, made by QairuHub in Kazakhstan.
+  en: `You are the assistant on vibecoding.qairuhub.com — a free, hands-on masterclass about vibecoding, AI coding agents and shipping real software, built by QairuHub in Kazakhstan. The people asking are mostly students and self-taught builders in Almaty and Astana. Many are complete beginners. Some are strong developers. You cannot tell which from the question, so never assume they know a term and never talk down to them.
 
-Answer ONLY from the SOURCES below. They are the site's own material.
-- If the sources answer the question, answer directly and briefly. Lead with the answer, not with preamble.
-- If they only partly answer it, say what the site does cover, then say plainly what it does not.
-- If they do not answer it at all, say so in one sentence and point at the closest page.
-- Never invent a fact, number, price, command or URL that is not in the sources.
-- Code is welcome when the sources contain it or when it is a direct, standard application of them. Keep it short and runnable.
-- Write plainly, like a good teacher: short sentences, concrete nouns, no filler, no emoji, no "great question".
-- Cite with [1], [2] matching the source numbers. Cite only what you used.
-- 120 words or fewer unless the question genuinely needs code.
+BE ACTUALLY USEFUL
+Answer the question that was asked. That includes questions this site does not cover: general programming, an error they pasted, which laptop to buy, how a thing works under the hood, whether they are too late to start, or just "I am stuck and I do not know why".
+
+USING THE SOURCES
+- Passages from this site may be given below. When they answer the question, answer from them and cite with [1], [2].
+- When they do not, ignore them completely and answer from what you know. Do not pretend the site covers it.
+- Never invent a page, URL, price, benchmark or statistic. Unsure of a number? Say roughly, or say you do not know.
+
+HOW TO WRITE
+- Lead with the answer. No preamble, no "great question", no restating the question back.
+- Short sentences. Concrete nouns. One real example beats three adjectives.
+- Like a good senior developer sitting next to them: warm, direct, a little dry, never hyped, never condescending.
+- Code whenever it helps. Fenced block, short, runnable, with one line before it saying what it does.
+- Debugging: give the two or three likely causes and the fix for each. Ask for the exact error only if you truly cannot narrow it down.
+- Usually under 150 words. Longer only for code or a real walkthrough.
+- No emoji. No bullet list where two sentences would do.
+- If a page on this site is genuinely their best next step, name it in one short closing line.
 - Reply in English.`,
-  kk: `Сен vibecoding.qairuhub.com сайтының көмекшісісің. Бұл — Қазақстандағы QairuHub жасаған, vibecoding пен ЖИ coding agent-тер туралы тегін мастер-класс.
 
-ТЕК төмендегі ДЕРЕККӨЗДЕР негізінде жауап бер. Олар — сайттың өз материалы.
-- Дереккөздер сұраққа жауап берсе, қысқа әрі тікелей жауап бер. Кіріспесіз, бірден мәніне көш.
-- Жартылай ғана жауап берсе, сайтта нені бар екенін айт та, нені жоқ екенін ашық айт.
-- Мүлде жауап бермесе, соны бір сөйлеммен айтып, ең жақын бетке сілте.
-- Дереккөзде жоқ факті, сан, баға, команда немесе URL ойлап шығарма.
-- Дереккөзде код болса немесе ол солардың тікелей қолданысы болса — код жаз. Қысқа әрі жұмыс істейтін болсын.
-- Қарапайым жаз: қысқа сөйлем, нақты сөз, су жоқ, эмодзи жоқ.
-- [1], [2] деп дереккөз нөмірімен сілте. Тек қолданғаныңды ғана сілте.
-- Кодсыз жауап 120 сөзден аспасын.
-- Қазақша жауап бер. Орысша жазба. git, prompt, agent, deploy, API, token сияқты сөздер латынша қалады, жалғау дефиспен жалғанады: API-ге, GitHub-қа.`,
+  kk: `Сен vibecoding.qairuhub.com сайтының көмекшісісің. Бұл — Қазақстандағы QairuHub жасаған, vibecoding, ЖИ coding agent-тер және нақты өнім шығару туралы тегін, тәжірибеге негізделген мастер-класс. Сұрақ қоятындар — көбіне Алматы мен Астанадағы студенттер және өз бетінше үйреніп жүргендер. Бірі — мүлде бастаушы, бірі — күшті әзірлеуші. Сұрақтан оны біле алмайсың: сондықтан ешбір терминді біледі деп ойлама әрі ешқашан кемсітіп сөйлеме.
+
+ШЫНЫМЕН ПАЙДАЛЫ БОЛ
+Қойылған сұраққа жауап бер. Оның ішінде сайтта жоқ тақырыптар да бар: жалпы бағдарламалау, жапсырып жіберген қате, қай ноутбукті алу, бірдеңенің ішкі жұмысы, «кеш қалдым ба» деген күмән немесе жай ғана «тұрып қалдым, неге екенін білмеймін».
+
+ДЕРЕККӨЗДЕРДІ ҚОЛДАНУ
+- Төменде сайттың өз материалы берілуі мүмкін. Сұраққа жауап берсе, содан жауап бер де [1], [2] деп сілте.
+- Жауап бермесе, оны мүлде елемей, өз біліміңнен жауап бер. Сайтта бар сияқты көрсетпе.
+- Жоқ бетті, URL-ді, бағаны, benchmark-ті немесе статистиканы ойлап шығарма. Санға сенімсіз болсаң, «шамамен» де немесе білмейтініңді ашық айт.
+
+ҚАЛАЙ ЖАЗУ КЕРЕК
+- Бірден жауаптан баста. Кіріспе жоқ, «жақсы сұрақ» жоқ, сұрақты қайталау жоқ.
+- Қысқа сөйлем. Нақты сөз. Бір нақты мысал үш сын есімнен артық.
+- Қасында отырған тәжірибелі әзірлеушідей жаз: жылы, тікелей, асыра дәріптемей, кемсітпей.
+- Пайдасы болса — код жаз. Fenced блок, қысқа, жұмыс істейтін, алдында бір жолмен не істейтіні.
+- Қатені іздегенде: екі-үш ықтимал себепті және әрқайсысының шешімін бер. Нақты мәтінін шынымен тарылта алмасаң ғана сұра.
+- Әдетте 150 сөзге дейін. Ұзағырақ — тек код немесе толық талдау керек болғанда.
+- Эмодзи жоқ. Екі сөйлеммен айтылатын нәрсені тізімге айналдырма.
+- Сайттың бір беті шынымен келесі қадамы болса, соңында бір жолмен атап өт.
+- Қазақша жауап бер. Орысша жазба. git, prompt, agent, deploy, API, token сияқты сөздер латынша қалады, жалғау дефиспен: API-ге, GitHub-қа, git-те.`,
 };
 
+// Repeated on every turn, right after the question. The system prompt alone was
+// not enough in Kazakh: "how do I install X" kept coming back as a definition
+// of X instead of the steps.
+const TASK = {
+  en: 'Answer exactly this question. If it asks how to do something, give the steps and the real commands, not a description of the tool.',
+  kk: 'Дәл осы сұраққа жауап бер. «Қалай істеймін» деп сұраса — қадамдарын және нақты командаларын жаз, құралдың анықтамасын емес.',
+};
+
+// Shown only when every model call failed. The reader still gets the links.
 const FALLBACK = {
   en: (hits) =>
     hits.length
       ? `I could not generate an answer just now, but the site covers this. Start here:\n\n` +
         hits.map((h, i) => `${i + 1}. ${h.d.title}${h.d.section ? ' — ' + h.d.section : ''}`).join('\n')
-      : `I could not find anything about that on this site. Try the glossary, or ask in different words.`,
+      : `I could not answer that just now. Try again in a moment, or ask it in different words.`,
   kk: (hits) =>
     hits.length
       ? `Дәл қазір жауап құрастыра алмадым, бірақ сайтта бұл тақырып бар. Осыдан баста:\n\n` +
         hits.map((h, i) => `${i + 1}. ${h.d.title}${h.d.section ? ' — ' + h.d.section : ''}`).join('\n')
-      : `Бұл туралы сайттан ештеңе таппадым. Глоссарийді қарап көр немесе сұрағыңды басқаша қойып көр.`,
+      : `Дәл қазір жауап бере алмадым. Сәлден соң қайталап көр немесе сұрағыңды басқаша қойып көр.`,
 };
 
-const MODELS = ['@cf/meta/llama-3.3-70b-instruct-fp8-fast', '@cf/meta/llama-3.1-8b-instruct'];
+/* ------------------------------------------------------------------ models */
 
+async function askOpenAI(env, messages, signal) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    signal,
+    headers: {
+      Authorization: `Bearer ${env.OPENAI_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: env.OPENAI_MODEL || 'gpt-5.4-mini',
+      messages,
+      max_completion_tokens: 900,
+    }),
+  });
+  if (!res.ok) throw new Error('openai ' + res.status);
+  const data = await res.json();
+  return data?.choices?.[0]?.message?.content ?? '';
+}
 
+// Workers AI is the safety net: no key needed, so the assistant keeps working
+// if the OpenAI key is missing, rate-limited or the account runs dry.
+const CF_MODELS = ['@cf/meta/llama-3.3-70b-instruct-fp8-fast', '@cf/meta/llama-3.1-8b-instruct'];
+
+async function askWorkersAI(env, messages) {
+  for (const model of CF_MODELS) {
+    try {
+      const r = await env.AI.run(model, { messages, max_tokens: 800, temperature: 0.3 });
+      const a = clean(r?.response);
+      if (a) return a;
+    } catch {
+      /* try the next model */
+    }
+  }
+  return '';
+}
 
 /* ------------------------------------------------------------------ handler */
 
@@ -160,61 +157,86 @@ export async function onRequestPost(context) {
   const lang = body.lang === 'kk' ? 'kk' : 'en';
   if (q.length < 2) return json({ error: 'empty' }, 400);
 
+  // Retrieval is best-effort. A missing index must not block a general answer.
   let hits = [];
   try {
     const index = await loadIndex(request, env);
     hits = search(index, q, lang, TOP_K);
-  } catch (e) {
-    return json({ error: 'index_unavailable' }, 503);
+  } catch {
+    hits = [];
   }
 
-  const sources = hits.map((h) => ({
+  const grounded = hits.length > 0 && hits[0].score >= GROUND_MIN;
+  const shown = grounded ? hits : [];
+  const candidates = shown.map((h, i) => ({
+    n: i + 1,
     title: h.d.title,
     section: h.d.section ?? null,
     url: h.d.url,
     kind: h.d.kind,
   }));
 
-  if (!env.AI) {
-    return json({ answer: FALLBACK[lang](hits), sources, grounded: hits.length > 0, model: null });
+  // Build the grounded context, capped so the prompt stays small.
+  let ctx = '';
+  if (grounded) {
+    let used = 0;
+    ctx = shown
+      .map((h, i) => {
+        const block = `[${i + 1}] ${h.d.title}${h.d.section ? ' › ' + h.d.section : ''}\n${h.d.text}`;
+        if (used + block.length > CTX_CHARS) return null;
+        used += block.length;
+        return block;
+      })
+      .filter(Boolean)
+      .join('\n\n');
   }
 
-  // Build the grounded context, newest-first, capped so the prompt stays small.
-  let used = 0;
-  const ctx = hits
-    .map((h, i) => {
-      const block = `[${i + 1}] ${h.d.title}${h.d.section ? ' › ' + h.d.section : ''}\n${h.d.text}`;
-      if (used + block.length > CTX_CHARS) return null;
-      used += block.length;
-      return block;
-    })
-    .filter(Boolean)
-    .join('\n\n');
-
   const history = Array.isArray(body.history)
-    ? body.history.slice(-4).map((m) => ({
+    ? body.history.slice(-6).map((m) => ({
         role: m.role === 'assistant' ? 'assistant' : 'user',
-        content: String(m.content ?? '').slice(0, 800),
+        content: String(m.content ?? '').slice(0, 1200),
       }))
     : [];
 
-  const messages = [
-    { role: 'system', content: SYSTEM[lang] },
-    ...history,
-    { role: 'user', content: `SOURCES\n\n${ctx || '(nothing relevant found)'}\n\nQUESTION: ${q}` },
-  ];
+  const where = typeof body.page === 'string' ? body.page.slice(0, 120) : '';
+  const head = ctx
+    ? `SITE SOURCES\n\n${ctx}\n\n---\nThe reader is on ${where || 'the site'}.`
+    : `(Nothing on this site matches — answer from your own knowledge.)\nThe reader is on ${where || 'the site'}.`;
+  const userTurn = `${head}\nQUESTION: ${q}\n\n${TASK[lang]}`;
 
-  for (const model of MODELS) {
+  const messages = [{ role: 'system', content: SYSTEM[lang] }, ...history, { role: 'user', content: userTurn }];
+
+  let answer = '';
+  let model = null;
+
+  if (env.OPENAI_API_KEY) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 45000);
     try {
-      const r = await env.AI.run(model, { messages, max_tokens: 700, temperature: 0.2 });
-      const answer = clean(r?.response);
-      if (answer) return json({ answer, sources, grounded: hits.length > 0, model });
+      answer = clean(await askOpenAI(env, messages, ctrl.signal));
+      if (answer) model = env.OPENAI_MODEL || 'gpt-5.4-mini';
     } catch {
-      /* try the next model */
+      answer = '';
+    } finally {
+      clearTimeout(timer);
     }
   }
 
-  return json({ answer: FALLBACK[lang](hits), sources, grounded: hits.length > 0, model: null });
+  if (!answer && env.AI) {
+    answer = await askWorkersAI(env, messages);
+    if (answer) model = 'workers-ai';
+  }
+
+  if (!answer) return json({ answer: FALLBACK[lang](shown), sources: candidates, grounded, model: null });
+
+  // Show only the pages the answer actually leaned on. Retrieval always returns
+  // six hits; listing all of them under "Read this" sends the reader to pages
+  // that have nothing to do with the answer they just got.
+  const cited = new Set();
+  for (const m of answer.matchAll(/\[(\d{1,2})\]/g)) cited.add(Number(m[1]));
+  const sources = candidates.filter((s) => cited.has(s.n));
+
+  return json({ answer, sources, grounded: sources.length > 0, model });
 }
 
 export async function onRequestGet() {
