@@ -11,6 +11,13 @@ import type { Lang } from '@/data/curriculum';
  */
 
 const KEY = 'vc:ask:v1';
+const WIDTH_KEY = 'vc:ask:w';
+
+/** Never narrower than a readable column, never so wide the lesson vanishes. */
+function clampWidth(px: number) {
+  const vw = window.innerWidth;
+  return Math.round(Math.min(Math.max(px, 340), Math.max(360, Math.min(vw - 320, vw * 0.75))));
+}
 
 const copy = {
   en: {
@@ -25,6 +32,7 @@ const copy = {
     close: 'Close',
     copy: 'Copy',
     copied: 'Copied',
+    resize: 'Drag to resize. Arrow keys also work.',
     disclaimer: 'It can be wrong. Linked pages are the source of truth.',
     error: 'Something went wrong. Try again in a moment.',
     offline: 'Could not reach the assistant. Check your connection.',
@@ -49,6 +57,7 @@ const copy = {
     close: 'Жабу',
     copy: 'Көшіру',
     copied: 'Көшірілді',
+    resize: 'Енін өзгерту үшін сүйре. Көрсеткі пернелер де жүреді.',
     disclaimer: 'Ол қателесуі мүмкін. Шындық көзі — сілтемедегі беттер.',
     error: 'Бірдеңе дұрыс болмады. Сәлден соң қайтала.',
     offline: 'Көмекшіге қосыла алмадық. Байланысыңды тексер.',
@@ -93,6 +102,7 @@ export default function Assistant({ lang }: { lang: Lang }) {
   const [busy, setBusy] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Restore the thread after mount, never during render — sessionStorage does
@@ -111,11 +121,66 @@ export default function Assistant({ lang }: { lang: Lang }) {
     } catch {}
   }, [msgs]);
 
+  // The page reads this class to inset itself, so the lesson and the answer sit
+  // side by side instead of one on top of the other.
   useEffect(() => {
     try {
       sessionStorage.setItem(KEY + ':open', open ? '1' : '0');
     } catch {}
+    document.documentElement.classList.toggle('ask-open', open);
+    return () => document.documentElement.classList.remove('ask-open');
   }, [open]);
+
+  // Restore a width the reader chose earlier. Re-clamped against the current
+  // window, because they may have resized the browser since.
+  useEffect(() => {
+    try {
+      const saved = Number(localStorage.getItem(WIDTH_KEY));
+      if (Number.isFinite(saved) && saved > 0) {
+        document.documentElement.style.setProperty('--ask-w', `${clampWidth(saved)}px`);
+      }
+    } catch {}
+  }, []);
+
+  function applyWidth(px: number, persist: boolean) {
+    const w = clampWidth(px);
+    document.documentElement.style.setProperty('--ask-w', `${w}px`);
+    if (persist) {
+      try {
+        localStorage.setItem(WIDTH_KEY, String(w));
+      } catch {}
+    }
+  }
+
+  function startResize(e: React.PointerEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    const el = e.currentTarget;
+    el.setPointerCapture(e.pointerId);
+    const root = document.documentElement;
+    root.classList.add('ask-sizing');
+    panelRef.current?.classList.add('is-sizing');
+
+    const move = (ev: PointerEvent) => applyWidth(window.innerWidth - ev.clientX, false);
+    const end = (ev: PointerEvent) => {
+      applyWidth(window.innerWidth - ev.clientX, true);
+      root.classList.remove('ask-sizing');
+      panelRef.current?.classList.remove('is-sizing');
+      el.removeEventListener('pointermove', move);
+      el.removeEventListener('pointerup', end);
+      el.removeEventListener('pointercancel', end);
+    };
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+  }
+
+  function gripKey(e: React.KeyboardEvent) {
+    const step = e.shiftKey ? 80 : 24;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const current = panelRef.current?.getBoundingClientRect().width ?? 480;
+    applyWidth(current + (e.key === 'ArrowLeft' ? step : -step), true);
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -179,7 +244,16 @@ export default function Assistant({ lang }: { lang: Lang }) {
         <span>{t.open}</span>
       </button>
 
-      <aside className={`vc-ask ${open ? 'is-open' : ''}`} aria-hidden={!open} aria-label={t.title}>
+      <aside ref={panelRef} className={`vc-ask ${open ? 'is-open' : ''}`} aria-hidden={!open} aria-label={t.title}>
+        <button
+          type="button"
+          className="vc-ask-grip"
+          onPointerDown={startResize}
+          onKeyDown={gripKey}
+          aria-label={t.resize}
+          title={t.resize}
+          tabIndex={open ? 0 : -1}
+        />
         <header className="vc-ask-head">
           <div>
             <p className="vc-ask-title">{t.title}</p>

@@ -4,6 +4,7 @@ import { cors } from 'hono/cors';
 import { q } from './db.js';
 import { migrate } from './migrate.js';
 import { checkPassword, hashPassword, isAdmin, normEmail, readToken, signToken, validateCredentials, TOKEN_DAYS } from './auth.js';
+import { CAPSTONE, TRACKS, capstoneEligibility, eligibility, isTrack, newCredentialId } from './tracks.js';
 
 const app = new Hono();
 
@@ -206,6 +207,160 @@ app.post('/event', async (c) => {
   if (!/^[a-z_:.-]{2,40}$/.test(kind)) return c.json({ error: 'invalid' }, 400);
   await logEvent(user.id, kind, String(body.ref ?? '').slice(0, 120) || null, body.lang === 'kk' ? 'kk' : 'en');
   return c.json({ ok: true });
+});
+
+/* -------------------------------------------------------------- workbench */
+
+// The in-browser workbench calls a real model on the project's own account, so
+// it needs a ceiling per person per day. Generous enough to build something,
+// small enough that one enthusiastic afternoon cannot empty the account.
+const AI_DAILY_LIMIT = Number(process.env.AI_DAILY_LIMIT ?? 40);
+
+/** Read the caller's remaining allowance without spending any of it. */
+app.get('/ai/quota', async (c) => {
+  const user = await requireUser(c);
+  if (!user) return c.json({ error: 'unauthorized' }, 401);
+  const { rows } = await q('SELECT calls FROM ai_usage WHERE user_id = $1 AND day = current_date', [user.id]);
+  const used = rows[0]?.calls ?? 0;
+  return c.json({ used, limit: AI_DAILY_LIMIT, remaining: Math.max(0, AI_DAILY_LIMIT - used) });
+});
+
+/**
+ * Spend one call. The increment and the check happen in a single statement, so
+ * two tabs cannot both squeeze through on the last remaining call.
+ */
+app.post('/ai/quota', async (c) => {
+  const user = await requireUser(c);
+  if (!user) return c.json({ error: 'unauthorized' }, 401);
+
+  const { rows } = await q(
+    `INSERT INTO ai_usage (user_id, day, calls) VALUES ($1, current_date, 1)
+     ON CONFLICT (user_id, day) DO UPDATE
+       SET calls = ai_usage.calls + 1
+       WHERE ai_usage.calls < $2
+     RETURNING calls`,
+    [user.id, AI_DAILY_LIMIT],
+  );
+
+  // No row back means the WHERE blocked the update: they are at the ceiling.
+  if (!rows.length) {
+    return c.json({ allowed: false, used: AI_DAILY_LIMIT, limit: AI_DAILY_LIMIT, remaining: 0 }, 429);
+  }
+  const used = rows[0].calls;
+  return c.json({ allowed: true, used, limit: AI_DAILY_LIMIT, remaining: Math.max(0, AI_DAILY_LIMIT - used) });
+});
+
+/* ---------------------------------------------------------- certificates */
+
+/** The learner's own credentials. */
+app.get('/certificates', async (c) => {
+  const user = await requireUser(c);
+  if (!user) return c.json({ error: 'unauthorized' }, 401);
+  const { rows } = await q(
+    `SELECT id, track, holder_name, score, issued_at
+       FROM certificates WHERE user_id = $1 AND NOT revoked ORDER BY issued_at`,
+    [user.id],
+  );
+  return c.json({ certificates: rows });
+});
+
+/**
+ * Issue a credential.
+ *
+ * The eligibility check runs HERE, against the progress row this server stores,
+ * not against whatever the browser claims. Issuing is idempotent: asking twice
+ * returns the same id, so a link someone already shared keeps working.
+ */
+app.post('/certificate', async (c) => {
+  const user = await requireUser(c);
+  if (!user) return c.json({ error: 'unauthorized' }, 401);
+
+  const body = await c.req.json().catch(() => ({}));
+  const track = String(body.track ?? '');
+  if (track !== 'capstone' && !isTrack(track)) return c.json({ error: 'unknown_track' }, 400);
+
+  const existing = await q('SELECT id, track, holder_name, score, issued_at FROM certificates WHERE user_id = $1 AND track = $2 AND NOT revoked', [user.id, track]);
+  if (existing.rowCount) return c.json({ certificate: existing.rows[0], issued: false });
+
+  let check;
+  if (track === 'capstone') {
+    const held = await q('SELECT track FROM certificates WHERE user_id = $1 AND NOT revoked', [user.id]);
+    check = capstoneEligibility(held.rows.map((r) => r.track));
+  } else {
+    const { rows } = await q('SELECT earned FROM progress WHERE user_id = $1', [user.id]);
+    check = eligibility(track, rows[0]?.earned ?? {});
+  }
+  if (!check.ok) return c.json({ error: 'not_eligible', missing: check.missing }, 409);
+
+  // The printed name is whatever the learner typed. It is a display name on a
+  // course certificate, not an identity claim, and the verify page says so.
+  const holder = String(body.name ?? user.name ?? '').trim().slice(0, 80);
+
+  // Retry on the astronomically unlikely id collision rather than 500.
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const id = newCredentialId(track);
+    try {
+      const { rows } = await q(
+        `INSERT INTO certificates (id, user_id, track, holder_name, score)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, track, holder_name, score, issued_at`,
+        [id, user.id, track, holder, check.score],
+      );
+      await logEvent(user.id, 'certificate', track, user.lang);
+      return c.json({ certificate: rows[0], issued: true }, 201);
+    } catch (e) {
+      // 23505 is a unique violation: either the id clashed, or this user raced
+      // themselves from two tabs. The second case must return the winner.
+      if (e?.code !== '23505') throw e;
+      const again = await q('SELECT id, track, holder_name, score, issued_at FROM certificates WHERE user_id = $1 AND track = $2', [user.id, track]);
+      if (again.rowCount) return c.json({ certificate: again.rows[0], issued: false });
+    }
+  }
+  return c.json({ error: 'server_error' }, 500);
+});
+
+/** Update the printed name on a credential the learner already holds. */
+app.put('/certificate/:id', async (c) => {
+  const user = await requireUser(c);
+  if (!user) return c.json({ error: 'unauthorized' }, 401);
+  const body = await c.req.json().catch(() => ({}));
+  const holder = String(body.name ?? '').trim().slice(0, 80);
+  if (!holder) return c.json({ error: 'invalid' }, 400);
+  const { rows } = await q(
+    `UPDATE certificates SET holder_name = $1 WHERE id = $2 AND user_id = $3 AND NOT revoked
+     RETURNING id, track, holder_name, score, issued_at`,
+    [holder, c.req.param('id'), user.id],
+  );
+  if (!rows.length) return c.json({ error: 'not_found' }, 404);
+  return c.json({ certificate: rows[0] });
+});
+
+/**
+ * Public verification. No auth: the whole point is that a stranger holding the
+ * link can check it. It returns the credential and the holder's display name,
+ * and nothing else — no email, no user id, no progress.
+ */
+app.get('/verify/:id', async (c) => {
+  const id = String(c.req.param('id') ?? '').toUpperCase().slice(0, 40);
+  if (!/^VC-[A-Z]{3}-[A-Z0-9]{4,16}$/.test(id)) return c.json({ valid: false }, 404);
+  const { rows } = await q(
+    `SELECT c.id, c.track, c.holder_name, c.score, c.issued_at
+       FROM certificates c WHERE c.id = $1 AND NOT c.revoked`,
+    [id],
+  );
+  if (!rows.length) return c.json({ valid: false }, 404);
+  const r = rows[0];
+  const credential = r.track === 'capstone' ? CAPSTONE.credential : (TRACKS[r.track]?.credential ?? r.track);
+  return c.json({
+    valid: true,
+    id: r.id,
+    track: r.track,
+    credential,
+    name: r.holder_name,
+    score: r.score,
+    issuedAt: r.issued_at,
+    issuer: 'QairuHub',
+  });
 });
 
 /** Aggregate statistics. Requires the owner token, and returns no personal data. */

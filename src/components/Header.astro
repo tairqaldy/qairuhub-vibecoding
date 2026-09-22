@@ -19,6 +19,7 @@ const links: { key: UiKey; to: string; admin?: boolean }[] = [
   { key: 'nav.labs', to: 'labs' },
   { key: 'nav.tools', to: 'tools' },
   { key: 'nav.materials', to: 'materials' },
+  { key: 'nav.build', to: 'build' },
   { key: 'nav.workshop', to: 'workshop', admin: true },
 ];
 const isActive = (to: string) => path.startsWith(href(lang, to));
@@ -47,12 +48,12 @@ const isActive = (to: string) => path.startsWith(href(lang, to));
     </nav>
 
     <div class="tools">
-      <a class="xp" href={href(lang, 'learn')} title={t('progress.yourProgress')}>
+      <a class="xp" href={href(lang, 'profile')} title={t('progress.yourProgress')}>
         <span class="xp-dot" aria-hidden="true"></span>
         <span data-xp-value>0</span>
         <span class="xp-total">/ {totalXp} {t('progress.xp')}</span>
       </a>
-      <a class="acct" href={href(lang, 'login')} data-acct hidden>
+      <a class="acct" href={href(lang, 'profile')} data-acct hidden>
         <span class="acct-dot" aria-hidden="true"></span>
         <span data-acct-name>{t('auth.account')}</span>
       </a>
@@ -92,8 +93,9 @@ const isActive = (to: string) => path.startsWith(href(lang, to));
         </a>
       ))
     }
-    <a href={href(lang, 'glossary')} style="--i:6">{t('nav.glossary')}</a>
-    <a href={href(lang, 'present')} style="--i:7" data-admin-only hidden>{t('nav.present')}</a>
+    <a href={href(lang, 'profile')} style="--i:6" data-acct-only hidden>{t('progress.yourProgress')}</a>
+    <a href={href(lang, 'glossary')} style="--i:7">{t('nav.glossary')}</a>
+    <a href={href(lang, 'present')} style="--i:8" data-admin-only hidden>{t('nav.present')}</a>
   </nav>
 </header>
 
@@ -204,6 +206,7 @@ const isActive = (to: string) => path.startsWith(href(lang, to));
     document
       .querySelectorAll<HTMLElement>('[data-admin-only]')
       .forEach((el) => (el.hidden = !user?.admin));
+    document.querySelectorAll<HTMLElement>('[data-acct-only]').forEach((el) => (el.hidden = !user));
     if (label && user) label.textContent = (user.name || user.email || '').split(' ')[0].slice(0, 16);
   }
   paintAuth();

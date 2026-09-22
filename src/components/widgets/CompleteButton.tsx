@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import type { Lang } from '@/data/curriculum';
+import { track } from '@/lib/api';
 import { award, revoke, subscribe, has } from '@/lib/store';
 
 const copy = {
@@ -20,7 +21,16 @@ export default function CompleteButton({ lang, id, xp }: { lang: Lang; id: strin
       <button
         type="button"
         className={done ? 'btn' : 'btn btn-signal'}
-        onClick={() => (done ? revoke(id) : award(id, xp))}
+        onClick={() => {
+          if (done) {
+            revoke(id);
+            return;
+          }
+          award(id, xp);
+          // Fire and forget: the endpoint already swallows its own failures,
+          // and a dropped statistic must never block marking a lesson done.
+          void track('complete', id, lang);
+        }}
         aria-pressed={done}
       >
         {done ? `✓ ${t.done}` : `${t.mark} · +${xp} XP`}

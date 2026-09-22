@@ -1,0 +1,46 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import Workbench from '@/components/widgets/Workbench';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+
+const c = {
+  en: {
+    title: 'Workbench',
+    desc: 'Edit files, ask an agent to change them, see the result. A real model, in your browser.',
+    kicker: 'Workbench',
+    h1: 'Try the loop here',
+    lead: 'A real agent on a real project. Ask for a change, read what it did, run it. Everything stays in this browser.',
+  },
+  kk: {
+    title: 'Workbench',
+    desc: 'Файлдарды өңде, agent-тен өзгертуді сұра, нәтижесін көр. Нағыз модель, өз браузеріңде.',
+    kicker: 'Workbench',
+    h1: 'Циклді осында байқап көр',
+    lead: 'Нағыз жобадағы нағыз agent. Өзгеріс сұра, не істегенін оқы, іске қос. Бәрі осы браузерде қалады.',
+  },
+}[lang];
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc} noindex>
+  <section class="wrap head">
+    <p class="kicker">{c.kicker}</p>
+    <h1>{c.h1}</h1>
+    <p class="lead">{c.lead}</p>
+  </section>
+  <section class="wrap-wide shell">
+    <Workbench client:load lang={lang} />
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding: clamp(24px, 3.5vw, 40px) 0 0; }
+  .kicker { margin: 0 0 12px; font: 500 11px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
+  h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 300; letter-spacing: -0.04em; }
+  .lead { max-width: 60ch; margin: 14px 0 0; font-size: 16px; line-height: 1.6; color: var(--color-muted); }
+  .shell { padding: 26px 0 60px; }
+</style>

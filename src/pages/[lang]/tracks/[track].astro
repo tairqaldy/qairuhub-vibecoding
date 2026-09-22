@@ -1,0 +1,117 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import { capstone, tracks } from '@/data/tracks';
+import { examPool } from '@/data/exams';
+import { href } from '@/i18n/ui';
+import TrackBoard from '@/components/widgets/TrackBoard';
+import Exam from '@/components/widgets/Exam';
+import Credential from '@/components/widgets/Credential';
+
+/**
+ * One level. The reading list, the exam, the certificate — in that order,
+ * because that is the order they unlock in.
+ *
+ * "all" is the capstone: no reading list of its own and no exam, just the
+ * credential you get for holding the other four.
+ */
+export const getStaticPaths = (() =>
+  (['en', 'kk'] as Lang[]).flatMap((lang) => [
+    ...tracks.map((t) => ({ params: { lang, track: t.id } })),
+    { params: { lang, track: 'all' } },
+  ])) satisfies GetStaticPaths;
+
+const { lang, track: slug } = Astro.params as { lang: Lang; track: string };
+const track = tracks.find((t) => t.id === slug);
+const isCapstone = slug === 'all';
+
+const c = {
+  en: {
+    back: 'All levels',
+    level: 'Level',
+    forWho: 'For',
+    whatItProves: 'What it proves',
+    readK: 'The reading',
+    examK: 'The exam',
+    certK: 'The certificate',
+    pool: (n: number, ask: number) => `${ask} questions drawn from a pool of ${n}, shuffled every attempt.`,
+    capstoneK: 'The whole programme',
+  },
+  kk: {
+    back: 'Барлық деңгей',
+    level: 'Деңгей',
+    forWho: 'Кімге',
+    whatItProves: 'Нені растайды',
+    readK: 'Оқу тізімі',
+    examK: 'Емтихан',
+    certK: 'Сертификат',
+    pool: (n: number, ask: number) => `${n} сұрақтан ${ask}-і кездейсоқ алынады, әр талпыныста араластырылады.`,
+    capstoneK: 'Толық бағдарлама',
+  },
+}[lang];
+
+const title = isCapstone ? capstone.title[lang] : (track?.title[lang] ?? '');
+const desc = isCapstone ? capstone.tagline[lang] : (track?.tagline[lang] ?? '');
+const poolSize = track ? examPool(track.id).length : 0;
+---
+
+<BaseLayout lang={lang} title={title} description={desc} noindex>
+  <section class="wrap head" style={track ? `--accent:${track.accent}` : ''}>
+    <a class="back" href={href(lang, 'profile')}>← {c.back}</a>
+    <p class="kicker">
+      {isCapstone ? c.capstoneK : `${c.level} ${track?.n} · ${c.level} ${track?.level}`}
+    </p>
+    <h1>{title}</h1>
+    <p class="lead">{desc}</p>
+    {
+      track && (
+        <p class="forwho">
+          <span>{c.forWho}</span> {track.forWho[lang]}
+        </p>
+      )
+    }
+  </section>
+
+  {
+    track && (
+      <>
+        <section class="wrap band">
+          <p class="eyebrow">{c.readK}</p>
+          <TrackBoard client:load lang={lang} track={track.id} />
+        </section>
+
+        <section class="wrap band">
+          <p class="eyebrow">{c.examK}</p>
+          <p class="band-lead">{c.pool(poolSize, Math.min(track.ask, poolSize))}</p>
+          <Exam client:load lang={lang} track={track.id} />
+        </section>
+      </>
+    )
+  }
+
+  <section class="wrap band last">
+    <p class="eyebrow">{c.certK}</p>
+    <Credential
+      client:load
+      lang={lang}
+      id={isCapstone ? 'capstone' : track!.id}
+      credential={isCapstone ? capstone.credential[lang] : track!.credential[lang]}
+      proves={isCapstone ? capstone.proves[lang] : track!.proves[lang]}
+    />
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding: clamp(26px, 4vw, 48px) 0 0; --accent: var(--color-signal); }
+  .back { display: inline-block; margin-bottom: 20px; font: 500 13px/1 var(--font-mono); color: var(--color-faint); text-decoration: none; }
+  .back:hover { color: #fff; }
+  .kicker { margin: 0 0 14px; font: 500 11px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: clamp(33px,6vw, 53px); font-weight: 300; letter-spacing: -0.04em; }
+  .lead { max-width: 60ch; margin: 18px 0 0; font-size: clamp(16px, 1.9vw, 18px); line-height: 1.6; color: var(--color-muted); }
+  .forwho { margin: 16px 0 0; font-size: 15px; line-height: 1.55; color: var(--color-faint); }
+  .forwho span { font: 500 10.5px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-right: 8px; }
+  .band { padding: clamp(34px, 5vw, 54px) 0 0; }
+  .last { padding-bottom: 72px; }
+  .band-lead { max-width: 58ch; margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: var(--color-muted); }
+</style>

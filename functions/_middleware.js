@@ -11,7 +11,7 @@
  * warning — a misconfigured deploy should degrade, not lock everyone out.
  */
 
-const GATED = /^\/(en|kk)\/(learn|labs|tools|materials|workshop|present|admin)(\/|$)/;
+const GATED = /^\/(en|kk)\/(learn|labs|tools|materials|profile|tracks|build|workshop|present|admin)(\/|$)/;
 // The run-of-show, the slides and the analytics are for whoever is teaching,
 // not for the room. The `admin` claim is signed by the API, so it cannot be
 // set by editing a cookie.

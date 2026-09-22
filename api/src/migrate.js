@@ -45,6 +45,32 @@ const statements = [
      created_at timestamptz NOT NULL DEFAULT now()
    )`,
   `CREATE INDEX IF NOT EXISTS auth_attempts_ident ON auth_attempts (ident, created_at DESC)`,
+
+  // Issued credentials. This is the only place an issue DATE exists — the
+  // progress map is a flat {id: xp} blob with no per-item timestamp, so a
+  // certificate cannot be reconstructed from it. One per track per person;
+  // re-issuing returns the same id so a shared link never goes dead.
+  `CREATE TABLE IF NOT EXISTS certificates (
+     id          text PRIMARY KEY,
+     user_id     bigint NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     track       text NOT NULL,
+     holder_name text NOT NULL DEFAULT '',
+     score       integer,
+     issued_at   timestamptz NOT NULL DEFAULT now(),
+     revoked     boolean NOT NULL DEFAULT false
+   )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS certificates_user_track ON certificates (user_id, track)`,
+  `CREATE INDEX IF NOT EXISTS certificates_issued ON certificates (issued_at DESC)`,
+
+  // Daily counter for the in-browser workbench, which spends real money on a
+  // real model. One row per person per day; the primary key is what makes the
+  // increment atomic under concurrent tabs.
+  `CREATE TABLE IF NOT EXISTS ai_usage (
+     user_id bigint NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     day     date   NOT NULL DEFAULT current_date,
+     calls   integer NOT NULL DEFAULT 0,
+     PRIMARY KEY (user_id, day)
+   )`,
 ];
 
 export async function migrate() {

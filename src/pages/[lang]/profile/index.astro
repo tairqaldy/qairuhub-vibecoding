@@ -1,0 +1,31 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/data/curriculum';
+import Profile from '@/components/widgets/Profile';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+
+const c = {
+  en: {
+    title: 'Your profile',
+    desc: 'Four levels, what is left in each, and the certificates you hold.',
+  },
+  kk: {
+    title: 'Сенің профилің',
+    desc: 'Төрт деңгей, әрқайсысында не қалғаны және сенде бар сертификаттар.',
+  },
+}[lang];
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc} noindex>
+  <section class="wrap page">
+    <Profile client:load lang={lang} />
+  </section>
+</BaseLayout>
+
+<style>
+  .page { padding: clamp(28px, 4vw, 52px) 0 64px; }
+</style>

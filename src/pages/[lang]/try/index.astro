@@ -11,27 +11,29 @@ const { lang } = Astro.params as { lang: Lang };
 const c = {
   en: {
     title: 'Your first 10 minutes',
-    desc: 'Three ways to try AI coding right now, free, on whatever device you have. Pick one and actually do it.',
+    desc: 'Three ways to try AI coding right now, free, on any device. Pick one and do it.',
     kicker: 'Start here · 10 minutes',
     h1a: 'Stop reading.',
     h1b: 'Start typing.',
-    lead: 'Nobody has ever learned this from a page. Pick the track that matches what you have in front of you, spend ten minutes, and build one small real thing. Everything else on this site will make more sense afterwards.',
+    lead: 'Nobody learns this from a page. Pick the track that fits what you have, spend ten minutes, build one small real thing. The rest of the site makes sense after that.',
     pickTrack: 'Pick your track',
+    showSteps: 'Show the steps',
+    hideSteps: 'Hide',
     why: 'Why ten minutes matters',
     whyBody:
-      'The gap between reading about agents and using one is bigger than it looks. Until you have watched a model confidently write something wrong, and then fixed it, the warnings in this course are just words. Ten minutes of real contact does more than an hour of video.',
+      'Reading about agents is not using one. Until you have watched a model write something confidently wrong and then fixed it, the warnings in this course are just words.',
     tracks: [
       {
         id: 'browser',
         tag: 'No install · Free',
         name: 'In your browser',
-        who: 'You have a phone or a locked-down computer, or you just want to see it work first.',
+        who: 'For a phone, or a computer you cannot install anything on.',
         mins: '5 min',
         steps: [
-          { t: 'Open a free AI chat', d: 'Any of claude.ai, chatgpt.com, or gemini.google.com. All have a free tier that is enough for this.' },
-          { t: 'Ask for one complete file', d: 'Copy the prompt below. Asking for a single self-contained HTML file matters: it means you can run the result with no setup at all.' },
-          { t: 'Save it and open it', d: 'Copy the code into a text editor, save it as countdown.html, and double-click the file. That is a working web page you made.' },
-          { t: 'Now change one thing', d: 'Go back and ask for one change — a different colour, your own date, a sound at zero. Watch how you describe it. That is the whole skill.' },
+          { t: 'Open a free AI chat', d: 'claude.ai, chatgpt.com or gemini.google.com — the free tier is enough.' },
+          { t: 'Ask for one complete file', d: 'Copy the prompt below: one self-contained HTML file runs with no setup.' },
+          { t: 'Save it and open it', d: 'Save the code as countdown.html and double-click it.' },
+          { t: 'Change one thing', d: 'Ask for one change — another colour, your own date, a sound at zero.' },
         ],
         prompt: `Write a complete, single-file HTML page that counts down to 1 January 2027.
 
@@ -42,20 +44,20 @@ Requirements:
 - Put my name at the top: <your name>
 
 Return only the file contents, nothing else.`,
-        done: 'You have a working page, made by describing it. That is vibe coding, in the original sense.',
+        done: 'You made a working page by describing it. That is vibe coding, in the original sense.',
       },
       {
         id: 'terminal',
         tag: 'Laptop · The real thing',
         name: 'A real coding agent',
-        who: 'You have a laptop you can install things on. This is the track the rest of the course builds on.',
+        who: 'A laptop you can install on. The rest of the course builds on this track.',
         mins: '10 min',
         steps: [
-          { t: 'Install Node, if you do not have it', d: 'Get the LTS version from nodejs.org. Then check it worked: the command below should print a version number.' },
-          { t: 'Install a coding agent', d: 'Claude Code is what this course uses. Gemini CLI is free and works the same way if you would rather not pay for anything yet.' },
-          { t: 'Make an empty folder and go into it', d: 'Never point an agent at your whole computer. Give it one small folder that contains only this experiment.' },
-          { t: 'Start it and ask for something real', d: 'Run the agent, then type a request in plain language. Watch which files it decides to create before you accept anything.' },
-          { t: 'Read what it did', d: 'Ask it to explain its own work. An agent that can explain its choices is one you can correct. This habit is worth more than any prompt trick.' },
+          { t: 'Install Node', d: 'Take the LTS build from nodejs.org, then check that a version number prints.' },
+          { t: 'Install a coding agent', d: 'This course uses Claude Code. Gemini CLI is free and works the same way.' },
+          { t: 'Make an empty folder', d: 'Never point an agent at your whole computer — give it one small folder.' },
+          { t: 'Start it and ask for something real', d: 'Type your request in plain language, then read which files it plans to create.' },
+          { t: 'Read what it did', d: 'Ask it to explain its own work. An agent that explains its choices is one you can correct.' },
         ],
         prompt: `Build a single-page countdown site for a QairuHub event on 1 December 2026.
 
@@ -64,32 +66,32 @@ Return only the file contents, nothing else.`,
 - Dark theme, mobile first.
 
 Before you write anything: tell me what files you plan to create and why. Wait for me to say go.`,
-        done: 'You have run a real agent, reviewed a plan, and shipped a file. Lab 01 picks up exactly here.',
+        done: 'You ran a real agent, reviewed its plan and shipped a file. Lab 01 picks up here.',
       },
       {
         id: 'ship',
         tag: 'Bonus · Free',
         name: 'Put it on the internet',
-        who: 'You finished either track above and want a link you can send someone.',
+        who: 'You finished a track above and want a link to send someone.',
         mins: '5 min',
         steps: [
-          { t: 'Open a free host', d: 'Go to app.netlify.com/drop or pages.cloudflare.com. Neither needs a card for a small static site.' },
-          { t: 'Drag your folder in', d: 'Netlify Drop takes a folder with an index.html and gives you a URL. Rename your file to index.html first.' },
-          { t: 'Send the link to someone', d: 'This is the moment it stops being a file on your laptop and becomes a thing that exists. Do not skip it.' },
+          { t: 'Open a free host', d: 'app.netlify.com/drop or pages.cloudflare.com — neither needs a card for a small static site.' },
+          { t: 'Drag your folder in', d: 'Rename your file to index.html first, then Netlify Drop hands you a URL.' },
+          { t: 'Send the link', d: 'Now it is a thing other people can open, not a file on your laptop.' },
         ],
         prompt: null,
-        done: 'Something you described in words is now live at a URL. Module 12 covers how all of this actually works.',
+        done: 'Something you described in words is live at a URL. Module 12 covers how that works.',
       },
     ],
     stuckH: 'If it goes wrong',
     stuck: [
-      { q: 'The code it gave me does not work.', a: 'Good — this is the normal case, not a failure. Paste the exact error back to it, along with what you expected to happen. Do not paraphrase the error; the full text is the useful part.' },
-      { q: 'It keeps giving me something different from what I asked.', a: 'Your request is probably under-specified rather than misunderstood. Add the constraint you have in your head but did not type. Module 07 is entirely about this.' },
-      { q: 'I cannot pay for anything.', a: 'Gemini CLI has a free tier, and the browser track needs nothing at all. The tools page lists every free option honestly, including what each one limits.' },
-      { q: 'It asked to run a command and I do not know if that is safe.', a: 'Read the command before approving it. If it deletes, force-pushes, or touches anything outside your test folder, say no. Module 11 is the full version of this rule.' },
+      { q: 'The code it gave me does not work.', a: 'Normal, not a failure. Paste the exact error back, with what you expected — the full text is the useful part, not your summary of it.' },
+      { q: 'It keeps building something else.', a: 'Under-specified, not misunderstood. Add the constraint you had in your head but never typed. Module 07 is all about this.' },
+      { q: 'I cannot pay for anything.', a: 'Gemini CLI has a free tier and the browser track costs nothing. The tools page lists every free option and its limits.' },
+      { q: 'It wants to run a command. Is that safe?', a: 'Read the command first. If it deletes, force-pushes or touches anything outside your test folder, say no. Module 11 is the full rule.' },
     ],
     nextH: 'Now the rest will make sense',
-    nextP: 'You have something that works and, probably, something that did not the first time. That is the right state to start from.',
+    nextP: 'You have something that works, and probably something that did not work first time. That is the right place to start.',
     nextPath: 'Start the full path',
     nextTools: 'Compare every tool',
     copyLabel: 'Copy this prompt',
@@ -98,27 +100,29 @@ Before you write anything: tell me what files you plan to create and why. Wait f
   },
   kk: {
     title: 'Алғашқы 10 минутың',
-    desc: 'ЖИ-мен кодтауды дәл қазір, тегін, қолыңдағы кез келген құрылғыда байқап көрудің үш жолы. Бірін таңда да, шынымен істе.',
+    desc: 'ЖИ-мен кодтауды қазір, тегін, кез келген құрылғыда байқаудың үш жолы. Бірін таңда да, істеп көр.',
     kicker: 'Осыдан баста · 10 минут',
     h1a: 'Оқуды қой.',
-    h1b: 'Жаза бастa.',
-    lead: 'Мұны бет оқып ешкім үйренген емес. Қолыңда барына сай жолды таңда, он минут бөл де, кішкентай бірақ нақты нәрсе жаса. Сайттағы қалғанының бәрі содан кейін әлдеқайда түсінікті болады.',
+    h1b: 'Жаза баста.',
+    lead: 'Мұны оқып үйрену мүмкін емес. Қолыңда барына сай жолды таңда, он минут бөл, кішкентай нақты дүние жаса. Сайттағы қалғанының бәрі содан кейін түсінікті болады.',
     pickTrack: 'Жолыңды таңда',
+    showSteps: 'Қадамдарын көрсет',
+    hideSteps: 'Жабу',
     why: 'Он минут неге маңызды',
     whyBody:
-      'Agent туралы оқу мен agent-ті қолданудың арасы көрінгеннен әлдеқайда үлкен. Модель сенімді түрде қате нәрсе жазғанын, содан соң оны өзің түзегеніңді көрмейінше, бұл курстағы ескертулер жай сөз болып қала береді. Он минуттық нақты байланыс бір сағаттық видеодан көп береді.',
+      'Agent туралы оқу мен agent-пен жұмыс істеу — екі бөлек нәрсе. Модель сенімді түрде қате жазғанын көріп, оны өзің түзетпейінше, курстағы ескертулер жай сөз болып қала береді.',
     tracks: [
       {
         id: 'browser',
-        tag: 'Орнатусыз · Тегін',
+        tag: 'Орнатпай · Тегін',
         name: 'Браузерде',
-        who: 'Қолыңда телефон немесе шектеулі компьютер бар, не болмаса алдымен жұмыс істейтінін көргің келеді.',
+        who: 'Телефонға немесе бағдарлама орната алмайтын компьютерге арналған.',
         mins: '5 мин',
         steps: [
-          { t: 'Тегін ЖИ чатын аш', d: 'claude.ai, chatgpt.com немесе gemini.google.com — қайсысы болса да. Бәрінде осыған жететін тегін мүмкіндік бар.' },
-          { t: 'Бір толық файл сұра', d: 'Төмендегі prompt-ты көшір. Бір өзі жеткілікті HTML файлын сұрау маңызды: нәтижені ешқандай дайындықсыз іске қоса аласың.' },
-          { t: 'Сақтап, ашып көр', d: 'Кодты мәтін редакторына көшір, countdown.html деп сақта да, файлды екі рет бас. Бұл — өзің жасаған жұмыс істейтін веб-бет.' },
-          { t: 'Енді бір нәрсені өзгерт', d: 'Қайта барып бір өзгеріс сұра — басқа түс, өз күнің, нөлге жеткенде дыбыс. Оны қалай сипаттағаныңа назар сал. Бар шеберлік осында.' },
+          { t: 'Тегін ЖИ чатын аш', d: 'claude.ai, chatgpt.com немесе gemini.google.com — тегін нұсқасы жетеді.' },
+          { t: 'Бір толық файл сұра', d: 'Төмендегі prompt-ты көшір: бір файлдық HTML ешқандай дайындықсыз ашылады.' },
+          { t: 'Сақта да, ашып көр', d: 'Кодты countdown.html деп сақта, файлды екі рет бас.' },
+          { t: 'Бір нәрсесін өзгерт', d: 'Бір ғана өзгеріс сұра: басқа түс, өз күнің, нөлге жеткенде дыбыс.' },
         ],
         prompt: `2027 жылдың 1 қаңтарына дейін санайтын толық, бір файлдан тұратын HTML бет жаз.
 
@@ -129,20 +133,20 @@ Before you write anything: tell me what files you plan to create and why. Wait f
 - Жоғарғы жағына менің атымды қой: <атың>
 
 Тек файл мазмұнын қайтар, басқа ештеңе жазба.`,
-        done: 'Сипаттап отырып жасаған, жұмыс істейтін бетің бар. Бастапқы мағынасындағы vibe coding — дәл осы.',
+        done: 'Сөзбен сипаттап, жұмыс істейтін бет жасадың. Бастапқы мағынасындағы vibe coding — осы.',
       },
       {
         id: 'terminal',
         tag: 'Ноутбук · Нағыз нұсқа',
         name: 'Нағыз coding agent',
-        who: 'Бағдарлама орната алатын ноутбугың бар. Курстың қалған бөлігі осы жолдың үстіне құрылады.',
+        who: 'Бағдарлама орната алатын ноутбукке арналған. Курстың қалғаны осы жолға сүйенеді.',
         mins: '10 мин',
         steps: [
-          { t: 'Node жоқ болса, орнат', d: 'nodejs.org сайтынан LTS нұсқасын ал. Содан соң тексер: төмендегі команда нұсқа нөмірін шығаруы керек.' },
-          { t: 'Coding agent орнат', d: 'Бұл курс Claude Code-ты қолданады. Әзірге ештеңеге төлегің келмесе, Gemini CLI тегін әрі дәл солай жұмыс істейді.' },
-          { t: 'Бос қалта жасап, ішіне кір', d: 'Agent-ті ешқашан бүкіл компьютеріңе бағыттама. Оған тек осы тәжірибе жатқан бір кішкентай қалта бер.' },
-          { t: 'Іске қосып, нақты нәрсе сұра', d: 'Agent-ті жүргіз де, қарапайым тілмен сұрауыңды жаз. Бірдеңені қабылдамас бұрын қандай файл жасамақ екенін қара.' },
-          { t: 'Не істегенін оқы', d: 'Өз жұмысын түсіндіруін сұра. Таңдауын түсіндіре алатын agent-ті түзете де аласың. Бұл әдет кез келген prompt айласынан құнды.' },
+          { t: 'Node орнат', d: 'nodejs.org сайтынан LTS нұсқасын ал, сосын нұсқа нөмірі шыққанын тексер.' },
+          { t: 'Coding agent орнат', d: 'Бұл курс Claude Code қолданады. Gemini CLI тегін әрі дәл солай жұмыс істейді.' },
+          { t: 'Бос қалта жаса', d: 'Agent-ті ешқашан бүкіл компьютеріңе жіберме — бір ғана кішкентай қалта бер.' },
+          { t: 'Іске қосып, нақты тапсырма бер', d: 'Сұрауыңды қарапайым тілмен жаз да, қандай файл жасамақ екенін оқы.' },
+          { t: 'Не істегенін оқы', d: 'Өз жұмысын түсіндіруін сұра. Таңдауын түсіндіре алатын agent-ті түзете де аласың.' },
         ],
         prompt: `2026 жылдың 1 желтоқсанындағы QairuHub іс-шарасына арналған бір беттік countdown сайтын құрастыр.
 
@@ -151,37 +155,37 @@ Before you write anything: tell me what files you plan to create and why. Wait f
 - Қараңғы тақырып, алдымен мобильді.
 
 Ештеңе жазбас бұрын: қандай файл жасамақ екеніңді және неге екенін айт. Мен «жарайды» дегенше күт.`,
-        done: 'Нағыз agent-ті іске қостың, жоспарын қарадың, файл шығардың. 01-практика дәл осы жерден жалғасады.',
+        done: 'Нағыз agent-ті іске қостың, жоспарын оқыдың, файл шығардың. 01-практика осы жерден жалғасады.',
       },
       {
         id: 'ship',
         tag: 'Бонус · Тегін',
         name: 'Интернетке шығар',
-        who: 'Жоғарыдағы екі жолдың бірін бітірдің де, біреуге жіберетін сілтеме алғың келеді.',
+        who: 'Жоғарыдағы жолды бітірдің, енді біреуге жіберетін сілтеме керек.',
         mins: '5 мин',
         steps: [
-          { t: 'Тегін хостинг аш', d: 'app.netlify.com/drop немесе pages.cloudflare.com. Шағын статикалық сайт үшін екеуіне де карта керек емес.' },
-          { t: 'Қалтаңды сүйреп апар', d: 'Netlify Drop ішінде index.html бар қалтаны қабылдап, саған URL береді. Алдымен файлыңның атын index.html деп өзгерт.' },
-          { t: 'Сілтемені біреуге жібер', d: 'Дәл осы сәтте ол ноутбугыңдағы файл болудан қалып, шынымен бар нәрсеге айналады. Бұл қадамды өткізіп жіберме.' },
+          { t: 'Тегін хостинг аш', d: 'app.netlify.com/drop немесе pages.cloudflare.com — шағын статикалық сайтқа карта керек емес.' },
+          { t: 'Қалтаңды сүйреп апар', d: 'Алдымен файлды index.html деп ата, сосын Netlify Drop саған URL береді.' },
+          { t: 'Сілтемені жібер', d: 'Енді ол ноутбугыңдағы файл емес, кез келген адам аша алатын дүние.' },
         ],
         prompt: null,
-        done: 'Сөзбен сипаттаған нәрсең енді нақты URL-де тұр. 12-модуль мұның бәрі қалай жұмыс істейтінін түсіндіреді.',
+        done: 'Сөзбен сипаттаған дүниең енді URL-де тұр. 12-модуль оның қалай жұмыс істейтінін түсіндіреді.',
       },
     ],
     stuckH: 'Бірдеңе дұрыс болмаса',
     stuck: [
-      { q: 'Берген коды жұмыс істемейді.', a: 'Жақсы — бұл сәтсіздік емес, қалыпты жағдай. Қатенің дәл мәтінін және не күткеніңді жазып, оған қайта жібер. Қатені өз сөзіңмен айтпа; ең пайдалысы — толық мәтіні.' },
-      { q: 'Сұрағаныма мүлде ұқсамайтын нәрсе беріп жатыр.', a: 'Мәселе түсінбеуінде емес, сұрауыңның толық болмауында шығар. Ойыңда бар, бірақ жазбаған шартты қос. 07-модуль түгелдей осы туралы.' },
-      { q: 'Ештеңеге төлей алмаймын.', a: 'Gemini CLI-де тегін мүмкіндік бар, ал браузер жолына мүлде ештеңе керек емес. Құралдар бетінде әр тегін нұсқа және оның нақты шектеулері адал жазылған.' },
-      { q: 'Команда жүргізуді сұрады, бірақ қауіпсіз бе — білмеймін.', a: 'Мақұлдамас бұрын команданы оқы. Егер ол жойса, күштеп push жасаса немесе тест қалтаңнан тыс жерге тисе — жоқ де. 11-модуль осы ереженің толық нұсқасы.' },
+      { q: 'Берген коды жұмыс істемейді.', a: 'Бұл сәтсіздік емес, қалыпты жағдай. Қатенің дәл мәтінін және не күткеніңді жазып жібер — пайдалысы сол толық мәтін, өз сөзіңмен айтқаның емес.' },
+      { q: 'Сұрағаным емес, басқа нәрсе жасап жатыр.', a: 'Түсінбей жатқан жоқ, сұрауың толық емес. Ойыңда бар, бірақ жазбаған шартты қос. 07-модуль түгелдей осы туралы.' },
+      { q: 'Ештеңеге төлей алмаймын.', a: 'Gemini CLI тегін, ал браузер жолына мүлде ештеңе керек емес. Құралдар бетінде әр тегін нұсқа мен оның шектеуі жазылған.' },
+      { q: 'Команда жүргізуді сұрады. Қауіпсіз бе?', a: 'Алдымен команданы оқы. Бірдеңе жойса, күштеп push жасаса, тест қалтаңнан тыс жерге тисе — жоқ де. 11-модуль осы ереженің толық нұсқасы.' },
     ],
     nextH: 'Енді қалғаны түсінікті болады',
-    nextP: 'Қолыңда жұмыс істейтін нәрсе бар, әрі бірінші реттен шықпаған бірдеңе де бар шығар. Бастауға дәл осындай күй керек.',
+    nextP: 'Қолыңда жұмыс істейтін нәрсе бар, бірінші реттен шықпаған бірдеңе де бар шығар. Бастауға керегі — дәл осы.',
     nextPath: 'Толық жолды бастау',
     nextTools: 'Барлық құралды салыстыру',
-    copyLabel: 'Осы prompt-ты көшір',
+    copyLabel: 'Prompt-ты көшір',
     copied: 'Көшірілді',
-    doneLabel: 'Аяқталды деп есепте, егер',
+    doneLabel: 'Аяқтадың деп есепте',
   },
 }[lang];
 
@@ -226,14 +230,23 @@ const cmds: Record<string, { label: string; code: string }[]> = {
             <h2>{tr.name}</h2>
             <p class="who">{tr.who}</p>
 
-            <ol class="steps">
-              {tr.steps.map((s) => (
-                <li>
-                  <span class="s-t">{s.t}</span>
-                  <span class="s-d">{s.d}</span>
-                </li>
-              ))}
-            </ol>
+            {/* Three columns of full step lists side by side read as a wall.
+                The headings stay visible so the track is still scannable; the
+                detail opens on the one you actually picked. */}
+            <details class="steps-wrap">
+              <summary>
+                <span class="steps-open">{c.showSteps}</span>
+                <span class="steps-close">{c.hideSteps}</span>
+                <span class="steps-n">{tr.steps.length}</span>
+              </summary>
+              <ol class="steps">
+                {tr.steps.map((s) => (
+                  <li>
+                    <span class="s-t">{s.t}</span>
+                    <span class="s-d">{s.d}</span>
+                  </li>
+                ))}
+              </ol>
 
             {
               cmds[tr.id] && (
@@ -267,6 +280,8 @@ const cmds: Record<string, { label: string; code: string }[]> = {
                 </div>
               )
             }
+
+            </details>
 
             <p class="done"><span>{c.doneLabel}</span> {tr.done}</p>
           </article>
@@ -302,16 +317,33 @@ const cmds: Record<string, { label: string; code: string }[]> = {
 </BaseLayout>
 
 <style>
-  .hero { padding: clamp(48px, 8vw, 92px) 0 0; }
+  /* The steps open on demand. Closed, a track card is four lines and the three
+     tracks can be compared at a glance; open, it is the full walkthrough. */
+  .steps-wrap { margin-top: 18px; }
+  .steps-wrap > summary {
+    display: flex; align-items: center; gap: 9px; cursor: pointer; list-style: none;
+    padding: 9px 13px; border-radius: 999px; border: 1px solid var(--color-line);
+    font: 500 12.5px/1 var(--font-sans); color: var(--color-muted); width: fit-content;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .steps-wrap > summary::-webkit-details-marker { display: none; }
+  .steps-wrap > summary:hover { color: #fff; border-color: var(--color-line-strong); }
+  .steps-n { font: 500 11px/1 var(--font-mono); color: var(--color-faint); }
+  .steps-close { display: none; }
+  .steps-wrap[open] > summary .steps-open { display: none; }
+  .steps-wrap[open] > summary .steps-close { display: inline; }
+  .steps-wrap[open] > summary { margin-bottom: 4px; }
+
+  .hero { padding: clamp(44px, 7.2vw, 77px) 0 0; }
   .kicker { margin: 0 0 20px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
-  h1 { font-size: clamp(42px, 9vw, 88px); font-weight: 300; letter-spacing: -0.045em; line-height: 0.98; }
+  h1 { font-size: clamp(40px,8.46vw, 65px); font-weight: 300; letter-spacing: -0.045em; line-height: 0.98; }
   .block { display: block; }
   .accent { color: var(--color-signal-soft); }
-  .lead { max-width: 60ch; margin: 28px 0 0; font-size: clamp(17px, 2vw, 20px); line-height: 1.6; color: var(--color-muted); }
+  .lead { max-width: 60ch; margin: 28px 0 0; font-size: clamp(16px, 1.88vw, 17px); line-height: 1.6; color: var(--color-muted); }
   .lead-sm { max-width: 58ch; margin: 16px 0 0; font-size: 17px; color: var(--color-muted); }
 
-  .band { padding: clamp(40px, 6vw, 72px) 0 0; }
-  .h2 { font-size: clamp(26px, 4vw, 40px); font-weight: 350; }
+  .band { padding: clamp(37px, 5.4vw, 60px) 0 0; }
+  .h2 { font-size: clamp(25px, 3.76vw, 34px); font-weight: 350; }
 
   .why { padding: 24px 26px; border-radius: 20px; border-left: 3px solid var(--color-signal); background: rgb(43 127 255 / 0.08); }
   .why p { margin: 10px 0 0; font-size: 17px; line-height: 1.65; color: #fff; max-width: 62ch; }
@@ -320,7 +352,7 @@ const cmds: Record<string, { label: string; code: string }[]> = {
   .track { padding: 26px 24px; border-radius: 24px; border: 1px solid var(--color-line); background: var(--color-fill); }
   .track header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .mins { font: 500 12px/1 var(--font-mono); color: var(--color-faint); }
-  .track h2 { margin-top: 16px; font-size: clamp(24px, 3vw, 30px); font-weight: 400; }
+  .track h2 { margin-top: 16px; font-size: clamp(23px, 2.82vw, 26px); font-weight: 400; }
   .who { margin: 8px 0 0; font-size: 15.5px; color: var(--color-muted); }
 
   .steps { list-style: none; counter-reset: s; margin: 22px 0 0; padding: 0; display: grid; gap: 14px; }

@@ -137,6 +137,27 @@ export const fetchMe = () =>
 export const pushProgress = (body: { earned: Record<string, number>; lastPage?: string; name?: string }) =>
   call<{ earned: Record<string, number>; xp: number }>('/progress', { method: 'PUT', body: JSON.stringify(body) }, true);
 
+export interface Credential {
+  id: string;
+  track: string;
+  holder_name: string;
+  score: number | null;
+  issued_at: string;
+}
+
+/** Ask the server to issue a credential. It re-checks eligibility against its own copy of progress. */
+export const issueCertificate = (track: string, name: string) =>
+  call<{ certificate: Credential; issued: boolean }>(
+    '/certificate',
+    { method: 'POST', body: JSON.stringify({ track, name }) },
+    true,
+  );
+
+export const fetchCertificates = () => call<{ certificates: Credential[] }>('/certificates', {}, true);
+
+export const renameCertificate = (id: string, name: string) =>
+  call<{ certificate: Credential }>(`/certificate/${id}`, { method: 'PUT', body: JSON.stringify({ name }) }, true);
+
 export interface Stats {
   users: number;
   activeLast7Days: number;

@@ -106,7 +106,11 @@ export default function AuthForm({ lang, mode = 'signup' }: { lang: Lang; mode?:
           : await login({ email, password });
       saveSession(res.token, res.user, res.expiresInDays);
       await syncFromServer();
-      location.href = nextUrl();
+      // A brand-new account has nowhere to continue from, so send it to the
+      // profile, where the "where are you starting from?" picker lives. A
+      // returning login keeps whatever ?next= brought them here.
+      const explicitNext = new URLSearchParams(location.search).has('next');
+      location.href = tab === 'signup' && !explicitNext ? `/${lang}/profile/` : nextUrl();
     } catch (err) {
       const e2 = err as ApiError;
       setError(t.errors[e2.code] ?? t.errors.server_error);

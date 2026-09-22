@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import './levels.css';
+@import './bench.css';
 
 /* ---------------------------------------------------------------------------
    vibecoding.qairuhub.com — design tokens
@@ -52,10 +54,10 @@
 :root {
   color-scheme: dark;
   --act: var(--color-signal);
-  --header-h: 72px;
+  --header-h: 64px;
   --glow-rgb: 6, 18, 58;
   --text-glow: 0 2px 24px rgb(var(--glow-rgb) / 0.45), 0 0 2px rgb(var(--glow-rgb) / 0.25);
-  --page-w: 1150px;
+  --page-w: 1000px;
 }
 /* one colour per act, all inside the qairuhub palette */
 [data-act='why'] { --act: var(--color-pink); }
@@ -72,8 +74,8 @@ body {
   margin: 0;
   min-height: 100dvh;
   font-family: var(--font-sans);
-  font-size: 17px;
-  line-height: 1.65;
+  font-size: 16px;
+  line-height: 1.62;
   color: var(--color-fg);
   background: transparent;
   -webkit-font-smoothing: antialiased;
@@ -114,9 +116,9 @@ a { color: inherit; }
 code, kbd, pre, samp { font-family: var(--font-mono); }
 
 /* ---------- primitives ---------- */
-.wrap { width: min(var(--page-w), 100% - 40px); margin-inline: auto; }
-.wrap-wide { width: min(1440px, 100% - 40px); margin-inline: auto; }
-.wrap-narrow { width: min(740px, 100% - 40px); margin-inline: auto; }
+.wrap { width: min(var(--page-w), 100% - 44px); margin-inline: auto; }
+.wrap-wide { width: min(1240px, 100% - 44px); margin-inline: auto; }
+.wrap-narrow { width: min(680px, 100% - 44px); margin-inline: auto; }
 
 .script { font-family: var(--font-script); font-weight: 600; letter-spacing: 0; color: var(--act); font-size: 1.15em; line-height: 0.9; }
 .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-faint); }
@@ -184,9 +186,9 @@ code, kbd, pre, samp { font-family: var(--font-mono); }
 /* ---------- lesson prose ---------- */
 .prose-vc { font-size: 17.5px; line-height: 1.75; color: rgb(255 255 255 / 0.86); }
 .prose-vc > * + * { margin-top: 1.25em; }
-.prose-vc h2 { font-size: clamp(28px, 4vw, 40px); margin-top: 2.2em; color: var(--color-fg); }
+.prose-vc h2 { font-size: clamp(27px, 3.76vw, 34px); margin-top: 2.2em; color: var(--color-fg); }
 .prose-vc h2::before { content: ''; display: block; width: 40px; height: 3px; border-radius: 3px; background: var(--act); margin-bottom: 18px; }
-.prose-vc h3 { font-size: clamp(21px, 2.6vw, 26px); margin-top: 1.9em; font-weight: 500; color: var(--color-fg); }
+.prose-vc h3 { font-size: clamp(20px, 2.44vw, 22px); margin-top: 1.9em; font-weight: 500; color: var(--color-fg); }
 .prose-vc h4 { font-size: 18px; font-weight: 600; margin-top: 1.6em; letter-spacing: -0.01em; }
 .prose-vc strong { color: #fff; font-weight: 600; }
 .prose-vc a { color: var(--color-signal-soft); text-decoration: underline; text-decoration-color: rgb(106 166 255 / 0.4); text-underline-offset: 3px; transition: text-decoration-color 0.2s, color 0.2s; }
@@ -274,7 +276,7 @@ code, kbd, pre, samp { font-family: var(--font-mono); }
 
 .sec-text { display: grid; gap: 5px; min-width: 0; }
 /* the heading keeps its own id so anchors and the table of contents still work */
-.prose-vc .sec-head h2 { margin: 0 !important; font-size: clamp(22px, 3vw, 30px); }
+.prose-vc .sec-head h2 { margin: 0 !important; font-size: clamp(21px, 2.82vw, 26px); }
 .prose-vc .sec-head h2::before { display: none; }
 .sec-teaser { font-size: 15.5px; line-height: 1.5; color: var(--color-muted); }
 .sec[open] .sec-teaser { display: none; }
@@ -312,9 +314,14 @@ code, kbd, pre, samp { font-family: var(--font-mono); }
 .vc-ask-fab[hidden] { display: none; }
 .vc-ask-spark { width: 9px; height: 9px; border-radius: 50%; background: var(--color-signal); box-shadow: 0 0 12px var(--color-signal); }
 
+/* The dock's width is one variable so the panel, the page inset and the drag
+   handle can never disagree. JS overwrites it on :root with a px value once the
+   reader has resized it. */
+:root { --ask-w: min(46vw, 620px); }
+
 .vc-ask {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 70;
-  width: min(440px, 100vw);
+  width: var(--ask-w);
   display: flex; flex-direction: column;
   background: rgb(6 9 24 / 0.97); backdrop-filter: blur(20px);
   border-left: 1px solid var(--color-line-strong);
@@ -325,13 +332,45 @@ code, kbd, pre, samp { font-family: var(--font-mono); }
 }
 .vc-ask.is-open { transform: none; visibility: visible; }
 
+/* Wide screens put the lesson and the chat side by side instead of burying one
+   under the other — the whole point of asking is to read the answer against the
+   thing you were reading. Below this the panel goes back to being an overlay,
+   because half of a phone is not a column. */
+@media (min-width: 1100px) {
+  html.ask-open body { padding-right: var(--ask-w); }
+  body { transition: padding-right 0.45s var(--ease-out-expo); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none; }
+  .vc-ask { transition: none; }
+}
+
+/* Drag to resize. Also focusable, so it works without a mouse. */
+.vc-ask-grip {
+  position: absolute; left: -4px; top: 0; bottom: 0; width: 9px; z-index: 2;
+  cursor: col-resize; background: transparent; border: 0; padding: 0;
+  touch-action: none;
+}
+.vc-ask-grip::after {
+  content: ''; position: absolute; left: 3px; top: 0; bottom: 0; width: 2px;
+  background: transparent; transition: background 0.2s;
+}
+.vc-ask-grip:hover::after, .vc-ask-grip:focus-visible::after, .vc-ask.is-sizing .vc-ask-grip::after {
+  background: var(--color-signal);
+}
+.vc-ask-grip:focus-visible { outline: none; }
+/* While dragging, kill the slide transition or the panel lags the pointer. */
+.vc-ask.is-sizing, .vc-ask.is-sizing ~ * , html.ask-sizing body { transition: none !important; }
+html.ask-sizing { cursor: col-resize; user-select: none; }
+@media (max-width: 1099px) { .vc-ask-grip { display: none; } }
+
 .vc-ask-head { display: flex; align-items: flex-start; gap: 12px; padding: 20px 20px 16px; border-bottom: 1px solid var(--color-line); }
 .vc-ask-title { margin: 0; font: 500 17px/1.25 var(--font-sans); color: #fff; }
 .vc-ask-sub { margin: 5px 0 0; font-size: 13px; line-height: 1.45; color: var(--color-faint); }
 .vc-ask-x { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-line); background: transparent; color: var(--color-muted); cursor: pointer; font-size: 13px; }
 .vc-ask-x:hover { color: #fff; border-color: var(--color-line-strong); }
 
-.vc-ask-body { flex: 1; overflow-y: auto; padding: 18px 20px; display: grid; gap: 16px; align-content: start; }
+.vc-ask-body { flex: 1; min-width: 0; overflow-y: auto; overflow-x: hidden; padding: 18px 20px; display: grid; gap: 16px; align-content: start; }
 .vc-ask-empty { display: grid; gap: 8px; }
 .vc-ask-sugg {
   text-align: left; padding: 11px 14px; border-radius: 14px;
@@ -341,7 +380,12 @@ code, kbd, pre, samp { font-family: var(--font-mono); }
 }
 .vc-ask-sugg:hover { color: #fff; border-color: rgb(43 127 255 / 0.5); background: rgb(43 127 255 / 0.08); }
 
-.vc-ask-msg { display: grid; gap: 8px; }
+/* min-width:0 all the way down. A grid item defaults to min-width:auto, so one
+   long line of code used to widen the whole panel and set the message list
+   scrolling sideways instead of the code block. */
+.vc-ask-body > * { min-width: 0; }
+.vc-ask-msg { display: grid; gap: 8px; min-width: 0; }
+.vc-ask-msg > * { min-width: 0; max-width: 100%; }
 .vc-ask-bubble { padding: 12px 15px; border-radius: 16px; font-size: 15px; line-height: 1.6; overflow-wrap: anywhere; }
 .vc-ask-user .vc-ask-bubble { justify-self: end; max-width: 88%; background: var(--color-signal); color: #fff; border-bottom-right-radius: 5px; white-space: pre-wrap; }
 .vc-ask-assistant .vc-ask-bubble { background: rgb(255 255 255 / 0.05); border: 1px solid var(--color-line); color: rgb(255 255 255 / 0.92); border-bottom-left-radius: 5px; }
@@ -360,7 +404,7 @@ code, kbd, pre, samp { font-family: var(--font-mono); }
 .vc-ask-bubble code { padding: 1px 5px; border-radius: 5px; background: rgb(255 255 255 / 0.09); font: 400 13px/1.5 var(--font-mono); overflow-wrap: anywhere; }
 .vc-ask-bubble b { font-weight: 600; color: #fff; }
 .vc-ask-bubble a { color: var(--color-signal-soft); }
-.vc-ask-code { margin: 10px 0; border-radius: 12px; border: 1px solid var(--color-line); background: #05060f; overflow: hidden; }
+.vc-ask-code { margin: 10px 0; max-width: 100%; border-radius: 12px; border: 1px solid var(--color-line); background: #05060f; overflow: hidden; }
 .vc-ask-code-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 8px 6px 12px; border-bottom: 1px solid var(--color-line); }
 .vc-ask-code-bar span { font: 500 10px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-faint); }
 .vc-ask-code-bar button { padding: 4px 9px; border-radius: 7px; border: 1px solid var(--color-line-strong); background: transparent; color: var(--color-muted); font: 500 11px/1 var(--font-mono); cursor: pointer; }
@@ -396,6 +440,7 @@ code, kbd, pre, samp { font-family: var(--font-mono); }
 .vc-ask-clear:hover { color: #fff; }
 .vc-ask-note { margin: 0; font-size: 12px; line-height: 1.4; color: var(--color-faint); text-align: center; }
 
+@media (max-width: 1099px) { .vc-ask { width: min(480px, 100vw); } }
 @media (max-width: 640px) {
   .vc-ask { width: 100vw; }
   .vc-ask-fab { right: 14px; bottom: 14px; }

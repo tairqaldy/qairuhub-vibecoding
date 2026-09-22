@@ -35,8 +35,10 @@ Astro + MDX + Tailwind v4 + React islands, static output, deployed to Cloudflare
 src/data/curriculum.ts   the 16 modules and 9 labs — single source of truth for structure
 src/data/tools.ts        32 AI coding environments
 src/data/models.ts       31 models + local options  (pricesCheckedOn is a real date — update it)
-src/data/materials.ts    139 curated resources in 18 categories
+src/data/materials.ts    139 curated resources in 14 categories
 src/data/glossary.ts     473 EN↔KK terms + the Kazakh writing rules
+src/data/tracks.ts       the 4 levels + capstone — mirrored in api/src/tracks.js
+src/data/exams.ts        49 exam questions, EN+KK, one pool per level
 src/data/workshop.ts     the live run-of-show
 src/content/{lessons,labs}/{en,kk}/NN-slug.mdx
 src/components/mdx/      components available inside MDX with no import
@@ -76,7 +78,7 @@ it works on stage with no wifi, and for a student who cannot pay for anything. K
 The course requires an account; the hook does not.
 
 - **Public:** `/`, `/{lang}/`, `/{lang}/try/`, `/{lang}/glossary/`, `/{lang}/login/`, static assets
-- **Signed in:** `/{lang}/learn|labs|tools|materials`
+- **Signed in:** `/{lang}/learn|labs|tools|materials|profile|tracks|build`
 - **Organiser only:** `/{lang}/workshop|present|admin` — the run-of-show, the slides and the
   analytics. The API puts a signed `admin` claim in the JWT for addresses in `ADMIN_EMAILS`
   (default: the project owner). The edge requires a *verified* signature for these, so a
@@ -91,6 +93,10 @@ replace it with one.
 
 - `POST /auth/signup`, `POST /auth/login` — argon2id hashes, JWT out, throttled per email and per IP
 - `GET /me` · `PUT /progress` · `POST /event` — Bearer token
+- `POST /certificate` · `GET /certificates` · `GET /verify/:id` (public) — credentials. Eligibility
+  is re-checked server-side against `api/src/tracks.js`; `scripts/check-tracks.mjs` fails the build
+  if that file and `src/data/tracks.ts` ever disagree.
+- `GET|POST /ai/quota` — the workbench's daily per-person ceiling (`AI_DAILY_LIMIT`, default 40)
 - `GET /stats` — aggregate counts · `GET /admin/users` — the roster: name, email, XP,
   modules and labs done, last seen. Both accept either the `X-Admin-Key` header or a Bearer
   token whose `admin` claim is true. The roster is personal data; no other endpoint returns it.

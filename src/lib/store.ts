@@ -54,6 +54,24 @@ export function award(id: string, xp: number): boolean {
   return true;
 }
 
+/**
+ * Keep the HIGHER of the stored value and this one.
+ *
+ * `award` is first-write-wins, which is right for "you finished this module"
+ * and wrong for an exam you are allowed to retake. A retake that scores worse
+ * must not lower the record, and one that scores better must raise it. The
+ * server already merges with Math.max, so this is the same rule on both sides.
+ *
+ * Returns true when the stored value went up.
+ */
+export function awardBest(id: string, value: number): boolean {
+  const p = read();
+  const current = p.earned[id];
+  if (typeof current === 'number' && current >= value) return false;
+  write({ ...p, earned: { ...p.earned, [id]: value } });
+  return true;
+}
+
 export function revoke(id: string) {
   const p = read();
   if (!(id in p.earned)) return;
