@@ -12,6 +12,49 @@ Built overnight, 21–22 September 2026.
 | Intended domain | https://vibecoding.qairuhub.com — **needs one 2-minute step from you, see below** |
 | Repo | https://github.com/tairqaldy/qairuhub-vibecoding |
 | Cloudflare project | Pages → `vibecoding` (account: Tairkaldybayev@gmail.com) |
+| API | https://vibecoding-api-production.up.railway.app |
+| Railway project | `vibecoding-api` + Postgres (account: taircaldy.yt@mail.ru) |
+| Your statistics | https://vibecoding-1vl.pages.dev/en/admin/ |
+
+---
+
+## Accounts (added after the first build)
+
+People now need a free account to reach the course. The hook stays open so the funnel works:
+
+- **Public:** home, `/try`, `/glossary`, `/login`
+- **Account required:** `/learn`, `/labs`, `/tools`, `/materials`, `/workshop`, `/present`, `/admin`
+
+Sign-up is name + email + password. Passwords are hashed with **argon2id** and never stored in
+plaintext. Sign-in returns a JWT that lasts 30 days.
+
+**The gate is real, not decorative.** A Cloudflare Pages Function verifies the token's HMAC
+signature at the edge *before any HTML is sent*. I tested it against forged cookies, `alg: none`
+tokens, wrong signatures and expired tokens signed with the real secret — all rejected.
+
+**Progress now lives in Postgres**: XP, which modules and labs are finished, and the last page
+visited. Merging always keeps the *higher* value per item, so opening an old tab can never erase
+work done on another device. I verified the round trip: finish a module in one browser, sign in
+from a clean one, the XP is there.
+
+### Your statistics
+
+Open **`/en/admin/`** and paste your admin key once — it stays in that browser only.
+
+Your key is in **`api/.env.railway.local`** on this machine (git-ignored), and in the Railway
+dashboard under the `vibecoding-api` service variables as `ADMIN_KEY`.
+
+The dashboard shows accounts, active in the last 7 days, signups per day, split by language,
+average and highest XP, and which modules and labs people actually finish. **It deliberately
+cannot show names, emails or individual progress** — the API does not return them.
+
+### What is not there yet
+
+- **No password reset.** It needs an email sender (Resend or similar). Until then, a person who
+  forgets their password needs a new account. Worth adding before you promote the site widely.
+- **No email verification**, so a signup count is a signup count, not a verified-human count.
+- Railway's free usage is limited; if the workshop drives real traffic, check the project's usage
+  before the event.
 
 ---
 
