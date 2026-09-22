@@ -1,0 +1,101 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AuthForm from '@/components/widgets/AuthForm';
+import type { Lang } from '@/data/curriculum';
+import { labs, modules } from '@/data/curriculum';
+import { href } from '@/i18n/ui';
+
+export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+
+const c = {
+  en: {
+    title: 'Sign in',
+    desc: 'Create a free account to save your progress across devices and carry on where you stopped.',
+    kicker: 'Free · takes 20 seconds',
+    h1a: 'Save your',
+    h1b: 'progress',
+    lead: 'The course is free and always will be. An account keeps your XP and your place in it, so a laptop session continues on a phone.',
+    getsYou: 'What you get',
+    gets: [
+      ['Your place, kept', 'Come back to the exact module you stopped at, on any device.'],
+      ['XP that follows you', `All ${modules.length} modules and ${labs.length} labs, tracked and synced.`],
+      ['A card you can share', 'A downloadable image of what you have finished.'],
+    ],
+    tryFirst: 'Want to look around first?',
+    tryLink: 'Try the 10-minute track →',
+    freeNote: 'No payment, ever. This is a QairuHub community project.',
+  },
+  kk: {
+    title: 'Кіру',
+    desc: 'Прогресіңді құрылғылар арасында сақтап, тоқтаған жеріңнен жалғастыру үшін тегін аккаунт аш.',
+    kicker: 'Тегін · 20 секунд',
+    h1a: 'Прогресіңді',
+    h1b: 'сақта',
+    lead: 'Курс тегін әрі солай қала береді. Аккаунт сенің XP-ің мен қай жерде тұрғаныңды сақтайды — ноутбуктағы сабақ телефонда жалғасады.',
+    getsYou: 'Не аласың',
+    gets: [
+      ['Орның сақталады', 'Кез келген құрылғыдан дәл тоқтаған модуліңе ораласың.'],
+      ['XP сенімен бірге', `Барлық ${modules.length} модуль мен ${labs.length} практика есепке алынады.`],
+      ['Бөлісуге болатын карта', 'Не бітіргеніңді көрсететін, жүктеп алуға болатын сурет.'],
+    ],
+    tryFirst: 'Алдымен қарап шыққың келе ме?',
+    tryLink: '10 минуттық жолды байқап көр →',
+    freeNote: 'Ешқандай төлем жоқ. Бұл — QairuHub қауымдастық жобасы.',
+  },
+}[lang];
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.desc} noindex>
+  <section class="wrap shell">
+    <div class="left">
+      <p class="kicker">{c.kicker}</p>
+      <h1><span class="block">{c.h1a}</span><span class="block accent">{c.h1b}</span></h1>
+      <p class="lead">{c.lead}</p>
+
+      <p class="eyebrow mt">{c.getsYou}</p>
+      <ul class="gets">
+        {
+          c.gets.map(([h, d]) => (
+            <li>
+              <b>{h}</b>
+              <span>{d}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="try">
+        {c.tryFirst} <a href={href(lang, 'try')}>{c.tryLink}</a>
+      </p>
+      <p class="free">{c.freeNote}</p>
+    </div>
+
+    <div class="right">
+      <AuthForm client:load lang={lang} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .shell { display: grid; gap: 40px; padding: clamp(40px, 7vw, 80px) 0 40px; align-items: start; }
+  .kicker { margin: 0 0 16px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-signal-soft); }
+  h1 { font-size: clamp(40px, 7.5vw, 72px); font-weight: 300; letter-spacing: -0.045em; line-height: 0.98; }
+  .block { display: block; }
+  .accent { color: var(--color-signal-soft); }
+  .lead { max-width: 46ch; margin: 22px 0 0; font-size: clamp(16.5px, 2vw, 19px); line-height: 1.6; color: var(--color-muted); }
+  .mt { margin-top: 36px; display: block; }
+  .gets { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 12px; max-width: 46ch; }
+  .gets li { display: grid; gap: 3px; padding-left: 26px; position: relative; }
+  .gets li::before { content: ''; position: absolute; left: 0; top: 9px; width: 12px; height: 2px; background: var(--color-signal); }
+  .gets b { font-size: 16px; color: #fff; font-weight: 600; }
+  .gets span { font-size: 15px; line-height: 1.5; color: var(--color-muted); }
+  .try { margin: 32px 0 0; font-size: 15.5px; color: var(--color-muted); }
+  .try a { color: var(--color-signal-soft); text-decoration: none; border-bottom: 1px solid transparent; }
+  .try a:hover { border-bottom-color: currentColor; }
+  .free { margin: 10px 0 0; font: 400 13px/1.5 var(--font-mono); color: var(--color-faint); }
+  .right :global(.widget) { margin: 0; }
+  @media (min-width: 900px) { .shell { grid-template-columns: 1fr 460px; gap: 64px; } }
+</style>

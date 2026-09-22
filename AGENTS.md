@@ -70,3 +70,30 @@ it works on stage with no wifi, and for a student who cannot pay for anything. K
   Ә Ғ Қ Ң Ө Ұ Ү Һ І as tofu. Inter, Caveat and IBM Plex Mono all cover Kazakh in full.
 - Reveal-on-scroll is opt-in via a `.reveal-armed` class set by JS. Content must stay visible
   when JS does not run.
+
+## Accounts and the API
+
+The course requires an account; the hook does not.
+
+- **Public:** `/`, `/{lang}/`, `/{lang}/try/`, `/{lang}/glossary/`, `/{lang}/login/`, static assets
+- **Gated:** `/{lang}/learn|labs|tools|materials|workshop|present|admin`
+
+Gating is enforced at the edge in `functions/_middleware.js`, a Cloudflare Pages Function that
+verifies the session JWT's HMAC signature before any HTML is served. It rejects `alg: none`,
+forged signatures and expired tokens. Client-side checks alone would be decorative; do not
+replace it with one.
+
+**API** — `api/`, deployed to Railway (`vibecoding-api`) with a Railway Postgres:
+
+- `POST /auth/signup`, `POST /auth/login` — argon2id hashes, JWT out, throttled per email and per IP
+- `GET /me` · `PUT /progress` · `POST /event` — Bearer token
+- `GET /stats` — aggregate only, behind `ADMIN_KEY`; returns no names, emails or per-user rows
+
+Deploy the API with `cd api && railway up --service vibecoding-api --ci`.
+
+**Secrets** live in Railway variables and in Cloudflare Pages (`JWT_SECRET`), never in git.
+`api/.env.railway.local` holds local copies and is git-ignored. The same `JWT_SECRET` must be set
+in both places or the edge gate cannot verify what the API signs.
+
+**Progress merging is one-way-safe.** Both the client and the server keep the HIGHER xp per id,
+so syncing an old tab can never erase work done on another device. Keep it that way.

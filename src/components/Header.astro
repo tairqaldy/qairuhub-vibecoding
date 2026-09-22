@@ -44,6 +44,11 @@ const isActive = (to: string) => path.startsWith(href(lang, to));
         <span data-xp-value>0</span>
         <span class="xp-total">/ {totalXp} {t('progress.xp')}</span>
       </a>
+      <a class="acct" href={href(lang, 'login')} data-acct hidden>
+        <span class="acct-dot" aria-hidden="true"></span>
+        <span data-acct-name>{t('auth.account')}</span>
+      </a>
+      <a class="btn btn-sm btn-signal signin" href={href(lang, 'login')} data-signin hidden>{t('auth.signIn')}</a>
       <div class="lang" role="group" aria-label={t('nav.language')}>
         {
           (Object.keys(languages) as Lang[]).map((l) => (
@@ -101,6 +106,13 @@ const isActive = (to: string) => path.startsWith(href(lang, to));
   .xp-total { color: var(--color-faint); }
   .xp-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-signal); box-shadow: 0 0 10px var(--color-signal); }
   .xp.bump .xp-dot { animation: pulse-ring 0.9s ease-out; }
+  .acct { display: none; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--color-line-strong); text-decoration: none; font: 500 13px/1 var(--font-sans); color: #fff; max-width: 150px; }
+  .acct:hover { background: var(--color-fill-hover); }
+  .acct[hidden] { display: none !important; }
+  .acct span[data-acct-name] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .acct-dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--color-ok); }
+  .signin[hidden] { display: none !important; }
+  @media (min-width: 640px) { .acct:not([hidden]) { display: inline-flex; } }
   .lang { display: flex; padding: 3px; border-radius: 999px; border: 1px solid var(--color-line-strong); }
   .lang a { padding: 6px 11px; border-radius: 999px; font: 600 12px/1 var(--font-sans); text-decoration: none; color: var(--color-muted); transition: color 0.2s; }
   .lang a:hover { color: #fff; }
@@ -161,4 +173,23 @@ const isActive = (to: string) => path.startsWith(href(lang, to));
       } catch {}
     }),
   );
+
+  // Account chip. Rendered hidden and revealed by JS so a cached page never
+  // shows the wrong state for the visitor looking at it.
+  function paintAuth() {
+    let user: { name?: string; email?: string } | null = null;
+    try {
+      const raw = localStorage.getItem('vc:user');
+      if (raw && localStorage.getItem('vc:token')) user = JSON.parse(raw);
+    } catch {}
+    const acct = document.querySelector<HTMLElement>('[data-acct]');
+    const signin = document.querySelector<HTMLElement>('[data-signin]');
+    const label = document.querySelector<HTMLElement>('[data-acct-name]');
+    if (acct) acct.hidden = !user;
+    if (signin) signin.hidden = Boolean(user);
+    if (label && user) label.textContent = (user.name || user.email || '').split(' ')[0].slice(0, 16);
+  }
+  paintAuth();
+  window.addEventListener('vc:auth', paintAuth);
+  window.addEventListener('storage', paintAuth);
 </script>

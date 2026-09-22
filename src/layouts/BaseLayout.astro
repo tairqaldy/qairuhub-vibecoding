@@ -150,6 +150,10 @@ const other: Lang = lang === 'en' ? 'kk' : 'en';
         });
       });
 
+      // Pull server-side progress once per page load, so a learner who finished
+      // a module on another device sees it reflected here.
+      import('@/lib/store').then(({ syncFromServer }) => syncFromServer());
+
       // remember the chosen language for the root redirect
       try {
         localStorage.setItem('vc:lang', document.documentElement.lang);
