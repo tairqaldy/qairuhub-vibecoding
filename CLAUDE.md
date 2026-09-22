@@ -35,7 +35,7 @@ Astro + MDX + Tailwind v4 + React islands, static output, deployed to Cloudflare
 src/data/curriculum.ts   the 16 modules and 9 labs — single source of truth for structure
 src/data/tools.ts        32 AI coding environments
 src/data/models.ts       31 models + local options  (pricesCheckedOn is a real date — update it)
-src/data/materials.ts    167 curated resources in 18 categories
+src/data/materials.ts    139 curated resources in 18 categories
 src/data/glossary.ts     473 EN↔KK terms + the Kazakh writing rules
 src/data/workshop.ts     the live run-of-show
 src/content/{lessons,labs}/{en,kk}/NN-slug.mdx

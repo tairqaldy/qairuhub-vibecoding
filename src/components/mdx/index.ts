@@ -18,4 +18,6 @@ export { default as Quiz } from './Quiz.astro';
 export { default as Checklist } from './Checklist.astro';
 export { default as Compare } from './Compare.astro';
 export { default as Figure } from './Figure.astro';
+export { default as Chart } from './Chart.astro';
+export { default as Meme } from './Meme.astro';
 export { default as Widget } from './Widget.astro';

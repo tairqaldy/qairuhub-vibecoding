@@ -81,7 +81,7 @@ It clears itself within the hour, or set the Wi-Fi adapter DNS to 1.1.1.1 to ski
 - `/learn/` — 16 modules in 3 acts, ~40,000 words of English and a full Kazakh translation
 - `/labs/` — 9 hands-on labs, ~22,000 words, exact commands and prompts
 - `/tools/` — 32 AI coding environments and 31 models compared, with free tiers and honest weaknesses
-- `/materials/` — 167 curated resources in 18 categories, plus 4 reading paths
+- `/materials/` — 139 curated resources in 18 categories, plus 4 reading paths
 - `/glossary/` — 473 EN↔KK terms with definitions and usage rules
 - `/workshop/` — the presenter's pack: a 27-segment run-of-show, 8 things to send attendees,
   a 14-item presenter kit, 14 audience moments, 3 live demo scripts with offline fallbacks,

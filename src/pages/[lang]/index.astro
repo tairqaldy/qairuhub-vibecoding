@@ -3,7 +3,14 @@ import type { GetStaticPaths } from 'astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import type { Lang } from '@/data/curriculum';
 import { labs, modules } from '@/data/curriculum';
+import { materials } from '@/data/materials';
+import { tools } from '@/data/tools';
 import { href } from '@/i18n/ui';
+
+// Counted from the data. These used to be typed by hand and had drifted:
+// the library said 167 when it held 139.
+const materialCount = materials.reduce((n, c) => n + c.items.length, 0);
+const toolCount = tools.length;
 
 export const getStaticPaths = (() => [{ params: { lang: 'en' } }, { params: { lang: 'kk' } }]) satisfies GetStaticPaths;
 
@@ -27,8 +34,8 @@ const c = {
     inside: [
       { t: 'The course', d: `${modules.length} modules, from what vibe coding means to running several agents at once.`, to: 'learn', meta: '~2h' },
       { t: 'The labs', d: `${labs.length} guided sessions on your own machine. Exact commands, exact prompts.`, to: 'labs', meta: 'hands-on' },
-      { t: 'Tools & models', d: 'Every serious AI coding tool side by side. Free tiers and real weaknesses.', to: 'tools', meta: '32 tools' },
-      { t: 'The library', d: 'The docs, research and incidents worth your time, sorted by what you need.', to: 'materials', meta: '167 links' },
+      { t: 'Tools & models', d: 'Every serious AI coding tool side by side. Free tiers and real weaknesses.', to: 'tools', meta: `${toolCount} tools` },
+      { t: 'The library', d: 'The docs, research and incidents worth your time, sorted by what you need.', to: 'materials', meta: `${materialCount} links` },
     ],
 
     honestH: 'We tell you what does not work, too',
@@ -53,8 +60,8 @@ const c = {
     inside: [
       { t: 'Курс', d: `Vibe coding деген не екенінен бірнеше agent-ті қатар басқаруға дейін — ${modules.length} модуль.`, to: 'learn', meta: '~2 сағ' },
       { t: 'Практика', d: `Өз компьютеріңде орындайтын ${labs.length} сабақ. Нақты командалар, нақты prompt-тар.`, to: 'labs', meta: 'тәжірибе' },
-      { t: 'Құралдар мен модельдер', d: 'Барлық негізгі ЖИ құралы қатар. Тегін мүмкіндіктері мен шын кемшіліктері.', to: 'tools', meta: '32 құрал' },
-      { t: 'Кітапхана', d: 'Уақытыңа тұрарлық құжаттама, зерттеу және оқиғалар — керегіңе қарай сұрыпталған.', to: 'materials', meta: '167 сілтеме' },
+      { t: 'Құралдар мен модельдер', d: 'Барлық негізгі ЖИ құралы қатар. Тегін мүмкіндіктері мен шын кемшіліктері.', to: 'tools', meta: `${toolCount} құрал` },
+      { t: 'Кітапхана', d: 'Уақытыңа тұрарлық құжаттама, зерттеу және оқиғалар — керегіңе қарай сұрыпталған.', to: 'materials', meta: `${materialCount} сілтеме` },
     ],
 
     honestH: 'Не жұмыс істемейтінін де айтамыз',

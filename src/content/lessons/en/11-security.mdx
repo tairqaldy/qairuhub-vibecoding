@@ -79,6 +79,25 @@ Kimball shipped a Lovable + Cursor + Supabase app in three days and was broken i
 
 Veracode ran over 100 models through security-sensitive coding tasks. 45% of the samples introduced an OWASP Top 10 flaw. Java failed 72% of the time, JavaScript 43%, Python 38%; cross-site scripting failed 86%. Bigger models did no better. The pass rate went 55%, then 55% again ([Mar 2026](https://www.veracode.com/blog/spring-2026-genai-code-security/)), then 56% ([Jul 2026](https://www.veracode.com/blog/2026-genai-code-security-report-ai-risk/)). Syntax correctness is near 100%; security has not moved.
 
+<Chart
+  title="How often unprompted AI code failed the security task, by language."
+  source="Veracode, 100+ models · July 2025"
+  bars={[
+    { label: 'Cross-site scripting tasks', value: 86, tone: 'bad' },
+    { label: 'Java', value: 72, tone: 'bad' },
+    { label: 'JavaScript', value: 43, tone: 'warn' },
+    { label: 'Python', value: 38, tone: 'warn' },
+  ]}
+/>
+
+<Meme
+  art="ship"
+  topLabel="What you asked for"
+  top="A sign-up form."
+  bottomLabel="What you also got, for free"
+  bottom="A sign-up form with no row level security, readable by anyone who opens the browser console."
+/>
+
 Two caveats. Veracode sells security tooling, and their prompts contain no security instructions — so 45% is the *default*, not the ceiling. Put "parameterise every query, validate input on the server, escape output" in your CLAUDE.md, then review what comes back.
 
 <Myth

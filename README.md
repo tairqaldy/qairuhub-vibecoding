@@ -15,7 +15,7 @@ Kazakh, by [QairuHub](https://qairuhub.com) — from your first prompt to runnin
 | **Learn** | 16 modules in 3 acts: the story and the evidence, the 9-step workflow, then multi-agent |
 | **Labs** | 9 hands-on sessions on your own machine, with exact commands and prompts |
 | **Tools** | 32 AI coding environments and 31 models compared — free tiers, honest weaknesses |
-| **Materials** | 167 curated resources in 18 categories, plus 4 reading paths |
+| **Materials** | 139 curated resources in 18 categories, plus 4 reading paths |
 | **Glossary** | 473 English↔Kazakh technical terms with definitions and usage rules |
 | **Workshop** | A minute-by-minute run-of-show for teaching it live, with demo fallbacks |
 | **Slides** | Keyboard-driven presentation mode |

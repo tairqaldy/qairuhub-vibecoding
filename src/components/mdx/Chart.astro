@@ -1,0 +1,85 @@
+---
+// A number you can see. Horizontal bars drawn from the research figures, with
+// the source underneath — the same data a <Stat> carries, but as a picture, so
+// a page of percentages stops reading like a spreadsheet.
+interface Bar {
+  label: string;
+  value: number;
+  /** Shown after the value. Defaults to the chart's own unit. */
+  unit?: string;
+  tone?: 'signal' | 'good' | 'bad' | 'warn' | 'quiet';
+  note?: string;
+}
+interface Props {
+  title?: string;
+  source?: string;
+  bars: Bar[];
+  /** Full width of the track. Defaults to the largest value, so bars fill the row. */
+  max?: number;
+  unit?: string;
+}
+const { title, source, bars, max, unit = '%' } = Astro.props;
+const top = max ?? Math.max(...bars.map((b) => Math.abs(b.value)), 1);
+---
+
+<figure class="chart" data-reveal>
+  {title && <figcaption class="title">{title}</figcaption>}
+  <div class="rows">
+    {
+      bars.map((b, i) => (
+        <div class="row" style={`--i:${i}`}>
+          <p class="label">{b.label}</p>
+          <div class="track">
+            <span
+              class:list={['fill', `t-${b.tone ?? 'signal'}`]}
+              style={`width:${Math.min(100, (Math.abs(b.value) / top) * 100)}%`}
+            />
+          </div>
+          <p class:list={['value', `t-${b.tone ?? 'signal'}`]}>
+            {b.value}
+            <span>{b.unit ?? unit}</span>
+          </p>
+          {b.note && <p class="note">{b.note}</p>}
+        </div>
+      ))
+    }
+  </div>
+  {source && <p class="source">{source}</p>}
+</figure>
+
+<style>
+  .chart { margin: 40px 0; padding: 24px 22px; border-radius: 20px; border: 1px solid var(--color-line); background: rgb(255 255 255 / 0.03); }
+  .title { margin: 0 0 20px; font-size: 16px; line-height: 1.45; color: #fff; }
+  .rows { display: grid; gap: 18px; }
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; }
+  .label { grid-column: 1 / -1; margin: 0; font-size: 14.5px; line-height: 1.4; color: var(--color-muted); }
+  .track { height: 18px; border-radius: 9px; background: rgb(255 255 255 / 0.07); overflow: hidden; }
+  .fill { display: block; height: 100%; border-radius: 9px; transform-origin: left; }
+
+  /* Bars grow when the card scrolls in. Without JS the class is never added and
+     the bars are simply drawn at full width, like every other reveal here. */
+  :global(.reveal-armed) .chart .fill { transform: scaleX(0); }
+  :global(.reveal-armed) .chart.is-in .fill { animation: chartgrow 0.8s var(--ease-out-expo) both; animation-delay: calc(var(--i) * 90ms); }
+  @keyframes chartgrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .value { margin: 0; font: 300 24px/1 var(--font-display); letter-spacing: -0.02em; white-space: nowrap; }
+  .value span { margin-left: 1px; font-size: 14px; opacity: 0.65; }
+  .note { grid-column: 1 / -1; margin: 0; font-size: 13px; line-height: 1.4; color: var(--color-faint); }
+  .source { margin: 20px 0 0; font: 400 12.5px/1.4 var(--font-mono); color: var(--color-faint); }
+
+  .fill.t-signal { background: var(--color-signal); }
+  .fill.t-good { background: var(--color-ok); }
+  .fill.t-bad { background: var(--color-pink); }
+  .fill.t-warn { background: var(--color-amber); }
+  .fill.t-quiet { background: rgb(255 255 255 / 0.28); }
+  .value.t-signal { color: var(--color-signal-soft); }
+  .value.t-good { color: var(--color-ok); }
+  .value.t-bad { color: var(--color-pink); }
+  .value.t-warn { color: var(--color-amber); }
+  .value.t-quiet { color: var(--color-muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.reveal-armed) .chart .fill,
+    :global(.reveal-armed) .chart.is-in .fill { transform: none; animation: none; }
+  }
+</style>

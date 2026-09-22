@@ -1,0 +1,118 @@
+---
+// The two-panel joke everyone already knows: what you pictured, then what
+// actually happened. The art is drawn here rather than borrowed, so it works
+// offline, carries no licence, and looks like the rest of the site.
+//
+// `art` picks a scene and must be identical in the English and Kazakh copies
+// of a lesson — only `top` and `bottom` are translated.
+interface Props {
+  top: string;
+  bottom: string;
+  topLabel?: string;
+  bottomLabel?: string;
+  art?: 'ship' | 'fire' | 'loop' | 'wall';
+}
+const { top, bottom, topLabel, bottomLabel, art = 'ship' } = Astro.props;
+---
+
+<figure class="meme" data-reveal>
+  <div class="panel a">
+    <div class="art">
+      {
+        art === 'ship' && (
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <path d="M40 12c9 9 13 20 13 31l-7 7H34l-7-7c0-11 4-22 13-31Z" fill="none" stroke="currentColor" stroke-width="3" />
+            <circle cx="40" cy="34" r="6" fill="currentColor" />
+            <path d="M31 62c3 5 6 7 9 7s6-2 9-7" fill="none" stroke="currentColor" stroke-width="3" opacity="0.5" />
+          </svg>
+        )
+      }
+      {
+        art === 'fire' && (
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <path d="M22 40h36M40 22v36" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.35" />
+            <circle cx="40" cy="40" r="24" fill="none" stroke="currentColor" stroke-width="3" />
+            <path d="M30 40l7 8 14-16" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        )
+      }
+      {
+        art === 'loop' && (
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <path d="M40 16v48" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            <path d="M32 56l8 8 8-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        )
+      }
+      {
+        art === 'wall' && (
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <rect x="26" y="16" width="28" height="48" rx="3" fill="none" stroke="currentColor" stroke-width="3" />
+            <circle cx="46" cy="40" r="3" fill="currentColor" />
+          </svg>
+        )
+      }
+    </div>
+    <div class="text">
+      <p class="lab">{topLabel}</p>
+      <p class="line">{top}</p>
+    </div>
+  </div>
+
+  <div class="panel b">
+    <div class="art">
+      {
+        art === 'ship' && (
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <path d="M40 12c9 9 13 20 13 31l-7 7H34l-7-7c0-11 4-22 13-31Z" fill="none" stroke="currentColor" stroke-width="3" opacity="0.55" />
+            <circle cx="40" cy="34" r="6" fill="currentColor" opacity="0.55" />
+            <path d="M18 66c4-6 8-6 12 0s8 6 12 0 8-6 12 0 6 5 8 3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            <path d="M56 18l10 10M66 18l-10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+          </svg>
+        )
+      }
+      {
+        art === 'fire' && (
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <path d="M40 66c-10 0-17-7-17-16 0-11 10-15 10-26 7 4 9 10 9 14 3-3 4-7 4-11 8 6 11 15 11 23 0 9-7 16-17 16Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+            <path d="M40 58c-4 0-6-3-6-7 0-5 4-6 4-11 4 3 8 6 8 11 0 4-2 7-6 7Z" fill="currentColor" />
+          </svg>
+        )
+      }
+      {
+        art === 'loop' && (
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <path d="M58 32a20 20 0 1 0 4 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            <path d="M62 26v12H50" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="40" cy="44" r="4" fill="currentColor" />
+          </svg>
+        )
+      }
+      {
+        art === 'wall' && (
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <path d="M14 24h52M14 40h52M14 56h52" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            <path d="M32 24v16M50 24v16M24 40v16M42 40v16M60 40v16" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.6" />
+          </svg>
+        )
+      }
+    </div>
+    <div class="text">
+      <p class="lab">{bottomLabel}</p>
+      <p class="line">{bottom}</p>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .meme { margin: 40px 0; display: grid; gap: 2px; border-radius: 20px; overflow: hidden; border: 1px solid var(--color-line); }
+  .panel { display: flex; align-items: center; gap: 20px; padding: 22px 22px; }
+  .a { background: rgb(43 127 255 / 0.09); color: var(--color-signal-soft); }
+  .b { background: rgb(255 120 210 / 0.09); color: var(--color-pink); }
+  .art { flex: none; width: 56px; height: 56px; display: grid; place-items: center; border-radius: 14px; background: rgb(255 255 255 / 0.05); }
+  .art svg { width: 34px; height: 34px; display: block; }
+  .text { min-width: 0; }
+  .lab { margin: 0; font: 500 10.5px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.85; }
+  .line { margin: 8px 0 0; font-size: clamp(16px, 2vw, 19px); line-height: 1.4; color: #fff; }
+  .lab:empty { display: none; }
+</style>

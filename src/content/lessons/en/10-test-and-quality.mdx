@@ -198,6 +198,23 @@ Tests catch behaviour. They do not catch slow rot. GitClear analysed 623 million
 
 Copy-pasted lines went from 9.4% of changes to 15.7% in the first half of 2026, while cross-file reuse fell 35%.
 
+<Chart
+  title="Share of changed lines that are refactoring — tidying what is already there."
+  source="GitClear, 623 million code changes · June 2026"
+  bars={[
+    { label: '2022, before agents were common', value: 21, tone: 'good' },
+    { label: 'First half of 2026', value: 3.8, tone: 'bad' },
+  ]}
+/>
+
+<Meme
+  art="wall"
+  topLabel="What an agent loves doing"
+  top="Adding. A new file, a new function, a new branch of the same logic."
+  bottomLabel="What it almost never does unasked"
+  bottom="Deleting. Merging two near-identical blocks. Making the thing smaller than it was."
+/>
+
 This is not about AI writing bad code. It is about what *unreviewed* AI code does to a repository. Asked to add a feature, an agent will write a fifth copy of a function that already exists four times: writing is cheap, searching costs context ([module 02](/en/learn/ai-in-plain-language/)). Nobody chose that debt — no human read the diff.
 
 <Post
